@@ -6,8 +6,8 @@ RUN apt update && apt install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-l
 WORKDIR /source
 
 COPY . .
-RUN dotnet publish ./src/GithubUpdater/GithubUpdater.csproj -c Release -a $TARGETARCH --self-contained /p:PublishTrimmed=true /p:PublishAot=true /p:StaticallyLinked=true
+RUN dotnet publish ./src/HwoodiwissUpdater/HwoodiwissUpdater.csproj -c Release -a $TARGETARCH --self-contained /p:PublishTrimmed=true /p:PublishAot=true /p:StaticallyLinked=true
 
 FROM scratch AS export
 ARG TARGETARCH
-COPY --from=build /source/artifacts/publish/GithubUpdater/release_linux-$TARGETARCH/ ./publish/GithubUpdater/release
+COPY --from=build /source/artifacts/publish/HwoodiwissUpdater/release_linux-$TARGETARCH/ ./publish/HwoodiwissUpdater/release
