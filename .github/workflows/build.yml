@@ -39,7 +39,7 @@ jobs:
       - name: Build AOT (ARM64)
         env:
           DOCKER_BUILDKIT: 1
-        run: docker build -f .\build\Dockerfile.cross-arm64 --platform linux/arm64 --output artifacts/aot .
+        run: docker build -f ./build/Dockerfile.cross-arm64 --platform linux/arm64 --output artifacts/aot .
 
       - name: Publish AOT Build
         uses: actions/upload-artifact@v3
