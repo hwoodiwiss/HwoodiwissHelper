@@ -7,4 +7,12 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
+  <PropertyGroup>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
+    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(PublishAot)' == 'true' ">
+    <DefineConstants>$(DefineConstants);NativeAot</DefineConstants>
+  </PropertyGroup>
 </Project>
