@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace HwoodiwissUpdater;
+namespace HwoodiwissHelper;
 
 [JsonSerializable(typeof(object))]
 public partial class ApplicationJsonContext : JsonSerializerContext

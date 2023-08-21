@@ -10,7 +10,7 @@ param (
 )
 
 $publishProjectPaths = @(
-    "src/HwoodiwissUpdater/HwoodiwissUpdater.csproj"
+    "src/HwoodiwissHelper/HwoodiwissHelper.csproj"
 )
 
 foreach ($publishProjectPath in $publishProjectPaths) {

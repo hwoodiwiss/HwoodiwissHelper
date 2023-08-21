@@ -1,4 +1,4 @@
-namespace HwoodiwissUpdater.Tests.Unit;
+namespace HwoodiwissHelper.Tests.Unit;
 
 public class UnitTest1
 {

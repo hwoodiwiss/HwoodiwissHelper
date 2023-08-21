@@ -9,11 +9,11 @@ param (
 )
 
 $buildProjectPaths = @(
-    "src/HwoodiwissUpdater/HwoodiwissUpdater.csproj"
+    "src/HwoodiwissHelper/HwoodiwissHelper.csproj"
 )
 
 $testProjectPaths = @(
-    "tests/HwoodiwissUpdater.Tests.Unit/HwoodiwissUpdater.Tests.Unit.csproj"
+    "tests/HwoodiwissHelper.Tests.Unit/HwoodiwissHelper.Tests.Unit.csproj"
 )
 
 $packageProjectPaths = @(

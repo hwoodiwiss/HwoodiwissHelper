@@ -1,4 +1,4 @@
-﻿namespace HwoodiwissUpdater;
+﻿namespace HwoodiwissHelper;
 
 public static class ApplicationMetadata
 {

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <RootNamespace>HwoodiwissUpdater</RootNamespace>
+    <RootNamespace>HwoodiwissHelper</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ArgumentativeFilters" />
