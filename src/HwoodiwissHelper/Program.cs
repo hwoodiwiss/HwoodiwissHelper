@@ -1,7 +1,5 @@
 using HwoodiwissHelper;
 
-#pragma warning disable CA1852
-
 var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -25,8 +23,6 @@ if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.MapGet("/heartbeat", () => Results.Ok())
     .WithDescription("Gets a heartbeat to check if the service is running.");
