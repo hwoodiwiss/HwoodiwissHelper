@@ -1,9 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-
-using Microsoft.AspNetCore.Mvc;
-
-namespace HwoodiwissHelper.Features.Configuration;
+﻿namespace HwoodiwissHelper.Features.Configuration;
 
 public static class Configuration
 {
