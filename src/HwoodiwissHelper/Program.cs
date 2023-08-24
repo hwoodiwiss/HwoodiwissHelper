@@ -1,4 +1,5 @@
 using HwoodiwissHelper;
+using HwoodiwissHelper.Features.Configuration;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -26,5 +27,7 @@ if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
 
 app.MapGet("/heartbeat", () => Results.Ok())
     .WithDescription("Gets a heartbeat to check if the service is running.");
+
+app.MapConfigurationEndpoints();
 
 app.Run();

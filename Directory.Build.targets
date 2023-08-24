@@ -1,4 +1,27 @@
 <Project>
+  <PropertyGroup>
+    <GitBranch Condition=" '$(GitBranch)' == '' and '$(GITHUB_REF_NAME)' != '' ">$(GITHUB_REF_NAME)</GitBranch>
+    <GitCommit Condition=" '$(GitCommit)' == '' ">$(GITHUB_SHA)</GitCommit>
+  </PropertyGroup>
+  <Target Name="AddGitMetadata" BeforeTargets="CoreGenerateAssemblyInfo" >
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)" Condition=" '$(GitCommit)' == '' ">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+    </Exec>
+    <Exec Command="git rev-parse --abbrev-ref HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true" WorkingDirectory="$(MSBuildThisFileDirectory)" Condition=" '$(GitBranch)' == '' ">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
+    </Exec>
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition=" $(GitCommit) != '' ">
+        <_Parameter1>GitCommit</_Parameter1>
+        <_Parameter2>$(GitCommit)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition=" $(GitBranch) != '' ">
+        <_Parameter1>GitBranch</_Parameter1>
+        <_Parameter2>$(GitBranch)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+  
   <PropertyGroup Condition=" '$(IsTestProject)' == 'true' ">
     <CollectCoverage Condition=" '$(CollectCoverage)' == '' ">true</CollectCoverage>
     <CoverletOutput Condition=" '$(OutputPath)' != '' ">$(OutputPath)\</CoverletOutput>
