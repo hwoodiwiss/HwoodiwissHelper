@@ -1,4 +1,8 @@
-﻿namespace HwoodiwissHelper.Features.Configuration;
+﻿using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+namespace HwoodiwissHelper.Features.Configuration;
 
 public static class Configuration
 {
@@ -6,7 +10,17 @@ public static class Configuration
     {
         var group = builder.MapGroup("/configuration");
         
-        group.MapGet("/version", VersionConfiguration.FromMetadata);
+        group.MapGet("/version", () => new Dictionary<string, string>
+        {
+            ["isNativeAot"] = ApplicationMetadata.IsNativeAot.ToString(CultureInfo.InvariantCulture),
+            ["version"] = ApplicationMetadata.Version,
+            ["gitBranch"] = ApplicationMetadata.GitBranch,
+            ["gitCommit"] = ApplicationMetadata.GitCommit,
+            ["systemArchitecture"] = RuntimeInformation.RuntimeIdentifier,
+            ["runtimeVersion"] = RuntimeInformation.FrameworkDescription,
+            ["aspNetCoreVersion"] = typeof(WebApplication).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown",
+            ["aspNetCoreRuntimeVersion"] = typeof(WebApplication).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown",
+        });
         return builder;
     }
 }
