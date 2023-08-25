@@ -1,22 +1,12 @@
 using HwoodiwissHelper;
+using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Features.Configuration;
 
-var builder = WebApplication.CreateSlimBuilder(args);
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
-});
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-if (!ApplicationMetadata.IsNativeAot)
-{
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-}
-
-var app = builder.Build();
+var app = WebApplication
+    .CreateSlimBuilder(args)
+    .ConfigureAndBuild();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
@@ -25,9 +15,11 @@ if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
     app.UseSwaggerUI();
 }
 
+app.UseCors();
+
 app.MapGet("/heartbeat", () => Results.Ok())
     .WithDescription("Gets a heartbeat to check if the service is running.");
 
-app.MapConfigurationEndpoints();
+app.MapEndpoints();
 
 app.Run();

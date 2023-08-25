@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace HwoodiwissHelper.Features.Configuration;
 
-public static class Configuration
+public static class ConfigurationEndpoints
 {
     public static IEndpointRouteBuilder MapConfigurationEndpoints(this IEndpointRouteBuilder builder)
     {
