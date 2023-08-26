@@ -5,6 +5,7 @@
     <Description>An API made to handle Github Webhook events and automagicalyy update applications from releases.</Description>
     <Deterministic>true</Deterministic>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <Nullable>enable</Nullable>
     <RepositoryType>git</RepositoryType>

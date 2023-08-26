@@ -3,8 +3,14 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <RootNamespace>HwoodiwissHelper.Tests.Unit</RootNamespace>
+    <RootNamespace>HwoodiwissHelper.Tests.Integration</RootNamespace>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.AspNetCore.Testing" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HwoodiwissHelper\HwoodiwissHelper.csproj" />

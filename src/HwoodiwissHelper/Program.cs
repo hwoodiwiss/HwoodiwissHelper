@@ -18,3 +18,9 @@ app.MapGet("/heartbeat", () => Results.Ok())
 app.MapEndpoints();
 
 app.Run();
+
+
+public partial class Program
+{
+    
+}

@@ -1,4 +1,7 @@
-﻿namespace HwoodiwissHelper.Extensions;
+﻿using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
+
+namespace HwoodiwissHelper.Extensions;
 
 public static class WebApplicationBuilderExtensions
 {
@@ -21,6 +24,13 @@ public static class WebApplicationBuilderExtensions
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
         });
 
+        services.AddKeyedTransient<JsonOptions>(KeyedService.AnyKey, (sp, key) =>
+        {
+            var optionsSnapshot = sp.GetRequiredService<IOptionsSnapshot<JsonOptions>>();
+            var jsonOptions = optionsSnapshot.Get(key.ToString());
+            return jsonOptions;
+        });
+
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (!ApplicationMetadata.IsNativeAot)
@@ -32,11 +42,11 @@ public static class WebApplicationBuilderExtensions
         return services;
     }
     
-    private static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<Microsoft.AspNetCore.Http.Json.JsonOptions> configureOptions)
+    private static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<JsonOptions> configureOptions)
     {
         services.ConfigureHttpJsonOptions(configureOptions);
 
-        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
+        services.Configure<JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
         {
             configureOptions(options);
             options.SerializerOptions.WriteIndented = true;

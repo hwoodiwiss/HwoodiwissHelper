@@ -19,6 +19,6 @@ public static class ApplicationMetadata
     
     public static string GitCommit => GetCustomMetadata("GitCommit");
     
-    private static string GetCustomMetadata(string key) => Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyMetadataAttribute>()
+    private static string GetCustomMetadata(string key) => typeof(ApplicationMetadata).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
         .FirstOrDefault(f => f.Key.Equals(key, StringComparison.OrdinalIgnoreCase))?.Value ?? throw new UnreachableException();
 }
