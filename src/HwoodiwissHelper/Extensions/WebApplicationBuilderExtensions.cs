@@ -10,7 +10,7 @@ public static class WebApplicationBuilderExtensions
         return builder.Build();
     }
     
-    public static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
+    public static IConfigurationBuilder ConfigureConfiguration(IConfigurationBuilder configurationBuilder)
         => configurationBuilder
             .AddJsonFile("appsettings.Secrets.json", true);
     
