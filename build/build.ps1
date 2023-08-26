@@ -13,7 +13,8 @@ $buildProjectPaths = @(
 )
 
 $testProjectPaths = @(
-    "tests/HwoodiwissHelper.Tests.Unit/HwoodiwissHelper.Tests.Unit.csproj"
+    "tests/HwoodiwissHelper.Tests.Unit/HwoodiwissHelper.Tests.Unit.csproj",
+    "tests/HwoodiwissHelper.Tests.Integration/HwoodiwissHelper.Tests.Integration.csproj"
 )
 
 $packageProjectPaths = @(
