@@ -13,11 +13,12 @@ public static class IEndpointBuilderExtensions
         builder.AddEndpointFilter(async (context, next) =>
         {
             var result = await next(context);
-            if (result is not JsonResult)
+            if (result is {} and not JsonResult)
             {
                 var jsonOptionsSnapshot = context.HttpContext.RequestServices.GetRequiredService<IOptionsSnapshot<Microsoft.AspNetCore.Http.Json.JsonOptions>>();
                 var jsonOptions = jsonOptionsSnapshot.Get(Constants.PrettyPrintJsonOptionsKey);
-                return Results.Json(result, jsonOptions.SerializerOptions);
+                var typeInfo = jsonOptions.SerializerOptions.GetTypeInfo(result.GetType());
+                return Results.Json(result, typeInfo);
             }
             return result;
         });
