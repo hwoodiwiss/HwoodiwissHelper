@@ -1,8 +1,5 @@
 using HwoodiwissHelper;
 using HwoodiwissHelper.Extensions;
-using HwoodiwissHelper.Features.Configuration;
-
-using Microsoft.AspNetCore.Cors.Infrastructure;
 
 var app = WebApplication
     .CreateSlimBuilder(args)
