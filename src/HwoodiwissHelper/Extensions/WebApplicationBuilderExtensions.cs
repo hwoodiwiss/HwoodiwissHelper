@@ -21,16 +21,6 @@ public static class WebApplicationBuilderExtensions
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
         });
 
-        services.AddCors(opt =>
-        {
-            opt.AddDefaultPolicy(builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        });
-
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (!ApplicationMetadata.IsNativeAot)

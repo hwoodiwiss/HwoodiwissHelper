@@ -15,8 +15,6 @@ if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
     app.UseSwaggerUI();
 }
 
-app.UseCors();
-
 app.MapGet("/heartbeat", () => Results.Ok())
     .WithDescription("Gets a heartbeat to check if the service is running.");
 
