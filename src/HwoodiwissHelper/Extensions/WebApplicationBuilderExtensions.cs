@@ -4,27 +4,21 @@ public static class WebApplicationBuilderExtensions
 {
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
-        ConfigureConfiguration(builder.Configuration);
-        ConfigureServices(builder.Services);
+        builder.Configuration.ConfigureConfiguration();
+        builder.Services.ConfigureServices();
 
         return builder.Build();
     }
     
-    public static IConfigurationBuilder ConfigureConfiguration(IConfigurationBuilder configurationBuilder)
+    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
         => configurationBuilder
             .AddJsonFile("appsettings.Secrets.json", true);
     
-    public static IServiceCollection ConfigureServices(IServiceCollection services)
+    public static IServiceCollection ConfigureServices(this IServiceCollection services)
     {
-        services.ConfigureHttpJsonOptions(options =>
+        services.ConfigureJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
-        });
-
-        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
-        {
-            options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
-            options.SerializerOptions.WriteIndented = true;
         });
 
         // Add services to the container.
@@ -34,6 +28,19 @@ public static class WebApplicationBuilderExtensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
+
+        return services;
+    }
+    
+    private static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<Microsoft.AspNetCore.Http.Json.JsonOptions> configureOptions)
+    {
+        services.ConfigureHttpJsonOptions(configureOptions);
+
+        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
+        {
+            configureOptions(options);
+            options.SerializerOptions.WriteIndented = true;
+        });
 
         return services;
     }
