@@ -2,14 +2,17 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+using HwoodiwissHelper.Extensions;
+
 namespace HwoodiwissHelper.Features.Configuration;
 
 public static class ConfigurationEndpoints
 {
     public static IEndpointRouteBuilder MapConfigurationEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("/configuration");
-        
+        var group = builder.MapGroup("/configuration")
+            .WithPrettyPrint();
+
         group.MapGet("/version", () => new Dictionary<string, string>
         {
             ["isNativeAot"] = ApplicationMetadata.IsNativeAot.ToString(CultureInfo.InvariantCulture),

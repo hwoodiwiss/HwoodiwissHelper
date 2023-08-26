@@ -21,6 +21,12 @@ public static class WebApplicationBuilderExtensions
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
         });
 
+        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
+        {
+            options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
+            options.SerializerOptions.WriteIndented = true;
+        });
+
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (!ApplicationMetadata.IsNativeAot)
