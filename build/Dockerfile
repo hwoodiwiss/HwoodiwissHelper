@@ -8,6 +8,13 @@ WORKDIR /source
 COPY . .
 RUN dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj -c Release -a $TARGETARCH --self-contained /p:PublishTrimmed=true /p:PublishAot=true /p:StaticallyLinked=true
 
-FROM scratch AS export
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS run
 ARG TARGETARCH
-COPY --from=build /source/artifacts/publish/HwoodiwissHelper/release_linux-$TARGETARCH/ ./publish/HwoodiwissHelper/release
+
+WORKDIR /app
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+EXPOSE 8080
+
+COPY --from=build /source/artifacts/publish/HwoodiwissHelper/release_*/ .
+ENTRYPOINT [ "./HwoodiwissHelper" ]

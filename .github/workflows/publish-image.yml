@@ -1,0 +1,28 @@
+name: publish-image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-image:
+    strategy:
+      matrix:
+        architecture:
+          - arm64
+          - amd64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to GHCR
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
+
+      - name: Build Image
+        run: |
+          docker build -f .\build\Dockerfile . --platform linux/$(matrix.architecture) -t hwoodiwiss/hwoodiwiss-helper:1.0.$(GITHUB_RUN_NUMBER)-$(matrix.architecture)
+
+      - name: Push Image
+        run: |
+          docker push hwoodiwiss/hwoodiwiss-helper:1.0.$(GITHUB_RUN_NUMBER)-$(matrix.architecture)

@@ -5,7 +5,7 @@ root = true
 indent_style = space
 
 # Xml files
-[*.{xml,csproj,props,targets,config,vsixmanifest,resx}]
+[*.{xml,csproj,props,targets,config,vsixmanifest,resx,yml}]
 indent_size = 2
 insert_final_newline = true
 
