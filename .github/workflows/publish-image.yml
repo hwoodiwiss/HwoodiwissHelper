@@ -21,7 +21,7 @@ jobs:
 
       - name: Login to GHCR
         run: |
-          echo ${{ secrets.PUSH_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
 
       - name: Build Image
         run: |
@@ -29,4 +29,4 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
+          docker push ghcr.io/hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
