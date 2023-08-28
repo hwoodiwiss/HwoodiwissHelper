@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -f ./build/Dockerfile . --platform linux/${{ matrix.architecture }} -t hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
+          docker build -f ./build/Dockerfile . --platform linux/${{ matrix.architecture }} -t ghcr.io/hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
 
       - name: Push Image
         run: |
