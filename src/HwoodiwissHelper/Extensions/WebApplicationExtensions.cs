@@ -6,9 +6,9 @@ namespace HwoodiwissHelper.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder, IWebHostEnvironment environment)
         => builder
-            .MapConfigurationEndpoints()
+            .MapConfigurationEndpoints(environment)
             .MapHealthEndpoints()
             .MapSurpriseEndpoints();
 }

@@ -15,7 +15,7 @@ if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
 app.MapGet("/heartbeat", () => Results.Ok())
     .WithDescription("Gets a heartbeat to check if the service is running.");
 
-app.MapEndpoints();
+app.MapEndpoints(app.Environment);
 
 app.Run();
 

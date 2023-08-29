@@ -19,6 +19,8 @@ public static class ApplicationMetadata
     
     public static string GitCommit => GetCustomMetadata("GitCommit");
     
+    public static bool IsKubernetes => Environment.GetEnvironmentVariable("KUBERNETES_SERVICE_HOST") is not null;
+    
     private static string GetCustomMetadata(string key) => typeof(ApplicationMetadata).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
         .FirstOrDefault(f => f.Key.Equals(key, StringComparison.OrdinalIgnoreCase))?.Value ?? throw new UnreachableException();
 }

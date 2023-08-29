@@ -8,11 +8,16 @@ namespace HwoodiwissHelper.Features.Configuration;
 
 public static class ConfigurationEndpoints
 {
-    public static IEndpointRouteBuilder MapConfigurationEndpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapConfigurationEndpoints(this IEndpointRouteBuilder builder, IWebHostEnvironment environment)
     {
         var group = builder.MapGroup("/configuration")
             .WithPrettyPrint();
 
+        if (ApplicationMetadata.IsKubernetes || environment.IsDevelopment())
+        {
+            group.MapGet("/", (IConfiguration config) => config.AsEnumerable().ToDictionary(k => k.Key, v => v.Value));
+        }
+        
         group.MapGet("/version", () => new Dictionary<string, string>
         {
             ["isNativeAot"] = ApplicationMetadata.IsNativeAot.ToString(CultureInfo.InvariantCulture),

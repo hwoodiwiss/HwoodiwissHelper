@@ -37,9 +37,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{772EE4D3-AA1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{00CC538C-3B01-44AC-BCEC-10FC5124B954}"
 	ProjectSection(SolutionItems) = preProject
-		build\Dockerfile.cross-arm64 = build\Dockerfile.cross-arm64
 		build\build.ps1 = build\build.ps1
 		build\publish-aot.ps1 = build\publish-aot.ps1
+		build\Dockerfile = build\Dockerfile
+		build\Dockerfile.build-cross = build\Dockerfile.build-cross
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HwoodiwissHelper.Tests.Integration", "tests\HwoodiwissHelper.Tests.Integration\HwoodiwissHelper.Tests.Integration.csproj", "{EEC0909B-ABCE-47BE-8FA1-42B9549F19C0}"
