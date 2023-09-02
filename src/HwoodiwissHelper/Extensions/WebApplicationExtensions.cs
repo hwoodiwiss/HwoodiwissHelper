@@ -1,4 +1,5 @@
 ﻿using HwoodiwissHelper.Features.Configuration;
+using HwoodiwissHelper.Features.Github;
 using HwoodiwissHelper.Features.Health;
 using HwoodiwissHelper.Features.Surprise;
 
@@ -10,5 +11,6 @@ public static class WebApplicationExtensions
         => builder
             .MapConfigurationEndpoints(environment)
             .MapHealthEndpoints()
-            .MapSurpriseEndpoints();
+            .MapSurpriseEndpoints()
+            .MapGithubEndpoints();
 }
