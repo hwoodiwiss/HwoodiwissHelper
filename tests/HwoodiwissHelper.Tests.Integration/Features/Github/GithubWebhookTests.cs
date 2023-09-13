@@ -2,15 +2,20 @@
 using System.Text;
 
 using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Tests.Integration.Extensions;
+
+using NSubstitute;
 
 namespace HwoodiwissHelper.Tests.Integration.Features.Github;
 
 public sealed class GithubWebhookTests : IClassFixture<HwoodiwissHelperFixture>
 {
+    private readonly HwoodiwissHelperFixture _fixture;
     private readonly HttpClient _client;
 
     public GithubWebhookTests(HwoodiwissHelperFixture fixture)
     {
+        _fixture = fixture;
         _client = fixture.CreateClient();
     }
     
@@ -19,7 +24,8 @@ public sealed class GithubWebhookTests : IClassFixture<HwoodiwissHelperFixture>
     {
         // Arrange
         HttpRequestMessage requestMessage = new(HttpMethod.Post, "/github/webhook");
-        requestMessage.Headers.Add("X-Hub-Signature-256", $"test_key");
+        requestMessage.Content = new StringContent("Hello World!", Encoding.UTF8, "text/plain");
+        await requestMessage.SignRequestAsync(HwoodiwissHelperFixture.WebhookSigningKey);
         
         // Act
         var response = await _client.SendAsync(requestMessage);

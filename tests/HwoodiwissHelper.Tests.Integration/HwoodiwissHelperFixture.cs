@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using NSubstitute;
+
 namespace HwoodiwissHelper.Tests.Integration;
 
 public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
 {
-    public GithubSignatureValidatorInterceptor SignatureValidator { get; } = new(); 
+    public const string WebhookSigningKey = "It's a Secret to Everybody";
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -17,15 +19,10 @@ public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
             cfg.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
-                    ["Github:WebhookKey"] = "test_key",
+                    ["Github:WebhookKey"] = WebhookSigningKey,
                 }
             ));
         
         base.ConfigureWebHost(builder);
-
-        builder.ConfigureServices(services =>
-        {
-            services.AddSingleton<IGithubSignatureValidator>(SignatureValidator);
-        });
     }
 }

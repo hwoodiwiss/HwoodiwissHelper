@@ -21,7 +21,7 @@ public class GithubSignatureValidatorTests
         var sut = CreateSut("It's a Secret to Everybody");
         
         // Act
-        var result = await sut.ValidateSignature(signature.AsMemory(), body, cancellationToken);
+        var result = await sut.ValidateSignatureAsync(signature.AsMemory(), body, cancellationToken);
         
         // Assert
         result.ShouldBeTrue();
@@ -39,7 +39,7 @@ public class GithubSignatureValidatorTests
         var sut = CreateSut("It's a Secret to Everybody");
         
         // Act
-        var result = await sut.ValidateSignature(signature.AsMemory(), body, cancellationToken);
+        var result = await sut.ValidateSignatureAsync(signature.AsMemory(), body, cancellationToken);
         
         // Assert
         result.ShouldBeFalse();

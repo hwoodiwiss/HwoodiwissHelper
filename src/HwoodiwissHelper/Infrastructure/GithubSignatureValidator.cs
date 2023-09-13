@@ -12,7 +12,7 @@ public sealed class GithubSignatureValidator(IOptions<GithubConfiguration> githu
 {
     private readonly byte[] _keyBytes = Encoding.UTF8.GetBytes(githubConfiguration.Value.WebhookKey);
 
-    public async ValueTask<bool> ValidateSignature(ReadOnlyMemory<char> signature, Stream body, CancellationToken cancellationToken)
+    public async ValueTask<bool> ValidateSignatureAsync(ReadOnlyMemory<char> signature, Stream body, CancellationToken cancellationToken)
     {
         var hasher = new HMACSHA256(_keyBytes);
         var digest = await HashDataAsync(hasher, body, cancellationToken);

@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Infrastructure;
 
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
@@ -43,6 +44,8 @@ public static class WebApplicationBuilderExtensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
+
+        services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
 
         return services;
     }
