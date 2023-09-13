@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG TARGETARCH
 RUN dpkg --add-architecture arm64
 RUN apt update && apt install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-linux-gnu llvm
