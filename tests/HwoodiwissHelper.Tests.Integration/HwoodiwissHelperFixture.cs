@@ -1,11 +1,6 @@
-﻿using HwoodiwissHelper.Infrastructure;
-
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-using NSubstitute;
 
 namespace HwoodiwissHelper.Tests.Integration;
 

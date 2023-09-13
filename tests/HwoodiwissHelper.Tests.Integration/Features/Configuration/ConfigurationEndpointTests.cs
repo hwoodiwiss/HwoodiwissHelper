@@ -1,18 +1,12 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-
 using HwoodiwissHelper.Tests.Integration.Assertions;
 
 namespace HwoodiwissHelper.Tests.Integration.Features.Configuration;
 
-public class ConfigurationEndpointTests : IClassFixture<HwoodiwissHelperFixture>
+public class ConfigurationEndpointTests(HwoodiwissHelperFixture fixture) : IClassFixture<HwoodiwissHelperFixture>
 {
-    private readonly HttpClient _client;
-
-    public ConfigurationEndpointTests(HwoodiwissHelperFixture fixture)
-    {
-        _client = fixture.CreateClient();
-    }
+    private readonly HttpClient _client = fixture.CreateClient();
 
     [Fact]
     public async Task Get_Version_ReturnsApplicationMetadata()

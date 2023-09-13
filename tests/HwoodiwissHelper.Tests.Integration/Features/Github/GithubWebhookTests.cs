@@ -1,24 +1,13 @@
 ﻿using System.Net;
 using System.Text;
-
-using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Tests.Integration.Extensions;
-
-using NSubstitute;
 
 namespace HwoodiwissHelper.Tests.Integration.Features.Github;
 
-public sealed class GithubWebhookTests : IClassFixture<HwoodiwissHelperFixture>
+public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClassFixture<HwoodiwissHelperFixture>
 {
-    private readonly HwoodiwissHelperFixture _fixture;
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = fixture.CreateClient();
 
-    public GithubWebhookTests(HwoodiwissHelperFixture fixture)
-    {
-        _fixture = fixture;
-        _client = fixture.CreateClient();
-    }
-    
     [Fact]
     public async Task Post_GithubWebhook_ReturnsOk()
     {

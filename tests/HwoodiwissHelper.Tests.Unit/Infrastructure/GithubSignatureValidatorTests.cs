@@ -1,6 +1,5 @@
 ﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
-
 using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Tests.Unit.Infrastructure;

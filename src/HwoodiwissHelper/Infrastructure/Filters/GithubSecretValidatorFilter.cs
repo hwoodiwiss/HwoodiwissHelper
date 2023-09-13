@@ -1,5 +1,4 @@
 ﻿using ArgumentativeFilters;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace HwoodiwissHelper.Infrastructure.Filters;

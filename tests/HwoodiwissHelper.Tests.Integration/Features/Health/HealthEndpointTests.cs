@@ -2,15 +2,10 @@
 
 namespace HwoodiwissHelper.Tests.Integration.Features.Health;
 
-public class HealthEndpointTests : IClassFixture<HwoodiwissHelperFixture>
+public class HealthEndpointTests(HwoodiwissHelperFixture fixture) : IClassFixture<HwoodiwissHelperFixture>
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = fixture.CreateClient();
 
-    public HealthEndpointTests(HwoodiwissHelperFixture fixture)
-    {
-        _client = fixture.CreateClient();
-    }
-    
     [Fact]
     public async Task Get_Health_ReturnsOk()
     {

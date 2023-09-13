@@ -1,8 +1,6 @@
 ﻿using ArgumentativeFilters;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-
 using JsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 namespace HwoodiwissHelper.Infrastructure.Filters;
