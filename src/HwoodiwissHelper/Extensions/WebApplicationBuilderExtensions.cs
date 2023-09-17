@@ -24,7 +24,6 @@ public static class WebApplicationBuilderExtensions
     private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder, ConfigurationManager configuration, IHostEnvironment environment)
     {
         var loggerConfig = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
             .Enrich.FromLogContext();
         if (environment.IsDevelopment())
         {
