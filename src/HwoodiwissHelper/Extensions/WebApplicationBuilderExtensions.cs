@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
-using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -72,7 +71,6 @@ public static class WebApplicationBuilderExtensions
         }
 
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
-        services.AddSingleton<RequestLoggingMiddleware>();
 
         return services;
     }

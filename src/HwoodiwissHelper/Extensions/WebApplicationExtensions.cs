@@ -2,7 +2,6 @@
 using HwoodiwissHelper.Features.Github;
 using HwoodiwissHelper.Features.Health;
 using HwoodiwissHelper.Features.Surprise;
-using HwoodiwissHelper.Middleware;
 
 namespace HwoodiwissHelper.Extensions;
 
@@ -17,7 +16,6 @@ public static class WebApplicationExtensions
             app.UseSwaggerUI();
         }
 
-        app.UseMiddleware<RequestLoggingMiddleware>();
         app.MapEndpoints(app.Environment);
         
         return app;
