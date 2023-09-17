@@ -2,7 +2,7 @@
 
 namespace HwoodiwissHelper.Features.Github;
 
-public static class GithubWebhookEndpoints
+public static partial class GithubWebhookEndpoints
 {
     public static IEndpointRouteBuilder MapGithubEndpoints(this IEndpointRouteBuilder builder)
     {

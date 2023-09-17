@@ -1,7 +1,12 @@
-﻿using HwoodiwissHelper.Configuration;
+﻿using System.Globalization;
+using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
 
 namespace HwoodiwissHelper.Extensions;
 
@@ -10,10 +15,34 @@ public static class WebApplicationBuilderExtensions
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
         builder.Configuration.ConfigureConfiguration();
+        builder.Host.ConfigureLogging(builder.Configuration, builder.Environment);
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices();
 
         return builder.Build();
+    }
+
+    private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder, ConfigurationManager configuration, IHostEnvironment environment)
+    {
+        var loggerConfig = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .Enrich.FromLogContext();
+        if (environment.IsDevelopment())
+        {
+            loggerConfig
+                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            loggerConfig
+                .WriteTo.Console(new JsonFormatter())
+                .WriteTo.File(new CompactJsonFormatter(), "./logs/application.log", rollingInterval: RollingInterval.Day);
+        }
+
+        Log.Logger = loggerConfig.CreateLogger();
+        
+        hostBuilder.UseSerilog();
+        return hostBuilder;
     }
     
     private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
@@ -43,6 +72,7 @@ public static class WebApplicationBuilderExtensions
         }
 
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
+        services.AddSingleton<RequestLoggingMiddleware>();
 
         return services;
     }
