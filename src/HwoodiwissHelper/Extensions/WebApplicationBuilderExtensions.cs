@@ -2,6 +2,7 @@
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -70,6 +71,12 @@ public static class WebApplicationBuilderExtensions
         }
 
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
+        services.AddHttpLogging(options =>
+        {
+            options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+            options.RequestHeaders.Add("X-Forwarded-For");
+            options.RequestHeaders.Add("X-Real-IP");
+        });
 
         return services;
     }
