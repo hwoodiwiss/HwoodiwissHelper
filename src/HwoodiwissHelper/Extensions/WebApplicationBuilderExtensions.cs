@@ -74,7 +74,7 @@ public static class WebApplicationBuilderExtensions
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
         services.AddHttpLogging(options =>
         {
-            options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+            options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders | HttpLoggingFields.ResponseStatusCode;
             options.RequestHeaders.Add("X-Forwarded-For");
             options.RequestHeaders.Add("X-Real-IP");
         });
