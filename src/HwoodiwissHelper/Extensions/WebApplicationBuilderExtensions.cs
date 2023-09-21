@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Json;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace HwoodiwissHelper.Extensions;
 
@@ -61,6 +62,13 @@ public static class WebApplicationBuilderExtensions
         services.ConfigureJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
+        });
+
+        // Enables easy named loggers in static contexts
+        services.AddKeyedTransient<ILogger>(KeyedService.AnyKey, (sp, key) =>
+        {
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
         
         // Add services to the container.
