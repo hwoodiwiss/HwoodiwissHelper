@@ -36,7 +36,7 @@ public static class WebApplicationBuilderExtensions
         {
             loggerConfig
                 .WriteTo.Console(new JsonFormatter())
-                .WriteTo.File(new CompactJsonFormatter(), "./logs/application.log", rollingInterval: RollingInterval.Day);
+                .WriteTo.File(new JsonFormatter(), "./logs/HwoodiwissHelper.log", rollingInterval: RollingInterval.Day);
         }
 
         Log.Logger = loggerConfig.CreateLogger();
