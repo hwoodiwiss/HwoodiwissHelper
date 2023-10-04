@@ -11,8 +11,8 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
     </Exec>
     <ItemGroup>
-      <AssemblyMetadata Include="GitCommit" Value="$(GitCommit)" Condition=" $(GitCommit) != '' ">
-      <AssemblyMetadata Include="GitBranch" Value="$(GitBranch)" Condition=" $(GitBranch) != '' ">
+      <AssemblyMetadata Include="GitCommit" Value="$(GitCommit)" Condition=" $(GitCommit) != '' " />
+      <AssemblyMetadata Include="GitBranch" Value="$(GitBranch)" Condition=" $(GitBranch) != '' " />
     </ItemGroup>
   </Target>
   
