@@ -8,9 +8,18 @@ using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Infrastructure;
 
-public sealed class GithubSignatureValidator(IOptions<GithubConfiguration> githubConfiguration) : IGithubSignatureValidator
+public sealed class GithubSignatureValidator : IGithubSignatureValidator
 {
-    private readonly byte[] _keyBytes = Encoding.UTF8.GetBytes(githubConfiguration.Value.WebhookKey);
+    private byte[] _keyBytes;
+
+    public GithubSignatureValidator(IOptionsMonitor<GithubConfiguration> githubConfiguration)
+    {
+        _keyBytes = Encoding.UTF8.GetBytes(githubConfiguration.CurrentValue.WebhookKey);
+        githubConfiguration.OnChange(value =>
+        {
+            _keyBytes = Encoding.UTF8.GetBytes(value.WebhookKey);
+        });
+    }
 
     public async ValueTask<bool> ValidateSignatureAsync(ReadOnlyMemory<char> signature, Stream body, CancellationToken cancellationToken)
     {

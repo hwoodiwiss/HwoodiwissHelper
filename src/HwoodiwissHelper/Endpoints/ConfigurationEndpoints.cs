@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using HwoodiwissHelper.Extensions;
 
-namespace HwoodiwissHelper.Features.Configuration;
+namespace HwoodiwissHelper.Endpoints;
 
 public static class ConfigurationEndpoints
 {

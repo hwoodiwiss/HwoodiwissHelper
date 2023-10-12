@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\src\HwoodiwissHelper\HwoodiwissHelper.csproj" />
   </ItemGroup>
 </Project>

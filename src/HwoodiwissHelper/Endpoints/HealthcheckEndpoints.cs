@@ -1,4 +1,4 @@
-﻿namespace HwoodiwissHelper.Features.Health;
+﻿namespace HwoodiwissHelper.Endpoints;
 
 public static class HealthcheckEndpoints
 {

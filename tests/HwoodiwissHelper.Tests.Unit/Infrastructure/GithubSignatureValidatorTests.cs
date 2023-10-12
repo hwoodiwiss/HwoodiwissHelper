@@ -1,6 +1,7 @@
 ﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 
 namespace HwoodiwissHelper.Tests.Unit.Infrastructure;
 
@@ -46,11 +47,12 @@ public class GithubSignatureValidatorTests
 
     private static GithubSignatureValidator CreateSut(string key)
     {
-        var options = Options.Create(new GithubConfiguration
+        var mockOptionsMonitor = Substitute.For<IOptionsMonitor<GithubConfiguration>>();
+        mockOptionsMonitor.CurrentValue.Returns(new GithubConfiguration
         {
             WebhookKey = key
         });
         
-        return new GithubSignatureValidator(options);
+        return new GithubSignatureValidator(mockOptionsMonitor);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace HwoodiwissHelper.Tests.Integration.Features.Health;
+namespace HwoodiwissHelper.Tests.Integration.Endpoints;
 
 public class HealthEndpointTests(HwoodiwissHelperFixture fixture) : IClassFixture<HwoodiwissHelperFixture>
 {

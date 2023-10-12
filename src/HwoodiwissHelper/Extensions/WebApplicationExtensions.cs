@@ -1,7 +1,4 @@
-﻿using HwoodiwissHelper.Features.Configuration;
-using HwoodiwissHelper.Features.Github;
-using HwoodiwissHelper.Features.Health;
-using HwoodiwissHelper.Features.Surprise;
+﻿using HwoodiwissHelper.Endpoints;
 
 namespace HwoodiwissHelper.Extensions;
 

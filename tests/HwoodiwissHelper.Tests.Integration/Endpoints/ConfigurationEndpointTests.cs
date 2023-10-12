@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using HwoodiwissHelper.Tests.Integration.Assertions;
 
-namespace HwoodiwissHelper.Tests.Integration.Features.Configuration;
+namespace HwoodiwissHelper.Tests.Integration.Endpoints;
 
 public class ConfigurationEndpointTests(HwoodiwissHelperFixture fixture) : IClassFixture<HwoodiwissHelperFixture>
 {

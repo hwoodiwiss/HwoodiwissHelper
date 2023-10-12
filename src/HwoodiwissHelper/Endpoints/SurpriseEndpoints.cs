@@ -1,4 +1,4 @@
-﻿namespace HwoodiwissHelper.Features.Surprise;
+﻿namespace HwoodiwissHelper.Endpoints;
 
 public static class SurpriseEndpoints
 {
