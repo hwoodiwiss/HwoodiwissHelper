@@ -12,6 +12,12 @@ public static class IEndpointBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Enables fluently defining that an endpoint should use buffered requests on the endpoint builder.
+    /// </summary>
+    /// <param name="builder">The EndpointConventionBuilder to add buffered requests to.</param>
+    /// <typeparam name="T">A concrete typed deriving IEndpointConventionBuilder</typeparam>
+    /// <returns><paramref name="builder"/></returns>
     public static T WithBufferedRequest<T>(this T builder)
         where T : IEndpointConventionBuilder
     {
