@@ -26,4 +26,21 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
+    
+    [Theory]
+    [InlineData("issue_comment", "edited")]
+    public async Task Post_GithubWebhook_HandlesUnknownWebhookEvents(string webhookEvent, string workflowAction)
+    {
+        // Arrange
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, "/github/webhook");
+        requestMessage.Headers.Add("X-Github-Event", webhookEvent);
+        requestMessage.Content = new StringContent($"{{\"action\": \"{workflowAction}\", \"test\": \"value\"}}", Encoding.UTF8, "application/json");
+        await requestMessage.SignRequestAsync(HwoodiwissHelperFixture.WebhookSigningKey);
+        
+        // Act
+        var response = await _client.SendAsync(requestMessage);
+        
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
 }
