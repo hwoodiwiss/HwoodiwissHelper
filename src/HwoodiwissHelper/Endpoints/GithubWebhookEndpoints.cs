@@ -19,10 +19,9 @@ public static class GithubWebhookEndpoints
                 HttpRequest request,
                 IServiceProvider serviceProvider) =>
             {
-                var jso = jsonOptions.Value;
                 var githubEventBase = githubEvent switch
                 {
-                    "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync<WorkflowRun>(request.Body, jso.JsonSerializerOptions),
+                    "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(request.Body, ApplicationJsonContext.Default.WorkflowRun),
                     _ => null,
                 };
                 

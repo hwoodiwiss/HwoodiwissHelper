@@ -1,4 +1,5 @@
-﻿using HwoodiwissHelper.Events.Github;
+﻿using System.Diagnostics.CodeAnalysis;
+using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Handlers;
 using HwoodiwissHelper.Handlers.Github;
 using WorkflowCompleteHandler = HwoodiwissHelper.Handlers.Github.WorkflowCompleteHandler;
@@ -14,7 +15,7 @@ public static class IServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddGithubEventHandler<THandler, TEvent>(this IServiceCollection services)
+    private static IServiceCollection AddGithubEventHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler, TEvent>(this IServiceCollection services)
         where TEvent : GithubWebhookEvent
         where THandler : GithubWebhookRequestHandler<TEvent>
     {
