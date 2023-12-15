@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using HwoodiwissHelper.Endpoints;
 using HwoodiwissHelper.Events.Github;
 
 namespace HwoodiwissHelper;

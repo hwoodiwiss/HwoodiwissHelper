@@ -14,11 +14,17 @@ public static class GithubWebhookEndpoints
     {
         var group = builder.MapGroup("/github");
 
-        group.MapPost("/webhook", async ([FromHeader(Name = "X-Github-Event")] string githubEvent, 
+        group.MapPost("/webhook", async (
+                [FromKeyedServices(nameof(GithubWebhookEndpoints))] ILogger logger,
+                [FromHeader(Name = "X-Github-Event")] string githubEvent, 
                 [FromServices] IOptions<JsonOptions> jsonOptions,
                 HttpRequest request,
                 IServiceProvider serviceProvider) =>
             {
+                using var _ = logger.BeginScope(new Dictionary<string, object>{
+                    ["GithubEvent"] = githubEvent,
+                });
+                
                 var githubEventBase = githubEvent switch
                 {
                     "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(request.Body, ApplicationJsonContext.Default.WorkflowRun),

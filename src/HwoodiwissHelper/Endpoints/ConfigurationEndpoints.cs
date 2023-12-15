@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using HwoodiwissHelper.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HwoodiwissHelper.Endpoints;
 
@@ -28,6 +29,12 @@ public static class ConfigurationEndpoints
             ["aspNetCoreVersion"] = typeof(WebApplication).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown",
             ["aspNetCoreRuntimeVersion"] = typeof(WebApplication).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown",
         });
+
+        group.MapGet("/reload", ([FromServices]IConfigurationRoot config) =>
+        {
+            config.Reload();
+        });
+        
         return builder;
     }
 }

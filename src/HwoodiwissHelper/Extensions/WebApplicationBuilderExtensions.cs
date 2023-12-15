@@ -3,6 +3,7 @@ using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -16,34 +17,24 @@ public static class WebApplicationBuilderExtensions
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
         builder.Configuration.ConfigureConfiguration();
-        builder.Host.ConfigureLogging(builder.Configuration, builder.Environment);
+        builder.ConfigureLogging(builder.Configuration, builder.Environment);
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
-        builder.Services.ConfigureServices();
+        builder.Services.ConfigureServices(builder.Configuration);
 
         return builder.Build();
     }
 
-    private static IHostBuilder ConfigureLogging(this IHostBuilder hostBuilder, ConfigurationManager configuration, IHostEnvironment environment)
+    private static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, ConfigurationManager configuration, IHostEnvironment environment)
     {
-        var loggerConfig = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .Enrich.FromLogContext();
-        if (environment.IsDevelopment())
-        {
-            loggerConfig
-                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
-        }
-        else
-        {
-            loggerConfig
-                .WriteTo.Console(new JsonFormatter())
-                .WriteTo.File(new JsonFormatter(renderMessage: true), "./logs/HwoodiwissHelper.log", rollingInterval: RollingInterval.Day);
-        }
-
-        Log.Logger = loggerConfig.CreateLogger();
+        builder.Logging.AddConfiguration(configuration)
+            .AddConsole();
         
-        hostBuilder.UseSerilog();
-        return hostBuilder;
+        builder.Services.Configure<ConsoleFormatterOptions>(options =>
+        {
+            options.IncludeScopes = true;
+        });
+        
+        return builder;
     }
     
     private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
@@ -57,7 +48,7 @@ public static class WebApplicationBuilderExtensions
         return serviceProvider;
     }
     
-    public static IServiceCollection ConfigureServices(this IServiceCollection services)
+    public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
         services.ConfigureJsonOptions(options =>
         {
@@ -79,6 +70,7 @@ public static class WebApplicationBuilderExtensions
             services.AddSwaggerGen();
         }
 
+        services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
         services.AddHttpLogging(options =>
         {
