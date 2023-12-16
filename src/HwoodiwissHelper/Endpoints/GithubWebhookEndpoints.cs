@@ -46,20 +46,31 @@ public static partial class GithubWebhookEndpoints
         {
             return githubEvent switch
             {
-                "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.WorkflowRun),
+                "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(body,
+                    ApplicationJsonContext.Default.WorkflowRun),
                 _ => null,
             };
         }
         catch (JsonException ex)
         {
-            Log.DeserializationFailed(logger, githubEvent, ex);
+            Log.DeserializationFailed(logger, ex);
+            return null;
+        }
+        catch (NotSupportedException ex)
+        {
+            body.Seek(0, SeekOrigin.Begin);
+            var githubEventBody = await new StreamReader(body).ReadToEndAsync();
+            Log.DeserializingGithubEventNotSupported(logger, githubEventBody, ex);
             return null;
         }
     }
     
     private static partial class Log
     {
-        [LoggerMessage(LogLevel.Error, "Failed to deserialize github event {GithubEvent}")]
-        public static partial void DeserializationFailed(ILogger logger, string githubEvent, Exception exception);
+        [LoggerMessage(LogLevel.Warning, "Failed to deserialize github event")]
+        public static partial void DeserializationFailed(ILogger logger, Exception exception);
+        
+        [LoggerMessage(LogLevel.Error, "Failed to deserialize github event data {GithubEventBody}")]
+        public static partial void DeserializingGithubEventNotSupported(ILogger logger, string githubEventBody, Exception exception);
     }
 }
