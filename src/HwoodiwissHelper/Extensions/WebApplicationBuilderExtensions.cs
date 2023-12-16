@@ -30,7 +30,6 @@ public static class WebApplicationBuilderExtensions
         var loggingBuilder = builder.Logging.AddConfiguration(configuration)
             .AddOpenTelemetry(opt =>
             {
-                opt.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ApplicationMetadata.Name));
                 opt.IncludeScopes = true;
                 opt.AddOtlpExporter();
             });
@@ -82,7 +81,7 @@ public static class WebApplicationBuilderExtensions
         }
 
         services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(ApplicationMetadata.Name))
+            .ConfigureResource(TelemetryResourceBuilder)
             .WithMetrics(metrics =>
             {
                 metrics.AddAspNetCoreInstrumentation()
@@ -127,5 +126,17 @@ public static class WebApplicationBuilderExtensions
         });
 
         return services;
+    }
+    
+    private static void TelemetryResourceBuilder(ResourceBuilder resourceBuilder)
+    {
+        resourceBuilder
+            .AddService(ApplicationMetadata.Name)
+            .AddAttributes([
+            new ("service.commit", ApplicationMetadata.GitCommit),
+            new ("service.branch", ApplicationMetadata.GitBranch),
+            new ("service.version", ApplicationMetadata.Version),
+            new ("service.host", Environment.MachineName),
+        ]);
     }
 }
