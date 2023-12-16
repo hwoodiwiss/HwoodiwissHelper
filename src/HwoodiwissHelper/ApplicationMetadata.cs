@@ -13,6 +13,8 @@ public static class ApplicationMetadata
             false;
 #endif
 
+    public static string Name => typeof(ApplicationMetadata).Assembly.GetName().Name ?? string.Empty;
+    
     public static string Version => typeof(ApplicationMetadata).Assembly.GetName().Version?.ToString() ?? string.Empty;
     
     public static string GitBranch => GetCustomMetadata("GitBranch");

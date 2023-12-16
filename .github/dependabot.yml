@@ -11,6 +11,9 @@ updates:
       xunit:
         patterns:
           - xunit*
+      open-telemetry:
+        patterns:
+          - OpenTelemetry*
   - package-ecosystem: github-actions
     directory: /.github
     schedule:

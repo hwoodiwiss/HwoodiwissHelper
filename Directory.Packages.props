@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <OpenTelemetryLibraryVersion>1.7.0</OpenTelemetryLibraryVersion>
+  </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ArgumentativeFilters" Version="0.0.6" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
@@ -8,6 +11,12 @@
     <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
+    <PackageVersion Include="OpenTelemetry" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryLibraryVersion)" />
     <PackageVersion Include="ReportGenerator" Version="5.2.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />

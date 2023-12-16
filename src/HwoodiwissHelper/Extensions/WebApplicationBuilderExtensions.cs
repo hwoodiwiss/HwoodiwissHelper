@@ -1,38 +1,49 @@
-﻿using System.Globalization;
-using HwoodiwissHelper.Configuration;
+﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Serilog;
-using Serilog.Formatting.Compact;
-using Serilog.Formatting.Json;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace HwoodiwissHelper.Extensions;
+
 
 public static class WebApplicationBuilderExtensions
 {
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
         builder.Configuration.ConfigureConfiguration();
-        builder.ConfigureLogging(builder.Configuration, builder.Environment);
+        builder.ConfigureLogging(builder.Configuration);
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
 
         return builder.Build();
     }
 
-    private static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, ConfigurationManager configuration, IHostEnvironment environment)
+    private static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, ConfigurationManager configuration)
     {
-        builder.Logging.AddConfiguration(configuration)
-            .AddConsole();
-        
-        builder.Services.Configure<ConsoleFormatterOptions>(options =>
-        {
-            options.IncludeScopes = true;
-        });
+        var loggingBuilder = builder.Logging.AddConfiguration(configuration)
+            .AddOpenTelemetry(opt =>
+            {
+                opt.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(ApplicationMetadata.Name));
+                opt.IncludeScopes = true;
+                opt.AddOtlpExporter();
+            });
+
+#if DEBUG
+            loggingBuilder.AddConsole()
+                .AddDebug();
+            
+            builder.Services.Configure<ConsoleFormatterOptions>(options =>
+            {
+                options.IncludeScopes = true;
+            });
+#endif
         
         return builder;
     }
@@ -70,6 +81,22 @@ public static class WebApplicationBuilderExtensions
             services.AddSwaggerGen();
         }
 
+        services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(ApplicationMetadata.Name))
+            .WithMetrics(metrics =>
+            {
+                metrics.AddAspNetCoreInstrumentation()
+                    .AddMeter("Microsoft.AspNetCore.Hosting")
+                    .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                    .AddOtlpExporter();
+            })
+            .WithTracing(tracing =>
+            {
+                tracing.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddOtlpExporter();
+            });
+        
         services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
         services.AddHttpLogging(options =>
