@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Endpoints;
 
-public static class GithubWebhookEndpoints
+public static partial class GithubWebhookEndpoints
 {
     public static IEndpointRouteBuilder MapGithubEndpoints(this IEndpointRouteBuilder builder)
     {
@@ -24,12 +24,8 @@ public static class GithubWebhookEndpoints
                 using var _ = logger.BeginScope(new Dictionary<string, object>{
                     ["GithubEvent"] = githubEvent,
                 });
-                
-                var githubEventBase = githubEvent switch
-                {
-                    "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(request.Body, ApplicationJsonContext.Default.WorkflowRun),
-                    _ => null,
-                };
+
+                var githubEventBase = await GetGithubEvent(logger, githubEvent, request.Body);
                 
                 var requestHandler = serviceProvider.GetKeyedService<IRequestHandler<GithubWebhookEvent>>(githubEventBase?.GetType());
 
@@ -42,5 +38,28 @@ public static class GithubWebhookEndpoints
             .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory);
         
         return builder;
+    }
+    
+    private static async Task<GithubWebhookEvent?> GetGithubEvent(ILogger logger, string githubEvent, Stream body)
+    {
+        try
+        {
+            return githubEvent switch
+            {
+                "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.WorkflowRun),
+                _ => null,
+            };
+        }
+        catch (JsonException ex)
+        {
+            Log.DeserializationFailed(logger, githubEvent, ex);
+            return null;
+        }
+    }
+    
+    private static partial class Log
+    {
+        [LoggerMessage(LogLevel.Error, "Failed to deserialize github event {GithubEvent}")]
+        public static partial void DeserializationFailed(ILogger logger, string githubEvent, Exception exception);
     }
 }

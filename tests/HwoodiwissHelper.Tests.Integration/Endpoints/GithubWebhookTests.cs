@@ -9,7 +9,7 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
     private readonly HttpClient _client = fixture.CreateClient();
     
     [Theory]
-    [InlineData("workflow_run", "complete")]
+    [InlineData("workflow_run", "completed")]
     [InlineData("workflow_run", "in_progress")]
     [InlineData("workflow_run", "requested")]
     public async Task Post_GithubWebhook_HandlesKnownWebhookEvents(string webhookEvent, string workflowAction)

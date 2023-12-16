@@ -10,7 +10,7 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddGithubWebhookHandlers(this IServiceCollection services)
     {
-        services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Complete>();
+        services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
         
         return services;
     }
