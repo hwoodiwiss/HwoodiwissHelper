@@ -12,6 +12,7 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
     [InlineData("workflow_run", "completed")]
     [InlineData("workflow_run", "in_progress")]
     [InlineData("workflow_run", "requested")]
+    [InlineData("pull_request", "opened")]
     public async Task Post_GithubWebhook_HandlesKnownWebhookEvents(string webhookEvent, string workflowAction)
     {
         // Arrange

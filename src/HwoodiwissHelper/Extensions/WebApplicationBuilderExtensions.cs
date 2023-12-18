@@ -5,13 +5,8 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace HwoodiwissHelper.Extensions;
-
 
 public static class WebApplicationBuilderExtensions
 {
@@ -54,6 +49,7 @@ public static class WebApplicationBuilderExtensions
     private static IServiceCollection ConfigureOptionsFor<T>(this IServiceCollection serviceProvider, ConfigurationManager configuration)
         where T : class, INamedConfiguration 
     {
+        // TODO: Make this work properly at some point, need to experiment with generic usage discovery, then see if that can be fed back into the source generator
         serviceProvider.Configure<GithubConfiguration>(t => configuration.GetSection(T.SectionName).Bind(t));
         return serviceProvider;
     }
@@ -80,21 +76,8 @@ public static class WebApplicationBuilderExtensions
             services.AddSwaggerGen();
         }
 
-        services.AddOpenTelemetry()
-            .ConfigureResource(TelemetryResourceBuilder)
-            .WithMetrics(metrics =>
-            {
-                metrics.AddAspNetCoreInstrumentation()
-                    .AddMeter("Microsoft.AspNetCore.Hosting")
-                    .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-                    .AddOtlpExporter();
-            })
-            .WithTracing(tracing =>
-            {
-                tracing.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter();
-            });
+        services.AddTelemetry();
+        services.AddGithubWebhookHandlers();
         
         services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
@@ -126,17 +109,5 @@ public static class WebApplicationBuilderExtensions
         });
 
         return services;
-    }
-    
-    private static void TelemetryResourceBuilder(ResourceBuilder resourceBuilder)
-    {
-        resourceBuilder
-            .AddService(ApplicationMetadata.Name)
-            .AddAttributes([
-            new ("service.commit", ApplicationMetadata.GitCommit),
-            new ("service.branch", ApplicationMetadata.GitBranch),
-            new ("service.version", ApplicationMetadata.Version),
-            new ("service.host", Environment.MachineName),
-        ]);
     }
 }

@@ -46,8 +46,8 @@ public static partial class GithubWebhookEndpoints
         {
             return githubEvent switch
             {
-                "workflow_run" => (GithubWebhookEvent?)await JsonSerializer.DeserializeAsync(body,
-                    ApplicationJsonContext.Default.WorkflowRun),
+                "workflow_run" => await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.WorkflowRun),
+                "pull_request" => await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.PullRequest),
                 _ => null,
             };
         }
