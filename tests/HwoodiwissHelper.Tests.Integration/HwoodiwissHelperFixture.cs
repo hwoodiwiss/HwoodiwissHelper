@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace HwoodiwissHelper.Tests.Integration;
 
@@ -17,6 +18,11 @@ public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
                     ["Github:WebhookKey"] = WebhookSigningKey,
                 }
             ));
+
+        builder.ConfigureLogging(loggingBuilder => 
+            loggingBuilder.AddConsole()
+                .AddDebug()
+            );
         
         base.ConfigureWebHost(builder);
     }
