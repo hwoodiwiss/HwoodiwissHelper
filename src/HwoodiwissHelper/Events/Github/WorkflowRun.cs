@@ -10,7 +10,7 @@ namespace HwoodiwissHelper.Events.Github;
 public abstract record WorkflowRun() : GithubWebhookEvent
 { 
     [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-    public sealed record Completed(WorkflowRun WorkflowRun) : WorkflowRun;
+    public sealed record Completed(WorkflowRunInfo WorkflowRun) : WorkflowRun;
     public sealed record InProgress() : WorkflowRun;
     public sealed record Requested() : WorkflowRun;
 }

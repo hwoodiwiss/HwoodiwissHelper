@@ -3,7 +3,7 @@
 namespace HwoodiwissHelper.Models.Github;
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-public record WorkflowRun(
+public sealed record WorkflowRunInfo(
     Actor Actor,
     string ArtifactsUrl,
     string CancelUrl,
