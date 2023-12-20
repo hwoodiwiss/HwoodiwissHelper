@@ -1,5 +1,4 @@
 ﻿using ArgumentativeFilters;
-using Microsoft.AspNetCore.Mvc;
 using JsonOptions = Microsoft.AspNetCore.Http.Json.JsonOptions;
 
 namespace HwoodiwissHelper.Infrastructure.Filters;
@@ -13,7 +12,7 @@ public static partial class PrettyPrintJson
         [FromKeyedServices(Constants.PrettyPrintJsonOptionsKey)] JsonOptions jsonOptions)
     {
         var result = await next(context);
-        if (result is {} and not JsonResult)
+        if (result is {} and not IResult)
         {
             var typeInfo = jsonOptions.SerializerOptions.GetTypeInfo(result.GetType());
             return Results.Json(result, typeInfo);

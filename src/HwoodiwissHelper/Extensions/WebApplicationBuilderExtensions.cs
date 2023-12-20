@@ -14,6 +14,7 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Configuration.ConfigureConfiguration();
         builder.ConfigureLogging(builder.Configuration);
+        builder.Services.AddOptions();
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
 
@@ -44,18 +45,19 @@ public static class WebApplicationBuilderExtensions
     
     private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
         => configurationBuilder
-            .AddJsonFile("appsettings.Secrets.json", true);
+            .AddJsonFile("appsettings.Secrets.json", true, true);
     
     private static IServiceCollection ConfigureOptionsFor<T>(this IServiceCollection serviceProvider, ConfigurationManager configuration)
         where T : class, INamedConfiguration 
     {
         // TODO: Make this work properly at some point, need to experiment with generic usage discovery, then see if that can be fed back into the source generator
-        serviceProvider.Configure<GithubConfiguration>(t => configuration.GetSection(T.SectionName).Bind(t));
+        serviceProvider.Configure<GithubConfiguration>(configuration.GetSection(T.SectionName));
         return serviceProvider;
     }
     
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
+        services.AddOptions();
         services.ConfigureJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
