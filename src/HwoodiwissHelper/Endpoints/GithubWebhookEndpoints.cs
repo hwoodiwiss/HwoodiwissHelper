@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Handlers;
@@ -19,11 +20,19 @@ public static partial class GithubWebhookEndpoints
                 [FromHeader(Name = "X-Github-Event")] string githubEvent, 
                 [FromServices] IOptions<JsonOptions> jsonOptions,
                 HttpRequest request,
-                IServiceProvider serviceProvider) =>
+                IServiceProvider serviceProvider,
+                IOptionsSnapshot<GithubConfiguration> githubConfiguration) =>
             {
                 using var _ = logger.BeginScope(new Dictionary<string, object>{
                     ["GithubEvent"] = githubEvent,
                 });
+                
+                if (githubConfiguration.Value.EnableRequestLogging)
+                {
+                    var githubEventBody = await GetRequestBodyText(request.Body);
+                    Log.ReceivedGithubEvent(logger, githubEventBody);
+                    request.Body.Seek(0, SeekOrigin.Begin);
+                }
 
                 var githubEventBase = await GetGithubEvent(logger, githubEvent, request.Body);
                 
@@ -53,18 +62,22 @@ public static partial class GithubWebhookEndpoints
         }
         catch (JsonException ex)
         {
-            body.Seek(0, SeekOrigin.Begin);
-            var githubEventBody = await new StreamReader(body).ReadToEndAsync();
+            var githubEventBody = await GetRequestBodyText(body);
             Log.DeserializationFailed(logger, githubEventBody, ex);
             return null;
         }
         catch (NotSupportedException ex)
         {
-            body.Seek(0, SeekOrigin.Begin);
-            var githubEventBody = await new StreamReader(body).ReadToEndAsync();
+            var githubEventBody = await GetRequestBodyText(body);
             Log.DeserializingGithubEventNotSupported(logger, githubEventBody, ex);
             return null;
         }
+    }
+
+    private static async Task<string> GetRequestBodyText(Stream requestBody)
+    {
+        requestBody.Seek(0, SeekOrigin.Begin);
+        return await new StreamReader(requestBody).ReadToEndAsync();
     }
     
     private static partial class Log
@@ -74,5 +87,9 @@ public static partial class GithubWebhookEndpoints
         
         [LoggerMessage(LogLevel.Error, "Failed to deserialize github event data {GithubEventBody}")]
         public static partial void DeserializingGithubEventNotSupported(ILogger logger, string githubEventBody, Exception exception);
+        
+        [LoggerMessage(LogLevel.Information, "Received Github event: {GithubEventBody}")]
+        public static partial void ReceivedGithubEvent(ILogger logger, string githubEventBody);
+
     }
 }
