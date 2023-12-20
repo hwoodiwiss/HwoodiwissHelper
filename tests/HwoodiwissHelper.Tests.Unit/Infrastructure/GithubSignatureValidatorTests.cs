@@ -50,7 +50,8 @@ public class GithubSignatureValidatorTests
         var mockOptionsMonitor = Substitute.For<IOptionsMonitor<GithubConfiguration>>();
         mockOptionsMonitor.CurrentValue.Returns(new GithubConfiguration
         {
-            WebhookKey = key
+            WebhookKey = key,
+            EnableRequestLogging = false,
         });
         
         return new GithubSignatureValidator(mockOptionsMonitor);
