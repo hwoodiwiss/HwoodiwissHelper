@@ -1,4 +1,5 @@
 ﻿using HwoodiwissHelper.Endpoints;
+using HwoodiwissHelper.Middleware;
 
 namespace HwoodiwissHelper.Extensions;
 
@@ -6,6 +7,8 @@ public static class WebApplicationExtensions
 {
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
+        app.Use(UserAgentRejectionMiddleware.Middleware);
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
         {
