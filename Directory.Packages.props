@@ -3,7 +3,7 @@
     <OpenTelemetryLibraryVersion>1.7.0</OpenTelemetryLibraryVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ArgumentativeFilters" Version="0.0.6" />
+    <PackageVersion Include="ArgumentativeFilters" Version="0.0.7" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
