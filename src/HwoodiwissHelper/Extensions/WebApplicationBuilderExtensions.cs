@@ -17,7 +17,7 @@ public static class WebApplicationBuilderExtensions
         builder.ConfigureLogging(builder.Configuration);
         builder.Services.AddOptions();
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
-        builder.Services.Configure<ApplicationConfiguration>(config => builder.Configuration.Bind(config));
+        builder.Services.Configure<ApplicationConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
 
         return builder.Build();
