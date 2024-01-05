@@ -7,7 +7,7 @@ public static class WebApplicationExtensions
 {
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
-        app.Use(UserAgentRejectionMiddleware.Middleware);
+        app.Use(UserAgentBlockMiddleware.Middleware);
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment() && !ApplicationMetadata.IsNativeAot)
