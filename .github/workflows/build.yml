@@ -42,7 +42,7 @@ jobs:
         run: docker build -f ./build/Dockerfile.build-cross --platform linux/arm64 --output artifacts/aot .
 
       - name: Publish AOT Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: publish-aot-arm64
           path: ./artifacts/aot/publish/HwoodiwissHelper/release
