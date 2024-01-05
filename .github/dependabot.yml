@@ -15,6 +15,6 @@ updates:
         patterns:
           - OpenTelemetry*
   - package-ecosystem: github-actions
-    directory: /.github
+    directory: /
     schedule:
       interval: daily
