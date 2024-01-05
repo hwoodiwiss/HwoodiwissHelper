@@ -5,11 +5,13 @@ namespace HwoodiwissHelper.Middleware;
 
 public sealed partial class UserAgentBlockMiddleware : IDisposable
 {
+    private readonly ILogger<UserAgentBlockMiddleware> _logger;
     private ApplicationConfiguration _configuration;
     private readonly IDisposable? _configurationSubscription;
 
-    public UserAgentBlockMiddleware(IOptionsMonitor<ApplicationConfiguration> configuration)
+    public UserAgentBlockMiddleware(ILogger<UserAgentBlockMiddleware> logger, IOptionsMonitor<ApplicationConfiguration> configuration)
     {
+        _logger = logger;
         _configuration = configuration.CurrentValue;
         _configurationSubscription = configuration.OnChange(config => _configuration = config);
     }
@@ -20,6 +22,7 @@ public sealed partial class UserAgentBlockMiddleware : IDisposable
         var disallowedUaParts = _configuration.BlockedUserAgents;
         if (disallowedUaParts is not null && ContainsAny(userAgent, disallowedUaParts))
         {
+            Log.BlockedUserAgent(_logger, userAgent);
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             return;
         }
@@ -53,6 +56,7 @@ public sealed partial class UserAgentBlockMiddleware : IDisposable
     
     private static partial class Log
     {
-        
+        [LoggerMessage(LogLevel.Information, "Blocked request for user agent: {UserAgent}")]
+        public static partial void BlockedUserAgent(ILogger logger, string userAgent);
     }
 }
