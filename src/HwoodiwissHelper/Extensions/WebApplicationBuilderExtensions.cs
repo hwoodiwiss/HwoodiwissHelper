@@ -1,5 +1,6 @@
 ﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Console;
@@ -16,6 +17,7 @@ public static class WebApplicationBuilderExtensions
         builder.ConfigureLogging(builder.Configuration);
         builder.Services.AddOptions();
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
+        builder.Services.Configure<ApplicationConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
 
         return builder.Build();
@@ -83,6 +85,7 @@ public static class WebApplicationBuilderExtensions
         
         services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
+        services.AddSingleton<UserAgentBlockMiddleware>();
         services.AddHttpLogging(options =>
         {
             options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders | HttpLoggingFields.ResponseStatusCode;
