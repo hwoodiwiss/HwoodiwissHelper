@@ -3,7 +3,6 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Bogus;
 using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Models.Github;
@@ -79,12 +78,65 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
             ActorType.User,
             f.Internet.Url()));
         
+        var branchFaker = new Faker<Branch>().CustomInstantiator(f => new Branch(
+            f.Lorem.Sentence(),
+            f.Lorem.Sentence(),
+            f.Random.Hash(),
+            actorFaker.Generate()));
+        
+        var pullRequestFaker = new Faker<PullRequestInfo>().CustomInstantiator(f => new PullRequestInfo(
+            f.Internet.Url(),
+            f.Random.Long(0),
+            f.Random.Guid().ToString(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Internet.Url(),
+            f.Random.Int(0),
+            "open",
+            f.Random.Bool(),
+            f.Lorem.Sentence(),
+            actorFaker.Generate(),
+            f.Lorem.Sentence(),
+            Array.Empty<Label>(),
+            null,
+            null,
+            DateTimeOffset.UtcNow.ToString("O"),
+            DateTimeOffset.UtcNow.ToString("O"),
+            null,
+            null,
+            null,
+            branchFaker.Generate(),
+            branchFaker.Generate(),
+            AuthorAssociation.Owner,
+            null,
+            null,
+            false,
+            null,
+            null,
+            "unknown",
+            null,
+            0,
+            0,
+            true,
+            1,
+            1,
+            1,
+            1));
+            
+            
+        
         TheoryData<string, object> data = new()
         {
             {"workflow_run", new TestWebhookEvent("completed", actorFaker.Generate()) },
             {"workflow_run", new TestWebhookEvent("in_progress", actorFaker.Generate()) },
             {"workflow_run", new TestWebhookEvent("requested", actorFaker.Generate()) },
-            {"pull_request", new TestWebhookEvent("opened", actorFaker.Generate()) },
+            {"pull_request", new PullRequest.Opened(1, pullRequestFaker.Generate(), actorFaker.Generate()) },
         };
         
         return data;
