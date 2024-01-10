@@ -1,10 +1,12 @@
 ﻿using System.Text.Json.Serialization;
+using HwoodiwissHelper.Models.Github;
 
 namespace HwoodiwissHelper.Events.Github;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "action")]
 [JsonDerivedType(typeof(Opened), "opened")]
-public abstract record PullRequest() : GithubWebhookEvent
+public abstract record PullRequest(Actor Sender) : GithubWebhookEvent(Sender)
 {
-    public sealed record Opened() : PullRequest;
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+    public sealed record Opened(int Number, PullRequestInfo PullRequest, Actor Sender) : PullRequest(Sender);
 }

@@ -1,5 +1,5 @@
-﻿namespace HwoodiwissHelper.Events.Github;
+﻿using HwoodiwissHelper.Models.Github;
 
-public abstract record GithubWebhookEvent
-{
-}
+namespace HwoodiwissHelper.Events.Github;
+
+public abstract record GithubWebhookEvent(Actor Sender);
