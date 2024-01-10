@@ -72,7 +72,7 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
             f.Internet.Url(),
             f.Internet.Url(),
             f.Internet.Url(),
-            f.Internet.UserName(),
+            f.Random.Bool(),
             f.Internet.Url(),
             f.Internet.Url(),
             ActorType.User,

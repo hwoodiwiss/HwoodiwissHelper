@@ -17,7 +17,7 @@ public sealed record Actor(
     string OrganizationsUrl,
     string ReceivedEventsUrl,
     string ReposUrl,
-    string SiteAdmin,
+    bool SiteAdmin,
     string StarredUrl,
     string SubscriptionsUrl,
     ActorType Type,
