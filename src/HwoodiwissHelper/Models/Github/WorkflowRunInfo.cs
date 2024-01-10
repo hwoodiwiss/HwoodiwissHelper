@@ -4,7 +4,7 @@ public sealed record WorkflowRunInfo(
     Actor Actor,
     string ArtifactsUrl,
     string CancelUrl,
-    int CheckSuiteId,
+    long CheckSuiteId,
     string CheckSuiteNodeId,
     string CheckSuiteUrl,
     WorkflowConclusion? Conclusion,
