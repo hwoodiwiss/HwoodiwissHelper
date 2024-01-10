@@ -7,6 +7,5 @@ namespace HwoodiwissHelper.Events.Github;
 [JsonDerivedType(typeof(Opened), "opened")]
 public abstract record PullRequest(Actor Sender) : GithubWebhookEvent(Sender)
 {
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
     public sealed record Opened(int Number, PullRequestInfo PullRequest, Actor Sender) : PullRequest(Sender);
 }

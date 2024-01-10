@@ -11,11 +11,11 @@ public abstract partial class GithubWebhookRequestHandler<T>(ILogger logger, Act
     
     public async ValueTask<object?> HandleAsync(GithubWebhookEvent request)
     {
-        using var activity = ActivitySource.StartActivity("Handling Github Webhook Event");
-        activity?.SetTag("EventType", EventType.Name);
-        activity?.SetTag("Handler", GetType().Name);
-        activity?.SetTag("SenderName", request.Sender.Name);
-        activity?.SetTag("SenderType", request.Sender.Type);
+        using var activity = ActivitySource.StartActivity("Handle Github Webhook Event");
+        activity?.SetTag("event.type", EventType.FullName);
+        activity?.SetTag("event.handler", GetType().Name);
+        activity?.SetTag("sender.name", request.Sender.Login);
+        activity?.SetTag("sender.type", request.Sender.Type);
             
         Log.HandlingEvent(logger, EventType);
         

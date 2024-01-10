@@ -1,12 +1,10 @@
 ﻿using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
-
 using HwoodiwissHelper.Configuration;
-
 using Microsoft.Extensions.Options;
 
-namespace HwoodiwissHelper.Infrastructure;
+namespace HwoodiwissHelper.Infrastructure.Github;
 
 public sealed class GithubSignatureValidator : IGithubSignatureValidator
 {

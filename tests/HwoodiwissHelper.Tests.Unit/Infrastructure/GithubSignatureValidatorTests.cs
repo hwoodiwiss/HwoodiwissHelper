@@ -1,5 +1,6 @@
 ﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Infrastructure.Github;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 

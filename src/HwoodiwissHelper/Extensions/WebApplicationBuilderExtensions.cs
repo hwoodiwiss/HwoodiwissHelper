@@ -1,5 +1,7 @@
-﻿using HwoodiwissHelper.Configuration;
+﻿using System.Text;
+using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Infrastructure.Github;
 using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
@@ -17,6 +19,15 @@ public static class WebApplicationBuilderExtensions
         builder.ConfigureLogging(builder.Configuration);
         builder.Services.AddOptions();
         builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
+        builder.Services.PostConfigure<GithubConfiguration>(config =>
+        {
+            var approxDecodedLength = config.AppPrivateKey.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
+            Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
+            if (Convert.TryFromBase64String(config.AppPrivateKey, buffer, out var bytesWritten))
+            {
+                config.AppPrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
+            }
+        });
         builder.Services.Configure<ApplicationConfiguration>(builder.Configuration);
         builder.Services.ConfigureServices(builder.Configuration);
 
@@ -63,6 +74,7 @@ public static class WebApplicationBuilderExtensions
         services.ConfigureJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
+            options.SerializerOptions.TypeInfoResolverChain.Insert(1, GithubJsonContext.Default);
         });
 
         // Enables easy named loggers in static contexts
@@ -82,6 +94,8 @@ public static class WebApplicationBuilderExtensions
 
         services.AddTelemetry();
         services.AddGithubWebhookHandlers();
+
+        services.AddHttpClient();
         
         services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
@@ -92,6 +106,7 @@ public static class WebApplicationBuilderExtensions
             options.RequestHeaders.Add("X-Forwarded-For");
             options.RequestHeaders.Add("X-Real-IP");
         });
+        services.AddSingleton<IGithubAppAuthProvider, GithubAppAuthProvider>();
 
         return services;
     }

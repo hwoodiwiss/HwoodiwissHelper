@@ -7,4 +7,8 @@ public sealed class GithubConfiguration : INamedConfiguration
     public required string WebhookKey { get; set; }
 
     public required bool EnableRequestLogging { get; set; }
+    
+    public required string AppId { get; set; }
+    
+    public required string AppPrivateKey { get; set; }
 }

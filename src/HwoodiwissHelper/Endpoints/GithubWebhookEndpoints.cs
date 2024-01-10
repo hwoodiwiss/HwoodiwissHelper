@@ -4,6 +4,7 @@ using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Handlers;
 using HwoodiwissHelper.Infrastructure.Filters;
+using HwoodiwissHelper.Infrastructure.Github;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -45,6 +46,8 @@ public static partial class GithubWebhookEndpoints
             })
             .WithBufferedRequest()
             .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory);
+        
+        group.MapGet("/token", ([FromServices]IGithubAppAuthProvider githubAppAuthProvider) => githubAppAuthProvider.GetToken());
         
         return builder;
     }

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using HwoodiwissHelper.Events.Github;
+using HwoodiwissHelper.Infrastructure.Github;
 using HwoodiwissHelper.Models.Github;
 
 namespace HwoodiwissHelper;
@@ -15,6 +16,8 @@ public partial class ApplicationJsonContext : JsonSerializerContext
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [JsonSerializable(typeof(WorkflowRun))]
 [JsonSerializable(typeof(PullRequest))]
+[JsonSerializable(typeof(GithubInstallationAuthenticationResponse))]
+[JsonSerializable(typeof(GithubUserInstallationResponse))]
 public partial class GithubJsonContext : JsonSerializerContext
 {
 }
