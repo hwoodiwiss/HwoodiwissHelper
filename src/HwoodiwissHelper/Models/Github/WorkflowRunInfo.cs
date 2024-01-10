@@ -13,7 +13,7 @@ public sealed record WorkflowRunInfo(
     string? HeadBranch,
     string HeadSha,
     string HtmlUrl,
-    int Id,
+    long Id,
     string JobsUrl,
     string LogsUrl,
     string? Name,
