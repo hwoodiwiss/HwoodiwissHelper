@@ -1,8 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace HwoodiwissHelper.Models.Github;
 
-namespace HwoodiwissHelper.Models.Github;
-
-[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 public sealed record Actor(
     string AvatarUrl,
     bool Deleted,
