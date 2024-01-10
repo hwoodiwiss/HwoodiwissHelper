@@ -53,6 +53,8 @@ public class GithubSignatureValidatorTests
         {
             WebhookKey = key,
             EnableRequestLogging = false,
+            AppId = string.Empty,
+            AppPrivateKey = string.Empty,
         });
         
         return new GithubSignatureValidator(mockOptionsMonitor);
