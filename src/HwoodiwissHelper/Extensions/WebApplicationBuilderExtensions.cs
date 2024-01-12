@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Infrastructure.Github;
@@ -84,8 +85,6 @@ public static class WebApplicationBuilderExtensions
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
         
-        // Add services to the container.
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (!ApplicationMetadata.IsNativeAot)
         {
             services.AddEndpointsApiExplorer();
@@ -95,7 +94,11 @@ public static class WebApplicationBuilderExtensions
         services.AddTelemetry();
         services.AddGithubWebhookHandlers();
 
-        services.AddHttpClient();
+        services.AddHttpClient("Github", client =>
+        {
+            client.BaseAddress = new Uri("https://api.github.com");
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
+        });
         
         services.AddSingleton(configurationRoot);
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
