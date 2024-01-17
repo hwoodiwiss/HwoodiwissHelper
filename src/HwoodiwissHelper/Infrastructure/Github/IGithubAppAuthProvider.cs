@@ -2,7 +2,5 @@
 
 public interface IGithubAppAuthProvider
 {
-    ValueTask<string> GetGithubJwt();
-    
-    ValueTask<string?> GetToken();
+    string GetGithubJwt();
 }

@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Headers;
-using System.Text;
 using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Infrastructure.Github;
 using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.Http.Json;
@@ -18,18 +16,8 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Configuration.ConfigureConfiguration();
         builder.ConfigureLogging(builder.Configuration);
-        builder.Services.AddOptions();
-        builder.Services.ConfigureOptionsFor<GithubConfiguration>(builder.Configuration);
-        builder.Services.PostConfigure<GithubConfiguration>(config =>
-        {
-            var approxDecodedLength = config.AppPrivateKey.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
-            Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
-            if (Convert.TryFromBase64String(config.AppPrivateKey, buffer, out var bytesWritten))
-            {
-                config.AppPrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
-            }
-        });
-        builder.Services.Configure<ApplicationConfiguration>(builder.Configuration);
+        builder.Services.ConfigureOptions(builder.Configuration);
+        builder.Services.ConfigureHttpClients();
         builder.Services.ConfigureServices(builder.Configuration);
 
         return builder.Build();
@@ -88,7 +76,7 @@ public static class WebApplicationBuilderExtensions
         if (!ApplicationMetadata.IsNativeAot)
         {
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddOpenApiDocument();
         }
 
         services.AddTelemetry();
@@ -110,7 +98,8 @@ public static class WebApplicationBuilderExtensions
             options.RequestHeaders.Add("X-Real-IP");
         });
         services.AddSingleton<IGithubAppAuthProvider, GithubAppAuthProvider>();
-
+        services.AddScoped<IGithubRequestAdaptor, GithubAppHttpClientRequestAdaptor>();
+        
         return services;
     }
     

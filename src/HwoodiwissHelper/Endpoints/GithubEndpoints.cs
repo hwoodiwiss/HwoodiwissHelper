@@ -10,15 +10,15 @@ using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Endpoints;
 
-public static partial class GithubWebhookEndpoints
+public static partial class GithubEndpoints
 {
     public static IEndpointRouteBuilder MapGithubEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("/github");
 
         group.MapPost("/webhook", async (
-                [FromKeyedServices(nameof(GithubWebhookEndpoints))] ILogger logger,
-                [FromHeader(Name = "X-Github-Event")] string githubEvent, 
+                [FromKeyedServices(nameof(GithubEndpoints))] ILogger logger,
+                [FromHeader(Name = "X-Github-Event")] string githubEvent,
                 [FromServices] IOptions<JsonOptions> jsonOptions,
                 HttpRequest request,
                 IServiceProvider serviceProvider,
@@ -46,8 +46,6 @@ public static partial class GithubWebhookEndpoints
             })
             .WithBufferedRequest()
             .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory);
-        
-        group.MapGet("/token", ([FromServices]IGithubAppAuthProvider githubAppAuthProvider) => githubAppAuthProvider.GetToken());
         
         return builder;
     }

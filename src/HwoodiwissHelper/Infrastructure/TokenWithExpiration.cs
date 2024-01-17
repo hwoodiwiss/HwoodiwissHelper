@@ -6,11 +6,11 @@ public struct TokenWithExpiration<T>(TimeProvider timeProvider, Func<T, DateTime
     private DateTime _expiresAt = DateTime.MinValue;
     private T? _token = null;
 
-    public async ValueTask<T> GetOrRenewAsync(Func<ValueTask<T>> tokenFactory)
+    public T GetOrRenew(Func<T> tokenFactory)
     {
         if (_token is null || timeProvider.GetUtcNow() >= _expiresAt)
         {
-            _token = await tokenFactory();
+            _token = tokenFactory();
             _expiresAt = expirationFactory(_token);
         }
 
