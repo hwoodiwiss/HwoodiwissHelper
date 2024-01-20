@@ -10,15 +10,15 @@ public sealed partial class PullRequestOpenedHandler(ILogger<PullRequestOpenedHa
     {
         using var activity = ActivitySource.StartActivity("Handling Pull Request Opened Event");
         Actor pullRequestUser = request.PullRequest.User;
-        
-        activity?.SetTag("PullRequestNumber", request.Number);
-        activity?.SetTag("PullRequestUser", pullRequestUser.Name);
-        
+
+        activity?.SetTag("pullrequest.number", request.Number);
+        activity?.SetTag("pullrequest.user", pullRequestUser.Name);
+
         if (request.PullRequest.User.Type is ActorType.Bot)
         {
             Log.BotPullRequestOpened(logger, pullRequestUser.Name);
         }
-        
+
         return new ValueTask<object?>(Results.NoContent());
     }
 

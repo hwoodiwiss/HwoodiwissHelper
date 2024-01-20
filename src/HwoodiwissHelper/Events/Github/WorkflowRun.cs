@@ -7,12 +7,9 @@ namespace HwoodiwissHelper.Events.Github;
 [JsonDerivedType(typeof(Completed), "completed")]
 [JsonDerivedType(typeof(InProgress), "in_progress")]
 [JsonDerivedType(typeof(Requested), "requested")]
-public abstract record WorkflowRun(Actor Sender) : GithubWebhookEvent(Sender)
-{ 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-    public sealed record Completed(WorkflowRunInfo WorkflowRun, Actor Sender) : WorkflowRun(Sender);
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-    public sealed record InProgress(Actor Sender) : WorkflowRun(Sender);
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
-    public sealed record Requested(Actor Sender) : WorkflowRun(Sender);
+public abstract record WorkflowRun(Actor Sender, Installation Installation) : GithubWebhookEvent(Sender, Installation)
+{
+    public sealed record Completed(WorkflowRunInfo WorkflowRun, Actor Sender, Installation Installation) : WorkflowRun(Sender, Installation);
+    public sealed record InProgress(Actor Sender, Installation Installation) : WorkflowRun(Sender, Installation);
+    public sealed record Requested(Actor Sender, Installation Installation) : WorkflowRun(Sender, Installation);
 }
