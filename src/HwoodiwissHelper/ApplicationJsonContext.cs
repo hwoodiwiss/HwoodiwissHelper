@@ -8,13 +8,7 @@ namespace HwoodiwissHelper;
 [JsonSerializable(typeof(object))]
 [JsonSerializable(typeof(KeyValuePair<string, string>))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
-public partial class ApplicationJsonContext : JsonSerializerContext
-{
-}
-
-[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
 [JsonSerializable(typeof(WorkflowRun))]
 [JsonSerializable(typeof(PullRequest))]
-public partial class GithubJsonContext : JsonSerializerContext
-{
-}
+public partial class ApplicationJsonContext : JsonSerializerContext;
+

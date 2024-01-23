@@ -4,7 +4,7 @@ using HwoodiwissHelper.Infrastructure.Github;
 
 namespace HwoodiwissHelper.Models.Github;
 
-[JsonConverter(typeof(GithubStringEnumConverter<AuthorAssociation>))]
+[JsonConverter(typeof(UppercaseStringEnumConverter<AuthorAssociation>))]
 public enum AuthorAssociation
 {
     Collaborator,

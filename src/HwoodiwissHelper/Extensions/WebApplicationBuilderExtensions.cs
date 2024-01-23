@@ -1,12 +1,9 @@
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Infrastructure.Github;
 using HwoodiwissHelper.Middleware;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 
 namespace HwoodiwissHelper.Extensions;
@@ -82,7 +79,6 @@ public static class WebApplicationBuilderExtensions
         }
 
         services.AddTelemetry();
-        services.AddGithubWebhookHandlers();
 
         services.AddHttpClient("Github", client =>
         {
@@ -91,7 +87,6 @@ public static class WebApplicationBuilderExtensions
         });
         
         services.AddSingleton(configurationRoot);
-        services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
         services.AddSingleton<UserAgentBlockMiddleware>();
         services.AddHttpLogging(options =>
         {
@@ -99,29 +94,9 @@ public static class WebApplicationBuilderExtensions
             options.RequestHeaders.Add("X-Forwarded-For");
             options.RequestHeaders.Add("X-Real-IP");
         });
-        services.AddSingleton<IGithubAppAuthProvider, GithubAppAuthProvider>();
-        services.AddScoped<IGithubRequestAdaptor, GithubAppHttpClientRequestAdaptor>();
-        
-        return services;
-    }
-    
-    private static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<JsonOptions> configureOptions)
-    {
-        services.ConfigureHttpJsonOptions(configureOptions);
 
-        services.Configure<JsonOptions>(Constants.PrettyPrintJsonOptionsKey, options =>
-        {
-            configureOptions(options);
-            options.SerializerOptions.WriteIndented = true;
-        });
+        services.ConfigureGithubServices();
         
-        services.AddKeyedTransient<JsonOptions>(KeyedService.AnyKey, (sp, key) =>
-        {
-            var optionsSnapshot = sp.GetRequiredService<IOptionsSnapshot<JsonOptions>>();
-            var jsonOptions = optionsSnapshot.Get(key.ToString());
-            return jsonOptions;
-        });
-
         return services;
     }
 }

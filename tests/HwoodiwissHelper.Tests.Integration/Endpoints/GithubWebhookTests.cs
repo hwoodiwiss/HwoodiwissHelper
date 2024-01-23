@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -56,27 +57,12 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
     public static TheoryData<string, object> WebhookData()
     {
         var actorFaker = new Faker<Actor>().CustomInstantiator(f => new Actor(
-            f.Internet.Url(),
             false,
             f.Internet.Email(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
             f.Random.Long(0),
             f.Internet.UserName(),
             f.Person.FullName,
-            f.Random.Guid().ToString(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Random.Bool(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            ActorType.User,
-            f.Internet.Url()));
+            ActorType.User));
 
         var branchFaker = new Faker<Branch>().CustomInstantiator(f => new Branch(
             f.Lorem.Sentence(),
@@ -84,63 +70,38 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
             f.Random.Hash(),
             actorFaker.Generate()));
 
+        var repoFaker = new Faker<Repository>().CustomInstantiator(f => new Repository(
+            f.Random.Long(0),
+            f.Lorem.Sentence(),
+            actorFaker.Generate()
+        ));
+
         var pullRequestFaker = new Faker<PullRequestInfo>().CustomInstantiator(f => new PullRequestInfo(
             f.Internet.Url(),
             f.Random.Long(0),
-            f.Random.Guid().ToString(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
-            f.Internet.Url(),
             f.Random.Int(0),
-            "open",
-            f.Random.Bool(),
-            f.Lorem.Sentence(),
+            f.Random.Guid().ToString(),
             actorFaker.Generate(),
-            f.Lorem.Sentence(),
+            f.Internet.Url(),
             Array.Empty<Label>(),
-            null,
-            null,
-            DateTimeOffset.UtcNow.ToString("O"),
-            DateTimeOffset.UtcNow.ToString("O"),
-            null,
-            null,
-            null,
+            f.Date.Recent().ToString(CultureInfo.InvariantCulture),
+            f.Date.Recent().ToString(CultureInfo.InvariantCulture),
             branchFaker.Generate(),
             branchFaker.Generate(),
-            AuthorAssociation.Owner,
+            AuthorAssociation.Contributor,
             null,
-            null,
-            false,
-            null,
-            null,
-            "unknown",
-            null,
-            0,
-            0,
-            true,
-            1,
-            1,
-            1,
-            1));
+            false));
 
         var installationFaker = new Faker<Installation>().CustomInstantiator(f => new Installation(
-            f.Random.Long(0),
+            f.Random.Int(0),
             f.Random.Hash()));
-
-
-
+        
         TheoryData<string, object> data = new()
         {
             {"workflow_run", new TestWebhookEvent("completed", actorFaker.Generate(), installationFaker.Generate()) },
             {"workflow_run", new TestWebhookEvent("in_progress", actorFaker.Generate(), installationFaker.Generate()) },
             {"workflow_run", new TestWebhookEvent("requested", actorFaker.Generate(), installationFaker.Generate()) },
-            {"pull_request", new PullRequest.Opened(1, pullRequestFaker.Generate(), actorFaker.Generate(), installationFaker.Generate()) },
+            {"pull_request", new PullRequest.Opened(1, pullRequestFaker.Generate(), repoFaker.Generate(), actorFaker.Generate(), installationFaker.Generate()) },
         };
 
         return data;

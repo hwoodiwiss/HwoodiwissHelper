@@ -3,5 +3,5 @@ using System.Text.Json.Serialization;
 
 namespace HwoodiwissHelper.Infrastructure.Github;
 
-public sealed class GithubStringEnumConverter<T>() : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseUpper)
+public sealed class UppercaseStringEnumConverter<T>() : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseUpper)
     where T : struct, Enum;

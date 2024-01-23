@@ -1,46 +1,33 @@
-﻿namespace HwoodiwissHelper.Models.Github;
+﻿using System.Text.Json.Serialization;
+
+namespace HwoodiwissHelper.Models.Github;
 
 public sealed record PullRequestInfo(
+    [property: JsonPropertyName("url")]
     string Url,
+    [property: JsonPropertyName("id")]
     long Id,
-    string NodeId,
-    string HtmlUrl,
-    string DiffUrl,
-    string PatchUrl,
-    string IssueUrl,
-    string CommitsUrl,
-    string ReviewCommentsUrl,
-    string ReviewCommentUrl,
-    string CommentsUrl,
-    string StatusesUrl,
+    [property: JsonPropertyName("number")]
     int Number,
-    string State,
-    bool Locked,
+    [property: JsonPropertyName("title")]
     string Title,
+    [property: JsonPropertyName("user")]
     Actor User,
+    [property: JsonPropertyName("body")]
     string? Body,
+    [property: JsonPropertyName("labels")]
     Label[] Labels,
-    Milestone? Milestone,
-    string? ActiveLockReason,
+    [property: JsonPropertyName("created_at")]
     string CreatedAt,
+    [property: JsonPropertyName("updated_at")]
     string UpdatedAt,
-    string? ClosedAt,
-    string? MergedAt,
-    string? MergeCommitSha,
+    [property: JsonPropertyName("head")]
     Branch Head,
+    [property: JsonPropertyName("base")]
     Branch Base,
+    [property: JsonPropertyName("author_association")]
     AuthorAssociation AuthorAssociation,
+    [property: JsonPropertyName("auto_merge")]
     AutoMerge? AutoMerge,
-    bool? Draft,
-    bool Merged,
-    bool? Mergeable,
-    bool? Rebaseable,
-    string MergeableState,
-    Actor? MergedBy,
-    int Comments,
-    int ReviewComments,
-    bool MaintainerCanModify,
-    int Commits,
-    int Additions,
-    int Deletions,
-    int ChangedFiles);
+    [property: JsonPropertyName("draft")]
+    bool? Draft);

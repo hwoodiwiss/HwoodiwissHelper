@@ -1,25 +1,17 @@
-﻿namespace HwoodiwissHelper.Models.Github;
+﻿using System.Text.Json.Serialization;
+
+namespace HwoodiwissHelper.Models.Github;
 
 public sealed record Actor(
-    string AvatarUrl,
+    [property: JsonPropertyName("deleted")]
     bool Deleted,
+    [property: JsonPropertyName("email")]
     string? Email,
-    string EventsUrl,
-    string FollowersUrl,
-    string FollowingUrl,
-    string GistsUrl,
-    string GravatarUrl,
-    string HtmlUrl,
+    [property: JsonPropertyName("id")]
     long Id,
+    [property: JsonPropertyName("login")]
     string Login,
+    [property: JsonPropertyName("name")]
     string Name,
-    string NodeId,
-    string OrganizationsUrl,
-    string ReceivedEventsUrl,
-    string ReposUrl,
-    bool SiteAdmin,
-    string StarredUrl,
-    string SubscriptionsUrl,
-    ActorType Type,
-    string Url
-    );
+    [property: JsonPropertyName("type")]
+    ActorType Type);
