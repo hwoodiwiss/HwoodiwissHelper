@@ -8,17 +8,18 @@ public abstract partial class GithubWebhookRequestHandler<T>(ILogger logger, Act
 {
     protected Type EventType { get; } = typeof(T);
     protected ActivitySource ActivitySource { get; } = activitySource;
-    
+
     public async ValueTask<object?> HandleAsync(GithubWebhookEvent request)
     {
-        using var activity = ActivitySource.StartActivity("Handle Github Webhook Event");
-        activity?.SetTag("event.type", EventType.FullName);
+        using var activity = ActivitySource.StartActivity("Handling Github Webhook Event");
+        activity?.SetTag("event.type", EventType.Name);
         activity?.SetTag("event.handler", GetType().Name);
-        activity?.SetTag("sender.name", request.Sender.Login);
-        activity?.SetTag("sender.type", request.Sender.Type);
-            
+        activity?.SetTag("event.sender.login", request.Sender.Login);
+        activity?.SetTag("event.sender.type", request.Sender.Type);
+        activity?.SetTag("event.installation.id", request.Installation.Id);
+
         Log.HandlingEvent(logger, EventType);
-        
+
         return request is T matchingRequestType
             ? await HandleGithubEventAsync(matchingRequestType)
             : throw new InvalidOperationException("The provided event type did not match the required type for the current handler.");

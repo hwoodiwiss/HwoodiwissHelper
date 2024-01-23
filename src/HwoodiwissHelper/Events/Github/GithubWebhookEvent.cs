@@ -2,4 +2,4 @@
 
 namespace HwoodiwissHelper.Events.Github;
 
-public abstract record GithubWebhookEvent(Actor Sender);
+public abstract record GithubWebhookEvent(Actor Sender, Installation Installation);
