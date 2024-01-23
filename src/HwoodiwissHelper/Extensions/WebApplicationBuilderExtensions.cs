@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure.Github;
 using HwoodiwissHelper.Middleware;
@@ -63,7 +64,6 @@ public static class WebApplicationBuilderExtensions
         services.ConfigureJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
-            options.SerializerOptions.TypeInfoResolverChain.Insert(1, GithubJsonContext.Default);
         });
 
         // Enables easy named loggers in static contexts
@@ -73,7 +73,9 @@ public static class WebApplicationBuilderExtensions
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
         
-        if (!ApplicationMetadata.IsNativeAot)
+        // Add services to the container.
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        if (RuntimeFeature.IsDynamicCodeSupported)
         {
             services.AddEndpointsApiExplorer();
             services.AddOpenApiDocument();

@@ -1,4 +1,5 @@
-﻿using HwoodiwissHelper.Endpoints;
+﻿using System.Runtime.CompilerServices;
+using HwoodiwissHelper.Endpoints;
 using HwoodiwissHelper.Middleware;
 
 namespace HwoodiwissHelper.Extensions;
@@ -10,7 +11,7 @@ public static class WebApplicationExtensions
         app.Use(UserAgentBlockMiddleware.Middleware);
 
         // Configure the HTTP request pipeline.
-        if (!ApplicationMetadata.IsNativeAot && app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() && RuntimeFeature.IsDynamicCodeSupported)
         {
             app.UseOpenApi();
             app.UseSwaggerUi();

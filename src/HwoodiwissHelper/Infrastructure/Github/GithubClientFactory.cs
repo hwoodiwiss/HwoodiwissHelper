@@ -2,6 +2,7 @@
 using GitHub.App.Installations.Item.Access_tokens;
 using GitHub.Authentication;
 using GitHub.Client;
+using GitHub.Models;
 
 namespace HwoodiwissHelper.Infrastructure.Github;
 
@@ -14,13 +15,16 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
         return new GitHubClient(adapter);
     }
     
-    public async Task<Maybe<GitHubClient>> CreateInstallationClient(int installationId)
+    public async Task<Maybe<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions)
     {
         try
         {
             var appClient = CreateAppClient();
             var accessToken = await appClient.App.Installations[installationId].Access_tokens
-                .PostAsync(new Access_tokensPostRequestBody());
+                .PostAsync(new Access_tokensPostRequestBody
+                {
+                    Permissions = permissions
+                });
 
             if (string.IsNullOrWhiteSpace(accessToken?.Token))
             {
