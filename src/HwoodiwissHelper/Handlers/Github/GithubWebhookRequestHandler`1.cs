@@ -12,6 +12,7 @@ public abstract partial class GithubWebhookRequestHandler<T>(ILogger logger, Act
     public async ValueTask<object?> HandleAsync(GithubWebhookEvent request)
     {
         using var activity = ActivitySource.StartActivity("Handling Github Webhook Event");
+        activity?.SetTag("event.repository", EventType.Name);
         activity?.SetTag("event.type", EventType.Name);
         activity?.SetTag("event.handler", GetType().Name);
         activity?.SetTag("event.sender.login", request.Sender.Login);

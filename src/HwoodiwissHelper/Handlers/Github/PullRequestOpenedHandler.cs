@@ -12,6 +12,8 @@ public sealed partial class PullRequestOpenedHandler(IGithubService githubServic
         using var activity = ActivitySource.StartActivity("Handling Pull Request Opened Event");
         Actor pullRequestUser = request.PullRequest.User;
 
+        activity?.SetTag("pullrequest.repository.owner", request.Repository.Owner);
+        activity?.SetTag("pullrequest.repository.name", request.Repository.Name);
         activity?.SetTag("pullrequest.number", request.Number);
         activity?.SetTag("pullrequest.user", pullRequestUser.Name);
 
@@ -21,7 +23,7 @@ public sealed partial class PullRequestOpenedHandler(IGithubService githubServic
             await githubService.ApprovePullRequestAsync(request.Repository.Owner.Login, request.Repository.Name, request.PullRequest.Number, request.Installation.Id);
         }
 
-        return new ValueTask<object?>(Results.NoContent());
+        return Results.NoContent();
     }
 
     private static partial class Log

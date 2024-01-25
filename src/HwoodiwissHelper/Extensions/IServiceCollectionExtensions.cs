@@ -35,9 +35,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-    
 
-    
     public static IServiceCollection AddTelemetry(this IServiceCollection services)
     {
         services.AddOpenTelemetry()
@@ -70,7 +68,7 @@ public static class IServiceCollectionExtensions
         
         return services;
     }
-    
+
     public static IServiceCollection ConfigureHttpClients(this IServiceCollection services)
     {
         services.ConfigureHttpClientDefaults(builder =>
@@ -78,7 +76,7 @@ public static class IServiceCollectionExtensions
             builder.ConfigureHttpClient(client =>
             {
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ApplicationMetadata.Name,
-                    $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
+                    ApplicationMetadata.Version));
                 
             });
 
@@ -89,15 +87,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-    
-    public static IServiceCollection AddGithubWebhookHandlers(this IServiceCollection services)
-    {
-        services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
-        services.AddGithubEventHandler<PullRequestOpenedHandler, PullRequest.Opened>();
-        
-        return services;
-    }
-    
+
     public static IServiceCollection ConfigureGithubServices(this IServiceCollection services)
     {
         services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
@@ -108,7 +98,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<JsonOptions> configureOptions)
     {
         services.ConfigureHttpJsonOptions(configureOptions);
@@ -126,6 +116,14 @@ public static class IServiceCollectionExtensions
             return jsonOptions;
         });
 
+        return services;
+    }
+
+    private static IServiceCollection AddGithubWebhookHandlers(this IServiceCollection services)
+    {
+        services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
+        services.AddGithubEventHandler<PullRequestOpenedHandler, PullRequest.Opened>();
+        
         return services;
     }
 
