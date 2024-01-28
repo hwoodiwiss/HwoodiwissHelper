@@ -10,6 +10,11 @@ namespace HwoodiwissHelper.Tests.Integration;
 
 public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
 {
+    public HwoodiwissHelperFixture()
+    {
+        Environment.SetEnvironmentVariable("OTEL_SDK_DISABLED", "true");
+    }
+    
     public const string WebhookSigningKey = "It's a Secret to Everybody";
 
     private readonly Dictionary<string, string?> _configuration = new();
