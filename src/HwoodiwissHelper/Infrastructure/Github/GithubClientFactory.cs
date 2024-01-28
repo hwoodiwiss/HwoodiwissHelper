@@ -1,8 +1,8 @@
 ﻿using GitHub;
 using GitHub.App.Installations.Item.Access_tokens;
-using GitHub.Authentication;
-using GitHub.Client;
 using GitHub.Models;
+using GitHub.Octokit.Authentication;
+using GitHub.Octokit.Client;
 
 namespace HwoodiwissHelper.Infrastructure.Github;
 

@@ -11,4 +11,6 @@ public sealed class GithubConfiguration : INamedConfiguration
     public required string AppId { get; set; }
     
     public required string AppPrivateKey { get; set; }
+    
+    public required string[] AllowedBots { get; set; }
 }

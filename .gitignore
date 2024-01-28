@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 
 # Secrets
 *.secrets.*
+!.packages/**

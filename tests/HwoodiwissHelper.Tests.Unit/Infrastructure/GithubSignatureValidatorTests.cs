@@ -55,6 +55,7 @@ public class GithubSignatureValidatorTests
             EnableRequestLogging = false,
             AppId = string.Empty,
             AppPrivateKey = string.Empty,
+            AllowedBots = Array.Empty<string>()
         });
         
         return new GithubSignatureValidator(mockOptionsMonitor);
