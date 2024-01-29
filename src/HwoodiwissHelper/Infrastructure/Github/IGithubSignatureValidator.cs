@@ -1,4 +1,4 @@
-﻿namespace HwoodiwissHelper.Infrastructure;
+﻿namespace HwoodiwissHelper.Infrastructure.Github;
 
 public interface IGithubSignatureValidator
 {

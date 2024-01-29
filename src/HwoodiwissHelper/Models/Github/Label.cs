@@ -1,10 +1,17 @@
-﻿namespace HwoodiwissHelper.Models.Github;
+﻿using System.Text.Json.Serialization;
+
+namespace HwoodiwissHelper.Models.Github;
 
 public sealed record Label(
+    [property: JsonPropertyName("id")]
     int Id,
-    string NodeId,
+    [property: JsonPropertyName("url")]
     string Url,
+    [property: JsonPropertyName("name")]
     string Name,
+    [property: JsonPropertyName("description")]
     string Description,
-    string Color,
+    [property: JsonPropertyName("color")]
+    string Colour,
+    [property: JsonPropertyName("default")]
     bool Default);

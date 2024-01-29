@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Infrastructure.Github;
 
 namespace HwoodiwissHelper.Models.Github;
 
-[JsonConverter(typeof(UpperSnakeCaseStringEnumConverter<AuthorAssociation>))]
+[JsonConverter(typeof(UppercaseStringEnumConverter<AuthorAssociation>))]
 public enum AuthorAssociation
 {
     Collaborator,

@@ -4,20 +4,21 @@ using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Handlers;
 using HwoodiwissHelper.Infrastructure.Filters;
+using HwoodiwissHelper.Infrastructure.Github;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Endpoints;
 
-public static partial class GithubWebhookEndpoints
+public static partial class GithubEndpoints
 {
     public static IEndpointRouteBuilder MapGithubEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("/github");
 
         group.MapPost("/webhook", async (
-                [FromKeyedServices(nameof(GithubWebhookEndpoints))] ILogger logger,
-                [FromHeader(Name = "X-Github-Event")] string githubEvent, 
+                [FromKeyedServices(nameof(GithubEndpoints))] ILogger logger,
+                [FromHeader(Name = "X-Github-Event")] string githubEvent,
                 [FromServices] IOptions<JsonOptions> jsonOptions,
                 HttpRequest request,
                 IServiceProvider serviceProvider,
@@ -55,8 +56,8 @@ public static partial class GithubWebhookEndpoints
         {
             return githubEvent switch
             {
-                "workflow_run" => await JsonSerializer.DeserializeAsync(body, GithubJsonContext.Default.WorkflowRun),
-                "pull_request" => await JsonSerializer.DeserializeAsync(body, GithubJsonContext.Default.PullRequest),
+                "workflow_run" => await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.WorkflowRun),
+                "pull_request" => await JsonSerializer.DeserializeAsync(body, ApplicationJsonContext.Default.PullRequest),
                 _ => null,
             };
         }

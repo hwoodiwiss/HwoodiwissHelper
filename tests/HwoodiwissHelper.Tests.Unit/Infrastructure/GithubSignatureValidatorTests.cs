@@ -1,5 +1,6 @@
 ﻿using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Infrastructure;
+using HwoodiwissHelper.Infrastructure.Github;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
@@ -52,6 +53,9 @@ public class GithubSignatureValidatorTests
         {
             WebhookKey = key,
             EnableRequestLogging = false,
+            AppId = string.Empty,
+            AppPrivateKey = string.Empty,
+            AllowedBots = Array.Empty<string>()
         });
         
         return new GithubSignatureValidator(mockOptionsMonitor);
