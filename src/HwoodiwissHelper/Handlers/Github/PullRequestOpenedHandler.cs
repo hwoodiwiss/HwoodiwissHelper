@@ -22,10 +22,6 @@ public sealed partial class PullRequestOpenedHandler(IGithubService githubServic
         if (request.PullRequest.User.Type is ActorType.Bot && githubOptions.Value.AllowedBots.Contains(request.PullRequest.User.Login, StringComparer.OrdinalIgnoreCase))
         {
             Log.BotPullRequestOpened(logger, pullRequestUser.Name);
-            return Results.NoContent();
-        }
-        {
-            Log.BotPullRequestOpened(logger, pullRequestUser.Name);
             await githubService.ApprovePullRequestAsync(request.Repository.Owner.Login, request.Repository.Name, request.PullRequest.Number, request.Installation.Id);
         }
 

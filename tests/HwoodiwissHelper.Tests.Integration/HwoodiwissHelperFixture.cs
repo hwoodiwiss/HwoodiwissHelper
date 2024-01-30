@@ -28,7 +28,6 @@ public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
             cfg.AddInMemoryCollection(
                 new Dictionary<string, string?> {["Github:WebhookKey"] = WebhookSigningKey,}
             ).Add(new TestConfigurationSource(_configuration));
-            
             _configurationRoot = cfg as IConfigurationRoot;
         });
 

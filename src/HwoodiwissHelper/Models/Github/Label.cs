@@ -4,7 +4,7 @@ namespace HwoodiwissHelper.Models.Github;
 
 public sealed record Label(
     [property: JsonPropertyName("id")]
-    int Id,
+    long Id,
     [property: JsonPropertyName("url")]
     string Url,
     [property: JsonPropertyName("name")]
