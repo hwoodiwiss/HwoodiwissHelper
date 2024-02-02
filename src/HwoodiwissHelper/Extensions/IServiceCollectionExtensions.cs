@@ -123,6 +123,7 @@ public static class IServiceCollectionExtensions
     {
         services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
         services.AddGithubEventHandler<PullRequestOpenedHandler, PullRequest.Opened>();
+        services.AddGithubEventHandler<PullRequestSynchronizeHandler, PullRequest.Synchronize>();
         
         return services;
     }

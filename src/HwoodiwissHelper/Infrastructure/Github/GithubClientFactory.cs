@@ -14,7 +14,7 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
         var adapter = RequestAdapter.Create(new TokenAuthenticationProvider(ApplicationMetadata.Name, jwt), client);
         return new GitHubClient(adapter);
     }
-    
+
     public async Task<Maybe<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions)
     {
         try
@@ -43,7 +43,7 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
             return new Maybe<GitHubClient>.None();
         }
     }
-    
+
     private static partial class Log
     {
         [LoggerMessage(LogLevel.Warning, "Failed to create GitHub client for installation {InstallationId} with {ErrorName}")]
