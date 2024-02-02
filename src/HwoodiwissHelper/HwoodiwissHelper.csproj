@@ -22,5 +22,6 @@
   <PropertyGroup>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 </Project>
