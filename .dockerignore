@@ -4,3 +4,4 @@ out/
 TestResults/
 tools/
 artifacts/
+**/*.Secrets.json
