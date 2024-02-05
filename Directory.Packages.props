@@ -26,7 +26,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryLibraryVersion)" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryLibraryVersion)" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryLibraryVersion)" />
-    <PackageVersion Include="ReportGenerator" Version="5.2.0" />
+    <PackageVersion Include="ReportGenerator" Version="5.2.1" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="xunit" Version="2.6.6" />
