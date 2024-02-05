@@ -17,7 +17,7 @@ public sealed partial class PullRequestSynchronizeHandler(IGithubService githubS
         activity?.SetTag("pullrequest.repository.owner", request.Repository.Owner);
         activity?.SetTag("pullrequest.repository.name", request.Repository.Name);
         activity?.SetTag("pullrequest.number", request.Number);
-        activity?.SetTag("pullrequest.user", pullRequestUser.Name);
+        activity?.SetTag("pullrequest.user", pullRequestUser.Login);
 
         if (request.PullRequest.User.Type is ActorType.Bot && githubOptions.Value.AllowedBots.Contains(request.PullRequest.User.Login, StringComparer.OrdinalIgnoreCase))
         {
