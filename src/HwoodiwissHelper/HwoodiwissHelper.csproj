@@ -23,5 +23,6 @@
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <UserSecretsId>HwoodiwissHelper</UserSecretsId>
   </PropertyGroup>
 </Project>

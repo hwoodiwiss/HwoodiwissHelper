@@ -31,30 +31,31 @@ public static class WebApplicationBuilderExtensions
             });
 
 #if DEBUG
-            loggingBuilder.AddConsole()
-                .AddDebug();
-            
-            builder.Services.Configure<ConsoleFormatterOptions>(options =>
-            {
-                options.IncludeScopes = true;
-            });
+        loggingBuilder.AddConsole()
+            .AddDebug();
+
+        builder.Services.Configure<ConsoleFormatterOptions>(options =>
+        {
+            options.IncludeScopes = true;
+        });
 #endif
-        
+
         return builder;
     }
-    
-    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder)
+
+    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment)
         => configurationBuilder
-            .AddJsonFile("appsettings.Secrets.json", true, true);
-    
+            .AddJsonFile("appsettings.Secrets.json", !environment.IsDevelopment(), true)
+            .AddUserSecrets<Program>();
+
     private static IServiceCollection ConfigureOptionsFor<T>(this IServiceCollection serviceProvider, ConfigurationManager configuration)
-        where T : class, INamedConfiguration 
+        where T : class, INamedConfiguration
     {
         // TODO: Make this work properly at some point, need to experiment with generic usage discovery, then see if that can be fed back into the source generator
         serviceProvider.Configure<GithubConfiguration>(configuration.GetSection(T.SectionName));
         return serviceProvider;
     }
-    
+
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
         services.AddOptions();
@@ -69,7 +70,7 @@ public static class WebApplicationBuilderExtensions
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
-        
+
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (RuntimeFeature.IsDynamicCodeSupported)
@@ -85,7 +86,7 @@ public static class WebApplicationBuilderExtensions
             client.BaseAddress = new Uri("https://api.github.com");
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
         });
-        
+
         services.AddSingleton(configurationRoot);
         services.AddSingleton<UserAgentBlockMiddleware>();
         services.AddHttpLogging(options =>
@@ -96,7 +97,7 @@ public static class WebApplicationBuilderExtensions
         });
 
         services.ConfigureGithubServices();
-        
+
         return services;
     }
 }
