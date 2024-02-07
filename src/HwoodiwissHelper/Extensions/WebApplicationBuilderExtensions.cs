@@ -12,7 +12,7 @@ public static class WebApplicationBuilderExtensions
 {
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
-        builder.Configuration.ConfigureConfiguration();
+        builder.Configuration.ConfigureConfiguration(builder.Environment);
         builder.ConfigureLogging(builder.Configuration);
         builder.Services.ConfigureOptions(builder.Configuration);
         builder.Services.ConfigureHttpClients();
