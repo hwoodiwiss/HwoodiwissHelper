@@ -43,9 +43,9 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
-    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment)
-        => configurationBuilder
-            .AddJsonFile("appsettings.Secrets.json", !environment.IsDevelopment(), true)
+    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment) => 
+        configurationBuilder
+            .AddJsonFile("appsettings.Secrets.json", environment.IsDevelopment(), true)
             .AddUserSecrets<Program>();
 
     private static IServiceCollection ConfigureOptionsFor<T>(this IServiceCollection serviceProvider, ConfigurationManager configuration)

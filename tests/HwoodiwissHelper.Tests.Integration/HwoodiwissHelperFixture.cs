@@ -32,7 +32,8 @@ public class HwoodiwissHelperFixture : WebApplicationFactory<Program>
         });
 
         builder.ConfigureLogging(loggingBuilder => 
-            loggingBuilder.AddConsole()
+            loggingBuilder
+                .AddConsole()
                 .AddDebug()
             ).ConfigureServices(services =>
         {
