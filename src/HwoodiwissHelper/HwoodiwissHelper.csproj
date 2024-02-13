@@ -6,11 +6,12 @@
   <ItemGroup>
     <PackageReference Include="ArgumentativeFilters" />
     <PackageReference Include="Dunet" />
-    <PackageReference Include="Github.Octokit.SDK" />
+    <PackageReference Include="GitHub.Octokit.SDK" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Microsoft.Extensions.Telemetry" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+    <PackageReference Include="Microsoft.Kiota.Serialization.Text" />
     <PackageReference Include="NSwag.AspNetCore" />
     <PackageReference Include="OpenTelemetry" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" />
@@ -24,5 +25,6 @@
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 </Project>

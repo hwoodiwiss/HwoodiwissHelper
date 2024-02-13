@@ -8,7 +8,7 @@
     <PackageVersion Include="Bogus" Version="35.4.0" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
     <PackageVersion Include="Dunet" Version="1.11.2" />
-    <PackageVersion Include="Github.Octokit.SDK" Version="0.0.7-local1" />
+    <PackageVersion Include="GitHub.Octokit.SDK" Version="0.0.7-local2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3" />
     <PackageVersion Include="JustEat.HttpClientInterception" Version="4.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.1.24081.5" />
@@ -17,6 +17,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="$(MicrosoftExtensionsLibraryVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="$(MicrosoftExtensionsLibraryVersion)" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.3.1" />
+    <PackageVersion Include="Microsoft.Kiota.Serialization.Text" Version="1.1.3-local1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="NSwag.AspNetCore" Version="14.0.3" />
