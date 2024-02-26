@@ -6,7 +6,6 @@
   <ItemGroup>
     <PackageReference Include="ArgumentativeFilters" />
     <PackageReference Include="Dunet" />
-    <PackageReference Include="GitHub.Octokit.SDK" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Microsoft.Extensions.Telemetry" />
@@ -18,12 +17,16 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+    <ProjectReference Include="..\..\submodules\octokit-dotnet-sdk\src\GitHub.Octokit.SDK.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <ILLinkTreatWarningsAsErrors>false</ILLinkTreatWarningsAsErrors>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <PublishAot>true</PublishAot>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
-    <PublishAot>true</PublishAot>
   </PropertyGroup>
 </Project>
