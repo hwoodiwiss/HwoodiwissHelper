@@ -6,7 +6,7 @@ RUN apt update && apt install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-l
 WORKDIR /source
 
 COPY . .
-RUN dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj -c Release -a $TARGETARCH --self-contained /p:PublishTrimmed=true /p:PublishAot=true
+RUN dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj -c Release -a $TARGETARCH --self-contained
 
 FROM scratch AS export
 ARG TARGETARCH
