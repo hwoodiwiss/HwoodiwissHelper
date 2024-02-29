@@ -29,4 +29,8 @@
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(GenerateAotMetadata)' == 'True' ">
+    <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
+    <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
+  </PropertyGroup>
 </Project>

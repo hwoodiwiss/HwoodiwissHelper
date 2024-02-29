@@ -15,7 +15,7 @@ $publishProjectPaths = @(
 
 foreach ($publishProjectPath in $publishProjectPaths) {
     Write-Host "Publishing $publishProjectPath for $RuntimeIdentifier"
-    dotnet publish $publishProjectPaths -c Release -r $RuntimeIdentifier --self-contained
+    dotnet publish $publishProjectPaths -c Release -r $RuntimeIdentifier --self-contained /p:GenerateAotMetadata=true
 
     if ($LASTEXITCODE -ne 0) {
         throw "dotnet pack failed with exit code $LASTEXITCODE"
