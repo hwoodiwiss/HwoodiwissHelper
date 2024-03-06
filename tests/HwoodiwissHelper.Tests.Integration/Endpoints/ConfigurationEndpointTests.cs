@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Text.Json.Nodes;
+using System.Net;
 using System.Net.Http.Json;
 using HwoodiwissHelper.Tests.Integration.Assertions;
 
@@ -18,7 +19,7 @@ public class ConfigurationEndpointTests(HwoodiwissHelperFixture fixture) : IClas
         
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var actualContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        var actualContent = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonNode>>();
         actualContent.ShouldNotBeNull();
         actualContent.Keys.ShouldContainAll([
             "isNativeAot",
