@@ -31,6 +31,7 @@ public class ConfigurationEndpointTests(HwoodiwissHelperFixture fixture) : IClas
             "aspNetCoreRuntimeVersion",
             "isDynamicCodeCompiled",
             "isDynamicCodeSupported",
+            "isNativeAot",
         ]);
     }
 }

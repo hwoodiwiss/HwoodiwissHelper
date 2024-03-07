@@ -33,6 +33,7 @@ public static class ConfigurationEndpoints
             ["aspNetCoreRuntimeVersion"] = JsonValue.Create(typeof(WebApplication).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown"),
             ["isDynamicCodeCompiled"] = JsonValue.Create(RuntimeFeature.IsDynamicCodeCompiled),
             ["isDynamicCodeSupported"] = JsonValue.Create(RuntimeFeature.IsDynamicCodeSupported),
+            ["isNativeAot"] = JsonValue.Create(!(RuntimeFeature.IsDynamicCodeSupported & RuntimeFeature.IsDynamicCodeCompiled)),
         }));
 
         group.MapGet("/reload", ([FromServices] IConfigurationRoot config) =>
