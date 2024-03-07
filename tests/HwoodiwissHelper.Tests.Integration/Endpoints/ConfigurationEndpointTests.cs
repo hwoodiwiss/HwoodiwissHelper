@@ -13,23 +13,24 @@ public class ConfigurationEndpointTests(HwoodiwissHelperFixture fixture) : IClas
     public async Task Get_Version_ReturnsApplicationMetadata()
     {
         // Arrange
-        
+
         // Act
         var response = await _client.GetAsync("/configuration/version");
-        
+
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var actualContent = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonNode>>();
         actualContent.ShouldNotBeNull();
         actualContent.Keys.ShouldContainAll([
-            "isNativeAot",
             "version",
             "gitBranch",
             "gitCommit",
             "systemArchitecture",
             "runtimeVersion",
             "aspNetCoreVersion",
-            "aspNetCoreRuntimeVersion"
+            "aspNetCoreRuntimeVersion",
+            "isDynamicCodeCompiled",
+            "isDynamicCodeSupported",
         ]);
     }
 }
