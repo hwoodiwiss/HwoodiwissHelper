@@ -1,8 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <OpenTelemetryLibraryVersion>1.7.0</OpenTelemetryLibraryVersion>
-    <MicrosoftExtensionsLibraryVersion>9.0.0-preview.1.24108.1</MicrosoftExtensionsLibraryVersion>
-  </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ArgumentativeFilters" Version="0.0.11" />
     <PackageVersion Include="Bogus" Version="35.5.0" />
@@ -20,13 +16,13 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="NSwag.AspNetCore" Version="14.0.3" />
-    <PackageVersion Include="OpenTelemetry" Version="$(OpenTelemetryLibraryVersion)" />
-    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="$(OpenTelemetryLibraryVersion)" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryLibraryVersion)" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryLibraryVersion)" />
+    <PackageVersion Include="OpenTelemetry" Version="1.8.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.8.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.7.1" />
-    <PackageVersion Include="ReportGenerator" Version="5.2.2" />
+    <PackageVersion Include="ReportGenerator" Version="5.2.4" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
