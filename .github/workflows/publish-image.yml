@@ -28,6 +28,11 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
 
+      - name: Install native dependencies
+        if: matrix.architecture == 'arm64'
+        run: |
+          sudo apt update && apt install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-linux-gnu llvm
+
       - name: Publish Image
         run: |
           dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer
