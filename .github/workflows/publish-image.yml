@@ -61,7 +61,7 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }};latest-${{ matrix.architecture }}"'
+          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }};latest-${{ matrix.architecture }}"'
 
   create-tag:
     runs-on: ubuntu-latest
