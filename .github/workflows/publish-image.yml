@@ -21,6 +21,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+
       - name: Login to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
