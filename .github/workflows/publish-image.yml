@@ -31,7 +31,8 @@ jobs:
       - name: Install native dependencies
         if: matrix.architecture == 'arm64'
         run: |
-          sudo apt update && sudo apt install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-linux-gnu llvm
+          sudo dpkg --add-architecture arm64
+          sudo apt-get update && sudo apt-get install -y clang zlib1g-dev zlib1g-dev:arm64 gcc-aarch64-linux-gnu llvm
 
       - name: Publish Image
         run: |
