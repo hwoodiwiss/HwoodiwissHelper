@@ -1,32 +1,32 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="ArgumentativeFilters" Version="0.0.11" />
-    <PackageVersion Include="Bogus" Version="35.5.0" />
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.1" />
+    <PackageVersion Include="Bogus" Version="35.5.1" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
     <PackageVersion Include="Dunet" Version="1.11.2" />
-    <PackageVersion Include="Github.Octokit.SDK" Version="0.0.9" />
+    <PackageVersion Include="Github.Octokit.SDK" Version="0.0.14" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3" />
-    <PackageVersion Include="JustEat.HttpClientInterception" Version="4.2.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.2.24128.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.2.24128.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="9.0.0-preview.2.24157.4" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.2.24157.4" />
-    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.0.0-preview.2.24157.4" />
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.4.0" />
+    <PackageVersion Include="JustEat.HttpClientInterception" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.3.24172.13" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.3.24172.13" />
+    <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="9.0.0-preview.3.24209.3" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.3.24209.3" />
+    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.0.0-preview.3.24209.3" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.5.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
-    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.3" />
-    <PackageVersion Include="OpenTelemetry" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.7.1" />
-    <PackageVersion Include="ReportGenerator" Version="5.2.4" />
+    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.7" />
+    <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
+    <PackageVersion Include="ReportGenerator" Version="5.2.5" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageVersion Include="xunit" Version="2.7.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
+    <PackageVersion Include="xunit" Version="2.8.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(IsTestProject)' == 'True' ">
     <Using Include="Shouldly" />
