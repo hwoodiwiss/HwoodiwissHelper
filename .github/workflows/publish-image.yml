@@ -61,9 +61,11 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }};latest-${{ matrix.architecture }}"'
+          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.architecture == 'arm64' && ';latest' || '' }}"'
 
   create-tag:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: [get-tag-version, build-image]
     if: github.event_name == 'workflow_dispatch'
