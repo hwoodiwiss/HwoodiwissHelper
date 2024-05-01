@@ -25,10 +25,6 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
 
-      - name: Build Image
+      - name: Publish Image
         run: |
-          docker build -f ./build/Dockerfile . --platform linux/${{ matrix.architecture }} -t ghcr.io/hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
-
-      - name: Push Image
-        run: |
-          docker push ghcr.io/hwoodiwiss/hwoodiwiss-helper:1.0.${{ github.run_number }}-${{ matrix.architecture }}
+          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer
