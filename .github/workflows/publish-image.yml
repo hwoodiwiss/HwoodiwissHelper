@@ -2,13 +2,30 @@ name: publish-image
 
 on:
   workflow_dispatch:
+    inputs:
+      tag-version:
+        description: "The tag version to use for the image"
+        required: true
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: read
   packages: write
 
 jobs:
+  get-tag-version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag-version: ${{ steps.get_tag.outputs.tag-version }}
+    steps:
+      - name: Get Tag Version
+        id: get_tag
+        run: echo ::set-output name=tag-version::${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag-version || github.ref }}
+
   build-image:
+    needs: [get-tag-version]
     strategy:
       matrix:
         architecture:
@@ -28,7 +45,7 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
 
-      - name: Install native dependencies
+      - name: Install ARM64 native dependencies
         if: matrix.architecture == 'arm64'
         run: |
           sudo dpkg --add-architecture arm64
@@ -44,4 +61,20 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer
+          dotnet publish --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }};latest-${{ matrix.architecture }}"'
+
+  create-tag:
+    runs-on: ubuntu-latest
+    needs: [get-tag-version, build-image]
+    if: github.event_name != 'workflow_dispatch'
+    steps:
+      - name: Create Tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/${{ needs.get-tag-version.outputs.tag-version }}',
+                sha: context.sha
+              })
