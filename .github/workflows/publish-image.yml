@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Get Tag Version
         id: get_tag
-        run: echo "tag-version=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag-version || github.ref }}" >> $GITHUB_OUTPUT
+        run: echo "tag-version=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag-version || github.ref_name }}" >> $GITHUB_OUTPUT
 
   build-image:
     needs: [get-tag-version]
