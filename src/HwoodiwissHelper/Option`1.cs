@@ -3,7 +3,7 @@
 namespace HwoodiwissHelper;
 
 [Union]
-public partial record Maybe<T>
+public partial record Option<T>
 {
     public partial record Some(T Value);
 

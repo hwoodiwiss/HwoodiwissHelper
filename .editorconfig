@@ -173,6 +173,10 @@ csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
 #### Naming styles ####
+
+# IDE0160: Convert to file scoped namespace
+csharp_style_namespace_declarations = file_scoped:suggestion
+
 [*.{cs,vb}]
 
 # Naming rules

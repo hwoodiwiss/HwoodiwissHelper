@@ -13,14 +13,14 @@ public static partial class GithubSecretValidatorFilter
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
-        if (!context.HttpContext.Request.Headers.TryGetValue("X-Hub-Signature-256", out var signature) 
+        if (!context.HttpContext.Request.Headers.TryGetValue("X-Hub-Signature-256", out var signature)
             || signature.Count is not 1
             || !await githubSignatureValidator.ValidateSignatureAsync(signature.ToString().AsMemory()[7..], context.HttpContext.Request.Body, CancellationToken.None))
         {
             Log.SecretValidationFailed(logger, signature.ToString());
             return Results.BadRequest();
         }
-        
+
         return await next(context);
     }
 

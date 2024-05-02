@@ -5,10 +5,10 @@ public static class SurpriseEndpoints
     public static IEndpointRouteBuilder MapSurpriseEndpoints(this IEndpointRouteBuilder builder)
     {
         var group = builder.MapGroup("/surprise");
-        
+
         group.MapGet("/next", (IConfiguration configuration) =>
             {
-                var surprises = configuration.GetSection("Surprises").Get<string[]>() ?? Array.Empty<string>();
+                var surprises = configuration.GetSection("Surprises").Get<string[]>() ?? [];
 
                 return surprises.Length switch
                 {
@@ -17,7 +17,7 @@ public static class SurpriseEndpoints
                 };
             })
             .WithDescription("Gets the next surprise.");
-        
+
         return builder;
     }
 }

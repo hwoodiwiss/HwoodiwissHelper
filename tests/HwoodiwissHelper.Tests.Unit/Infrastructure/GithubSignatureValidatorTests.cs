@@ -1,5 +1,4 @@
 ﻿using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Infrastructure.Github;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -20,14 +19,14 @@ public class GithubSignatureValidatorTests
         var body = new MemoryStream("Hello, World!"u8.ToArray());
         var cancellationToken = CancellationToken.None;
         var sut = CreateSut("It's a Secret to Everybody");
-        
+
         // Act
         var result = await sut.ValidateSignatureAsync(signature.AsMemory(), body, cancellationToken);
-        
+
         // Assert
         result.ShouldBeTrue();
     }
-    
+
     [Theory]
     [InlineData("\n")]
     [InlineData("\t")]
@@ -38,10 +37,10 @@ public class GithubSignatureValidatorTests
         var body = new MemoryStream("Hello, World!"u8.ToArray());
         var cancellationToken = CancellationToken.None;
         var sut = CreateSut("It's a Secret to Everybody");
-        
+
         // Act
         var result = await sut.ValidateSignatureAsync(signature.AsMemory(), body, cancellationToken);
-        
+
         // Assert
         result.ShouldBeFalse();
     }
@@ -55,9 +54,9 @@ public class GithubSignatureValidatorTests
             EnableRequestLogging = false,
             AppId = string.Empty,
             AppPrivateKey = string.Empty,
-            AllowedBots = Array.Empty<string>()
+            AllowedBots = []
         });
-        
+
         return new GithubSignatureValidator(mockOptionsMonitor);
     }
 }

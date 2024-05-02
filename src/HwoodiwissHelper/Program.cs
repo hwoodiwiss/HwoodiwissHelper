@@ -10,5 +10,5 @@ await app
 
 public partial class Program
 {
-    
+
 }

@@ -15,18 +15,19 @@ public sealed partial class GithubService(IGithubClientFactory githubClientFacto
         using var activity = activitySource.StartActivity();
         activity?.SetTag("pullrequest.number", pullRequestNumber);
         activity?.SetTag("pullrequest.repo", $"{repoOwner}/{repoName}");
-        
+
         var permissions = new AppPermissions() { PullRequests = AppPermissions_pull_requests.Write };
         var client = await githubClientFactory.CreateInstallationClient(installationId, permissions);
 
-        if (client is Maybe<GitHubClient>.None) return;
+        if (client is Option<GitHubClient>.None) return;
 
         try
         {
             await client.UnwrapSome().Value.Repos[repoOwner][repoName].Pulls[pullRequestNumber].Reviews.PostAsync(
                 new ReviewsPostRequestBody
                 {
-                    Body = "Automatically approving pull request", Event = ReviewsPostRequestBody_event.APPROVE,
+                    Body = "Automatically approving pull request",
+                    Event = ReviewsPostRequestBody_event.APPROVE,
                 });
         }
         catch (Exception error)

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Infrastructure.Github;
 
 namespace HwoodiwissHelper.Models.Github;

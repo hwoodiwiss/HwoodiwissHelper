@@ -8,8 +8,8 @@ namespace HwoodiwissHelper.Infrastructure.Github;
 
 public sealed class GithubAppAuthProvider(TimeProvider timeProvider, IOptionsMonitor<GithubConfiguration> githubConfiguration) : IGithubAppAuthProvider
 {
-    private TokenWithExpiration<JsonWebToken> _githubJwt  = new(timeProvider, token => token.ValidTo.AddSeconds(-30));
-    
+    private TokenWithExpiration<JsonWebToken> _githubJwt = new(timeProvider, token => token.ValidTo.AddSeconds(-30));
+
     public string GetGithubJwt() =>
         _githubJwt.GetOrRenew(GenerateJwt).EncodedToken;
 

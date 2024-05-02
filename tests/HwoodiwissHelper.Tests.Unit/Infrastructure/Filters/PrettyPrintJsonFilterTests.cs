@@ -4,10 +4,10 @@ public class PrettyPrintJsonFilterTests
 {
     public PrettyPrintJsonFilterTests()
     {
-        
+
     }
-    
+
     [Fact]
     public void Test()
-    {}
+    { }
 }

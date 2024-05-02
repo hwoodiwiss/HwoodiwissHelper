@@ -17,7 +17,7 @@ public abstract record PullRequest(Actor Sender, Installation Installation) : Gi
         Repository Repository,
         Actor Sender,
         Installation Installation) : PullRequest(Sender, Installation);
-    
+
     public sealed record Synchronize(
         [property: JsonPropertyName("number")]
         int Number,

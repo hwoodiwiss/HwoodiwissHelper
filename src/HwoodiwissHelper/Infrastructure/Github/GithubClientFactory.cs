@@ -15,7 +15,7 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
         return new GitHubClient(adapter);
     }
 
-    public async Task<Maybe<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions)
+    public async Task<Option<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions)
     {
         try
         {
@@ -28,19 +28,19 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
 
             if (string.IsNullOrWhiteSpace(accessToken?.Token))
             {
-                return new Maybe<GitHubClient>.None();
+                return new Option<GitHubClient>.None();
             }
 
             var adapter =
                 RequestAdapter.Create(
                     new TokenAuthenticationProvider(ApplicationMetadata.Name, accessToken?.Token ?? string.Empty),
                     client);
-            return new Maybe<GitHubClient>.Some(new GitHubClient(adapter));
+            return new Option<GitHubClient>.Some(new GitHubClient(adapter));
         }
         catch (Exception ex)
         {
             Log.AccessTokenRequestFailed(logger, installationId, ex.GetType().Name, ex);
-            return new Maybe<GitHubClient>.None();
+            return new Option<GitHubClient>.None();
         }
     }
 

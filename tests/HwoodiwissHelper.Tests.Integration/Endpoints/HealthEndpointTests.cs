@@ -10,10 +10,10 @@ public class HealthEndpointTests(HwoodiwissHelperFixture fixture) : IClassFixtur
     public async Task Get_Health_ReturnsOk()
     {
         // Arrange
-        
+
         // Act
         var response = await _client.GetAsync("/health");
-        
+
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }

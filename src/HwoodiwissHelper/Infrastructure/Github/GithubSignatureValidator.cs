@@ -29,7 +29,7 @@ public sealed class GithubSignatureValidator : IGithubSignatureValidator
         var digestString = Convert.ToHexString(digest);
         return signature.Span.Equals(digestString.AsSpan(), StringComparison.OrdinalIgnoreCase);
     }
-    
+
     private static async ValueTask<byte[]?> HashDataAsync(HMAC hmac, Stream data, CancellationToken cancellationToken)
     {
         // Read the body 4096 bytes at a time.
@@ -42,7 +42,7 @@ public sealed class GithubSignatureValidator : IGithubSignatureValidator
                 hmac.TransformBlock(buffer, 0, bytesRead, null, 0);
             }
 
-            hmac.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+            hmac.TransformFinalBlock([], 0, 0);
             return hmac.Hash;
         }
         finally

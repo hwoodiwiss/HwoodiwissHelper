@@ -83,7 +83,7 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
             f.Random.Guid().ToString(),
             actorFaker.Generate(),
             f.Internet.Url(),
-            Array.Empty<Label>(),
+            [],
             f.Date.Recent().ToString(CultureInfo.InvariantCulture),
             f.Date.Recent().ToString(CultureInfo.InvariantCulture),
             branchFaker.Generate(),
@@ -95,7 +95,7 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
         var installationFaker = new Faker<Installation>().CustomInstantiator(f => new Installation(
             f.Random.Int(0),
             f.Random.Hash()));
-        
+
         TheoryData<string, object> data = new()
         {
             {"workflow_run", new TestWebhookEvent("completed", actorFaker.Generate(), installationFaker.Generate()) },
@@ -109,5 +109,3 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
 
     private sealed record TestWebhookEvent([property: JsonPropertyOrder(-1)] string Action, Actor Sender, Installation Installation) : GithubWebhookEvent(Sender, Installation);
 }
-
-

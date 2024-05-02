@@ -7,10 +7,9 @@ public static class JsonSerializerOptionExtensions
 {
     public static JsonTypeInfo<T> GetJsonTypeInfo<T>(this JsonSerializerOptions options)
     {
-        if (options.TryGetTypeInfo(typeof(T), out var jsonTypeInfo) &&
-            jsonTypeInfo is JsonTypeInfo<T> info)
+        if (options.GetTypeInfo(typeof(T)) is JsonTypeInfo<T> jsonTypeInfo)
         {
-            return info;
+            return jsonTypeInfo;
         }
 
         throw new ArgumentException($"Unable to find JsonTypeInfo for {typeof(T).FullName}");

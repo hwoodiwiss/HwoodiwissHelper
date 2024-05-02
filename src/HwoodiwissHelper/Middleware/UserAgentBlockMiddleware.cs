@@ -39,21 +39,21 @@ public sealed partial class UserAgentBlockMiddleware : IDisposable
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public void Dispose()
     {
         _configurationSubscription?.Dispose();
     }
-    
+
     public static Task Middleware(HttpContext context, RequestDelegate next)
     {
         var middleware = context.RequestServices.GetRequiredService<UserAgentBlockMiddleware>();
         return middleware.HandleAsync(context, next);
     }
-    
+
     private static partial class Log
     {
         [LoggerMessage(LogLevel.Information, "Blocked request for user agent: {UserAgent}")]

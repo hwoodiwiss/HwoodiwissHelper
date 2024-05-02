@@ -6,5 +6,5 @@ namespace HwoodiwissHelper.Infrastructure.Github;
 public interface IGithubClientFactory
 {
     GitHubClient CreateAppClient();
-    Task<Maybe<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions = null);
+    Task<Option<GitHubClient>> CreateInstallationClient(int installationId, AppPermissions? permissions = null);
 }

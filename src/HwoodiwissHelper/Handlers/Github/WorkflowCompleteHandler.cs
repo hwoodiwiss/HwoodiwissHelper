@@ -5,7 +5,7 @@ namespace HwoodiwissHelper.Handlers.Github;
 
 public sealed partial class WorkflowCompleteHandler(
     ILogger<WorkflowCompleteHandler> logger,
-    ActivitySource activitySource) 
+    ActivitySource activitySource)
     : GithubWebhookRequestHandler<WorkflowRun.Completed>(logger, activitySource)
 {
     protected override ValueTask<object?> HandleGithubEventAsync(WorkflowRun.Completed request)

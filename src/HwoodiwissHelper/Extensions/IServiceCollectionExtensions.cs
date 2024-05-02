@@ -65,7 +65,7 @@ public static class IServiceCollectionExtensions
                     new ("service.host", Environment.MachineName),
                 ]);
         }
-        
+
         return services;
     }
 
@@ -77,12 +77,12 @@ public static class IServiceCollectionExtensions
             {
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(ApplicationMetadata.Name,
                     ApplicationMetadata.Version));
-                
+
             });
 
             builder.AddStandardResilienceHandler();
         });
-        
+
         services.AddHttpClient();
 
         return services;
@@ -108,7 +108,7 @@ public static class IServiceCollectionExtensions
             configureOptions(options);
             options.SerializerOptions.WriteIndented = true;
         });
-        
+
         services.AddKeyedTransient<JsonOptions>(KeyedService.AnyKey, (sp, key) =>
         {
             var optionsSnapshot = sp.GetRequiredService<IOptionsSnapshot<JsonOptions>>();
@@ -124,7 +124,7 @@ public static class IServiceCollectionExtensions
         services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
         services.AddGithubEventHandler<PullRequestOpenedHandler, PullRequest.Opened>();
         services.AddGithubEventHandler<PullRequestSynchronizeHandler, PullRequest.Synchronize>();
-        
+
         return services;
     }
 

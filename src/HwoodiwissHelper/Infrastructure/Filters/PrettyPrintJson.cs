@@ -12,7 +12,7 @@ public static partial class PrettyPrintJson
         [FromKeyedServices(Constants.PrettyPrintJsonOptionsKey)] JsonOptions jsonOptions)
     {
         var result = await next(context);
-        if (result is {} and not IResult)
+        if (result is { } and not IResult)
         {
             var typeInfo = jsonOptions.SerializerOptions.GetTypeInfo(result.GetType());
             return Results.Json(result, typeInfo);

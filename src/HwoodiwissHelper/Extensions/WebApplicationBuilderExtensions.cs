@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Middleware;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Console;
@@ -12,7 +11,7 @@ public static class WebApplicationBuilderExtensions
 {
     public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
     {
-        builder.Configuration.ConfigureConfiguration(builder.Environment);
+        builder.Configuration.ConfigureConfiguration();
         builder.ConfigureLogging(builder.Configuration);
         builder.Services.ConfigureOptions(builder.Configuration);
         builder.Services.ConfigureHttpClients();
@@ -43,18 +42,9 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
-    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment) => 
+    private static IConfigurationBuilder ConfigureConfiguration(this IConfigurationBuilder configurationBuilder) =>
         configurationBuilder
-            .AddJsonFile("appsettings.Secrets.json", environment.IsDevelopment(), true)
             .AddUserSecrets<Program>();
-
-    private static IServiceCollection ConfigureOptionsFor<T>(this IServiceCollection serviceProvider, ConfigurationManager configuration)
-        where T : class, INamedConfiguration
-    {
-        // TODO: Make this work properly at some point, need to experiment with generic usage discovery, then see if that can be fed back into the source generator
-        serviceProvider.Configure<GithubConfiguration>(configuration.GetSection(T.SectionName));
-        return serviceProvider;
-    }
 
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
