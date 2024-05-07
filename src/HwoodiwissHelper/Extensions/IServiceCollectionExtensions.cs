@@ -80,7 +80,8 @@ public static class IServiceCollectionExtensions
 
             });
 
-            builder.AddStandardResilienceHandler();
+            // Note - Disabled for now due to an issue with AOT compatibility
+            // builder.AddStandardResilienceHandler();
         });
 
         services.AddHttpClient();
@@ -109,7 +110,7 @@ public static class IServiceCollectionExtensions
             options.SerializerOptions.WriteIndented = true;
         });
 
-        services.AddKeyedTransient<JsonOptions>(KeyedService.AnyKey, (sp, key) =>
+        services.AddKeyedTransient(KeyedService.AnyKey, (sp, key) =>
         {
             var optionsSnapshot = sp.GetRequiredService<IOptionsSnapshot<JsonOptions>>();
             var jsonOptions = optionsSnapshot.Get(key.ToString());
