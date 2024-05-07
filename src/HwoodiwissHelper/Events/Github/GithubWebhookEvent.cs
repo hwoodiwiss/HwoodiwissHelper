@@ -3,8 +3,11 @@ using HwoodiwissHelper.Models.Github;
 
 namespace HwoodiwissHelper.Events.Github;
 
-public abstract record GithubWebhookEvent(
-    [property: JsonPropertyName("sender")]
-    Actor Sender,
-    [property: JsonPropertyName("installation")]
-    Installation Installation);
+public abstract record GithubWebhookEvent
+{
+    [JsonPropertyName("sender")]
+    public required Actor Sender { get; init; }
+
+    [JsonPropertyName("installation")]
+    public required Installation Installation { get; init; }
+}

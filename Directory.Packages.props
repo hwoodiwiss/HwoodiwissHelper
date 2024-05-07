@@ -7,6 +7,8 @@
     <PackageVersion Include="Github.Octokit.SDK" Version="0.0.14" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.3" />
     <PackageVersion Include="JustEat.HttpClientInterception" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0-preview.3.24172.13" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0-preview.3.24172.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.3.24172.13" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.3.24172.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="9.0.0-preview.3.24209.3" />
