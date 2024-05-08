@@ -14,6 +14,7 @@ public static class ConfigurationEndpoints
     public static IEndpointRouteBuilder MapConfigurationEndpoints(this IEndpointRouteBuilder builder, IWebHostEnvironment environment)
     {
         var group = builder.MapGroup("/configuration")
+            .ExcludeFromDescription()
             .WithPrettyPrint();
 
         group.MapGet("/debug", (IConfiguration config) => config is IConfigurationRoot root

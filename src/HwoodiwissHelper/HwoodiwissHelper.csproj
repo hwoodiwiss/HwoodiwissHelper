@@ -8,6 +8,7 @@
     <PackageReference Include="ArgumentativeFilters" />
     <PackageReference Include="Dunet" />
     <PackageReference Include="Github.Octokit.SDK" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Microsoft.Extensions.Telemetry" />
@@ -19,6 +20,9 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HwoodiwissHelper.UI\HwoodiwissHelper.UI.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>

@@ -16,7 +16,8 @@ public static class SurpriseEndpoints
                     _ => Results.Redirect(surprises[Random.Shared.Next(0, surprises.Length - 1)], true)
                 };
             })
-            .WithDescription("Gets the next surprise.");
+            .WithDescription("Gets the next surprise.")
+            .Produces(302);
 
         return builder;
     }

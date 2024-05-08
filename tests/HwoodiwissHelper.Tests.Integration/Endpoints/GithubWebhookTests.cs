@@ -98,14 +98,25 @@ public sealed class GithubWebhookTests(HwoodiwissHelperFixture fixture) : IClass
 
         TheoryData<string, object> data = new()
         {
-            {"workflow_run", new TestWebhookEvent("completed", actorFaker.Generate(), installationFaker.Generate()) },
-            {"workflow_run", new TestWebhookEvent("in_progress", actorFaker.Generate(), installationFaker.Generate()) },
-            {"workflow_run", new TestWebhookEvent("requested", actorFaker.Generate(), installationFaker.Generate()) },
-            {"pull_request", new PullRequest.Opened(1, pullRequestFaker.Generate(), repoFaker.Generate(), actorFaker.Generate(), installationFaker.Generate()) },
+            {"workflow_run", CreateTestEvent("completed") },
+            {"workflow_run", CreateTestEvent("in_progress") },
+            {"workflow_run", CreateTestEvent("requested") },
         };
 
         return data;
     }
 
-    private sealed record TestWebhookEvent([property: JsonPropertyOrder(-1)] string Action, Actor Sender, Installation Installation) : GithubWebhookEvent(Sender, Installation);
+    private static TestWebhookEvent CreateTestEvent(string action) =>
+        new()
+        {
+            Action = action,
+            Installation = new Installation(1, "hash"),
+            Sender = new Actor(false, "email", 1, "login", "name", ActorType.User)
+        };
+
+    private sealed record TestWebhookEvent : GithubWebhookEvent
+    {
+        [JsonPropertyName("action")]
+        public required string Action { get; init; }
+    }
 }

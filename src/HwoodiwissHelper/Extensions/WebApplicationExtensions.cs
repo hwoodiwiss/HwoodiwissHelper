@@ -9,17 +9,22 @@ public static class WebApplicationExtensions
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
         app.Use(UserAgentBlockMiddleware.Middleware);
+        app.UseDefaultFiles();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment() && RuntimeFeature.IsDynamicCodeSupported)
         {
-            app.UseOpenApi();
-            app.UseSwaggerUi();
+            app.UseOpenApi(cfg =>
+            {
+                cfg.Path = "/swagger/openapi.json";
+            });
         }
 
+        app.UseBlazorFrameworkFiles();
         app.UseHttpLogging();
         app.MapEndpoints(app.Environment);
 
+        app.UseStaticFiles();
         return app;
     }
 

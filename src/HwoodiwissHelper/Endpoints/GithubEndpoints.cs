@@ -45,7 +45,8 @@ public static partial class GithubEndpoints
                 return await requestHandler.HandleAsync(githubEventBase);
             })
             .WithBufferedRequest()
-            .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory);
+            .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory)
+            .Produces(201);
 
         return builder;
     }
