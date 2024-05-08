@@ -40,10 +40,10 @@ jobs:
       - name: Test Publish
         run: dotnet publish -c Release
 
-      - name: Publish AOT Build
+      - name: Publish Published Build
         uses: actions/upload-artifact@v4
         with:
-          name: publish-aot-arm64
+          name: publish-build
           path: ./artifacts/publish/HwoodiwissHelper/*
 
       # - name: Build & Test
@@ -59,4 +59,4 @@ jobs:
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: publish-aot-arm64
-      #     path: ./artifacts/publish/HwoodiwissHelper/*
+      #     path: ./artifacts/aot/publish/HwoodiwissHelper/release
