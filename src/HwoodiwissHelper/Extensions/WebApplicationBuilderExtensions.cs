@@ -66,7 +66,11 @@ public static class WebApplicationBuilderExtensions
         if (RuntimeFeature.IsDynamicCodeSupported)
         {
             services.AddEndpointsApiExplorer();
-            services.AddOpenApiDocument();
+            services.AddOpenApiDocument(opt =>
+            {
+                opt.Title = ApplicationMetadata.Name;
+                opt.Version = ApplicationMetadata.Version;
+            });
         }
 
         services.AddTelemetry();

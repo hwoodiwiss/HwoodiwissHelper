@@ -14,8 +14,10 @@ public static class WebApplicationExtensions
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment() && RuntimeFeature.IsDynamicCodeSupported)
         {
-            app.UseOpenApi();
-            app.UseSwaggerUi();
+            app.UseOpenApi(cfg =>
+            {
+                cfg.Path = "/swagger/openapi.json";
+            });
         }
 
         app.UseBlazorFrameworkFiles();

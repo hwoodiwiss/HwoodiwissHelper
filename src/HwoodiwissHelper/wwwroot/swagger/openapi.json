@@ -1,0 +1,60 @@
+﻿{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HwoodiwissHelper",
+    "version": "1.0.0+eaac8ca209d3a7399f37d12a5d8b47775c8eeec2"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "paths": {
+    "/surprise/next": {
+      "get": {
+        "operationId": "GetSurpriseNext",
+        "responses": {
+          "302": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/github/webhook": {
+      "post": {
+        "operationId": "PostGithubWebhook",
+        "parameters": [
+          {
+            "name": "X-Github-Event",
+            "x-originalName": "githubEvent",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {}
+}
