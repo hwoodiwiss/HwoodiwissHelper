@@ -34,6 +34,9 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
 
+      - name: Install Wasm workload
+        run: dotnet workload install wasm-tools
+
       - name: Test Publish
         run: dotnet publish -c Release
 
