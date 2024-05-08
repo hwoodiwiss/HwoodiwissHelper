@@ -9,6 +9,7 @@ public static class WebApplicationExtensions
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
         app.Use(UserAgentBlockMiddleware.Middleware);
+        app.UseDefaultFiles();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment() && RuntimeFeature.IsDynamicCodeSupported)
@@ -17,9 +18,11 @@ public static class WebApplicationExtensions
             app.UseSwaggerUi();
         }
 
+        app.UseBlazorFrameworkFiles();
         app.UseHttpLogging();
         app.MapEndpoints(app.Environment);
 
+        app.UseStaticFiles();
         return app;
     }
 
