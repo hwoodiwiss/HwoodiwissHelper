@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".workflows", ".workflows", 
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
 		.github\workflows\dependabot-autoapprove.yml = .github\workflows\dependabot-autoapprove.yml
+		.github\workflows\publish-image.yml = .github\workflows\publish-image.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{18EA41B9-7274-4062-BBA0-806C3BB103FE}"

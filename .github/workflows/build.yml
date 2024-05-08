@@ -34,29 +34,17 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
 
-      - name: Install Wasm workload
-        run: dotnet workload install wasm-tools
+      - name: Build & Test
+        shell: pwsh
+        run: .\build\build.ps1
 
-      - name: Test Publish
-        run: dotnet publish -c Release
+      - name: Build AOT (ARM64)
+        env:
+          DOCKER_BUILDKIT: 1
+        run: docker build -f ./build/Dockerfile.build-cross --platform linux/arm64 --output artifacts/aot .
 
-      - name: Publish Published Build
+      - name: Publish AOT Build
         uses: actions/upload-artifact@v4
         with:
-          name: publish-build
-          path: ./artifacts/publish/HwoodiwissHelper/*
-
-      # - name: Build & Test
-      #   shell: pwsh
-      #   run: .\build\build.ps1
-
-      # - name: Build AOT (ARM64)
-      #   env:
-      #     DOCKER_BUILDKIT: 1
-      #   run: docker build -f ./build/Dockerfile.build-cross --platform linux/arm64 --output artifacts/aot .
-
-      # - name: Publish AOT Build
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: publish-aot-arm64
-      #     path: ./artifacts/aot/publish/HwoodiwissHelper/release
+          name: publish-aot-arm64
+          path: ./artifacts/aot/publish/HwoodiwissHelper/release
