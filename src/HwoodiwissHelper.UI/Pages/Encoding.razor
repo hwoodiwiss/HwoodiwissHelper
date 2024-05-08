@@ -1,0 +1,52 @@
+﻿@page "/encoding"
+
+<PageTitle>Encoding</PageTitle>
+
+<h1>Encoding</h1>
+
+<p>Encoding is the process of converting a sequence of characters into a sequence of bytes. The .NET platform provides a number of classes for encoding and decoding text,
+    including:</p>
+
+<h2>Base 64</h2>
+
+<div>
+    <label for="base64-cleartext">Cleartext</label>
+    <textarea id="base64-cleartext" class="form-control" placeholder="Enter text to encode" @oninput="OnBase64CleartextInputChanged" @bind="base64Cleartext"></textarea>
+</div>
+<div>
+    <label for="base64-encoded">Base 64</label>
+    <textarea id="base64-encoded" class="form-control" placeholder="Base 64 encoded text" @oninput="OnBase64EncodedInputChanged" @bind="base64Encoded"></textarea>
+</div>
+
+@code {
+    private string base64Cleartext = string.Empty;
+    private string base64Encoded = string.Empty;
+
+    private void OnBase64CleartextInputChanged(ChangeEventArgs args)
+    {
+        if (args is not { Value: string value })
+        {
+            return;
+        }
+        var bytes = System.Text.Encoding.UTF8.GetBytes(value);
+        base64Encoded = System.Convert.ToBase64String(bytes);
+    }
+
+    private void OnBase64EncodedInputChanged(ChangeEventArgs args)
+    {
+        if (args is not { Value: string value })
+        {
+            return;
+        }
+        var approxDecodedLength = value.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
+        Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
+        if (System.Convert.TryFromBase64String(value, buffer, out var bytesWritten))
+        {
+            base64Cleartext = System.Text.Encoding.UTF8.GetString(buffer[..bytesWritten]);
+        }
+        else
+        {
+            base64Cleartext = "Invalid Base 64";
+        }
+    }
+}
