@@ -143,6 +143,7 @@ public static class IServiceCollectionExtensions
 
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
+        services.AddHttpContextAccessor();
         services.AddOptions();
         services.ConfigureJsonOptions(options =>
         {
