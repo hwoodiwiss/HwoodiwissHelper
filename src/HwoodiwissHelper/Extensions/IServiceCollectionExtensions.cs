@@ -1,13 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Events.Github;
 using HwoodiwissHelper.Handlers;
 using HwoodiwissHelper.Handlers.Github;
 using HwoodiwissHelper.Infrastructure.Github;
+using HwoodiwissHelper.Middleware;
 using HwoodiwissHelper.Services;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -134,6 +137,56 @@ public static class IServiceCollectionExtensions
         where THandler : GithubWebhookRequestHandler<TEvent>
     {
         services.AddKeyedScoped<IRequestHandler<GithubWebhookEvent>, THandler>(typeof(TEvent));
+        return services;
+    }
+
+
+    public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
+    {
+        services.AddOptions();
+        services.ConfigureJsonOptions(options =>
+        {
+            options.SerializerOptions.TypeInfoResolverChain.Insert(0, ApplicationJsonContext.Default);
+        });
+
+        // Enables easy named loggers in static contexts
+        services.AddKeyedTransient<ILogger>(KeyedService.AnyKey, (sp, key) =>
+        {
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+            return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
+        });
+
+        // Add services to the container.
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        if (RuntimeFeature.IsDynamicCodeSupported)
+        {
+            services.AddEndpointsApiExplorer();
+            services.AddOpenApiDocument(opt =>
+            {
+                opt.Title = ApplicationMetadata.Name;
+                opt.Version = ApplicationMetadata.Version;
+            });
+        }
+
+        services.AddTelemetry();
+
+        services.AddHttpClient("Github", client =>
+        {
+            client.BaseAddress = new Uri("https://api.github.com");
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
+        });
+
+        services.AddSingleton(configurationRoot);
+        services.AddSingleton<UserAgentBlockMiddleware>();
+        services.AddHttpLogging(options =>
+        {
+            options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders | HttpLoggingFields.ResponseStatusCode;
+            options.RequestHeaders.Add("X-Forwarded-For");
+            options.RequestHeaders.Add("X-Real-IP");
+        });
+
+        services.ConfigureGithubServices();
+
         return services;
     }
 }

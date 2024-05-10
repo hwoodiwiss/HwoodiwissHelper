@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using HwoodiwissHelper.Endpoints;
+using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Middleware;
 
 namespace HwoodiwissHelper.Extensions;
@@ -25,6 +26,33 @@ public static class WebApplicationExtensions
         app.MapEndpoints(app.Environment);
 
         app.UseStaticFiles();
+        return app;
+    }
+
+    private static WebApplication UseStaticFiles(this WebApplication app)
+    {
+        var opts = new StaticFileOptions
+        {
+            FileProvider = new PrecompressedStaticFileProvider(app.Environment, app.Services.GetRequiredService<IHttpContextAccessor>()),
+            OnPrepareResponse = ctx =>
+            {
+                var filename = ctx.File;
+
+                var contentEncoding = ctx.File.Name[^2..] switch
+                {
+                    "gz" => "gzip",
+                    "br" => "br",
+                    _ => null,
+                };
+
+                if (contentEncoding is not null)
+                {
+                    ctx.Context.Response.Headers["Content-Encoding"] = contentEncoding;
+                }
+            }
+        };
+        app.UseStaticFiles(opts);
+
         return app;
     }
 
