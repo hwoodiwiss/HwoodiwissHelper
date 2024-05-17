@@ -46,8 +46,10 @@ public static class IServiceCollectionExtensions
             .WithMetrics(metrics =>
             {
                 metrics.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
                     .AddMeter("Microsoft.AspNetCore.Hosting")
                     .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                    .AddMeter("Microsoft.AspNetCore.Diagnostics")
                     .AddOtlpExporter();
             })
             .WithTracing(tracing =>

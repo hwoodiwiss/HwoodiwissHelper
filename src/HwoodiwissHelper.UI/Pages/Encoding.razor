@@ -17,10 +17,15 @@
     <label for="base64-encoded">Base 64</label>
     <textarea id="base64-encoded" class="form-control" placeholder="Base 64 encoded text" @oninput="OnBase64EncodedInputChanged" @bind="base64Encoded"></textarea>
 </div>
+<div>
+    <label for="base64-url-encoded">Base 64 Url Encoded</label>
+    <textarea id="base64-url-encoded" class="form-control" placeholder="Base 64 URL encoded text" @oninput="OnBase64UrlEncodedInputChanged" @bind="base64UrlEncoded"></textarea>
+</div>
 
 @code {
     private string base64Cleartext = string.Empty;
     private string base64Encoded = string.Empty;
+    private string base64UrlEncoded = string.Empty;
 
     private void OnBase64CleartextInputChanged(ChangeEventArgs args)
     {
@@ -29,7 +34,8 @@
             return;
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(value);
-        base64Encoded = System.Convert.ToBase64String(bytes);
+        base64Encoded = Convert.ToBase64String(bytes);
+        base64UrlEncoded = base64Encoded.Replace('+', '-').Replace('/', '_').TrimEnd('=');
     }
 
     private void OnBase64EncodedInputChanged(ChangeEventArgs args)
@@ -40,13 +46,36 @@
         }
         var approxDecodedLength = value.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
         Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
-        if (System.Convert.TryFromBase64String(value, buffer, out var bytesWritten))
+        if (Convert.TryFromBase64String(value, buffer, out var bytesWritten))
         {
             base64Cleartext = System.Text.Encoding.UTF8.GetString(buffer[..bytesWritten]);
+            base64UrlEncoded = value.Replace('+', '-').Replace('/', '_').TrimEnd('=');
         }
         else
         {
             base64Cleartext = "Invalid Base 64";
+            base64UrlEncoded = "Invalid Base 64";
+        }
+    }
+
+    private void OnBase64UrlEncodedInputChanged(ChangeEventArgs args)
+    {
+        if (args is not { Value: string value })
+        {
+            return;
+        }
+        var b64 = value.Replace('-', '+').Replace('_', '/').PadRight(value.Length + (4 - value.Length % 4) % 4, '=');
+        var approxDecodedLength = b64.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
+        Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
+        if (Convert.TryFromBase64String(b64, buffer, out var bytesWritten))
+        {
+            base64Cleartext = System.Text.Encoding.UTF8.GetString(buffer[..bytesWritten]);
+            base64Encoded = b64;
+        }
+        else
+        {
+            base64Cleartext = "Invalid URL Encoded Base 64";
+            base64Encoded = "Invalid URL Encoded Base 64";
         }
     }
 }
