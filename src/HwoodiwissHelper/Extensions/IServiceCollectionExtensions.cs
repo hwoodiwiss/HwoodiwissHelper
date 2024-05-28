@@ -160,15 +160,9 @@ public static class IServiceCollectionExtensions
         });
 
         // Add services to the container.
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        if (RuntimeFeature.IsDynamicCodeSupported)
+        if (!RuntimeFeature.IsDynamicCodeCompiled)
         {
-            services.AddEndpointsApiExplorer();
-            services.AddOpenApiDocument(opt =>
-            {
-                opt.Title = ApplicationMetadata.Name;
-                opt.Version = ApplicationMetadata.Version;
-            });
+            services.AddOpenApi();
         }
 
         services.AddTelemetry();

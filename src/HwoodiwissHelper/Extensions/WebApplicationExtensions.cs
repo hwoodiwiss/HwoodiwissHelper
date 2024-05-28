@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using HwoodiwissHelper.Endpoints;
+﻿using HwoodiwissHelper.Endpoints;
 using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Middleware;
 
@@ -12,19 +11,11 @@ public static class WebApplicationExtensions
         app.Use(UserAgentBlockMiddleware.Middleware);
         app.UseDefaultFiles();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment() && RuntimeFeature.IsDynamicCodeSupported)
-        {
-            app.UseOpenApi(cfg =>
-            {
-                cfg.Path = "/swagger/openapi.json";
-            });
-        }
-
         app.UseBlazorFrameworkFiles();
         app.UseHttpLogging();
         app.MapEndpoints(app.Environment);
 
+        app.MapOpenApi();
         app.UseStaticFiles();
         return app;
     }
