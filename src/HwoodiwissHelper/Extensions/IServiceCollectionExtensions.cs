@@ -159,11 +159,7 @@ public static class IServiceCollectionExtensions
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
 
-        // Add services to the container.
-        if (!RuntimeFeature.IsDynamicCodeCompiled)
-        {
-            services.AddOpenApi();
-        }
+        services.AddOpenApi();
 
         services.AddTelemetry();
 
