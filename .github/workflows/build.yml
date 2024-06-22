@@ -34,8 +34,8 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
 
-      - name: Install .NET Wasm workload
-        run: dotnet workload install wasm-tools
+      - name: Install .NET Workloads
+        run: dotnet workload restore
 
       - name: Build & Test
         shell: pwsh

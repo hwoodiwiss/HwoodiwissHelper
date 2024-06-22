@@ -13,6 +13,8 @@ $publishProjectPaths = @(
     "src/HwoodiwissHelper/HwoodiwissHelper.csproj"
 )
 
+dotnet workload restore
+
 foreach ($publishProjectPath in $publishProjectPaths) {
     Write-Host "Publishing $publishProjectPath for $RuntimeIdentifier"
     dotnet publish $publishProjectPaths -c Release -r $RuntimeIdentifier --self-contained /p:GenerateAotMetadata=true

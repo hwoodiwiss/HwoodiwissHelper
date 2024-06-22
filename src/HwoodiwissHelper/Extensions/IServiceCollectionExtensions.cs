@@ -159,7 +159,10 @@ public static class IServiceCollectionExtensions
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
 
-        services.AddOpenApi();
+        if (RuntimeFeature.IsDynamicCodeSupported)
+        {
+            services.AddOpenApi();
+        }
 
         services.AddTelemetry();
 
