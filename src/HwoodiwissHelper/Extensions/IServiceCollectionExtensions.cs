@@ -159,16 +159,9 @@ public static class IServiceCollectionExtensions
             return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
         });
 
-        // Add services to the container.
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         if (RuntimeFeature.IsDynamicCodeSupported)
         {
-            services.AddEndpointsApiExplorer();
-            services.AddOpenApiDocument(opt =>
-            {
-                opt.Title = ApplicationMetadata.Name;
-                opt.Version = ApplicationMetadata.Version;
-            });
+            services.AddOpenApi();
         }
 
         services.AddTelemetry();

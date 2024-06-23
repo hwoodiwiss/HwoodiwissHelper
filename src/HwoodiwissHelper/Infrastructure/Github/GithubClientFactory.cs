@@ -1,7 +1,7 @@
 ﻿using GitHub;
 using GitHub.App.Installations.Item.Access_tokens;
 using GitHub.Models;
-using GitHub.Octokit.Authentication;
+using GitHub.Octokit.Client.Authentication;
 using GitHub.Octokit.Client;
 
 namespace HwoodiwissHelper.Infrastructure.Github;
@@ -11,7 +11,7 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
     public GitHubClient CreateAppClient()
     {
         var jwt = authProvider.GetGithubJwt();
-        var adapter = RequestAdapter.Create(new TokenAuthenticationProvider(ApplicationMetadata.Name, jwt), client);
+        var adapter = RequestAdapter.Create(new TokenAuthProvider(new TokenProvider(jwt)), client);
         return new GitHubClient(adapter);
     }
 
@@ -33,7 +33,7 @@ public partial class GithubClientFactory(ILogger<GithubClientFactory> logger, Ht
 
             var adapter =
                 RequestAdapter.Create(
-                    new TokenAuthenticationProvider(ApplicationMetadata.Name, accessToken?.Token ?? string.Empty),
+                    new TokenAuthProvider(new TokenProvider(accessToken?.Token ?? string.Empty)),
                     client);
             return new Option<GitHubClient>.Some(new GitHubClient(adapter));
         }
