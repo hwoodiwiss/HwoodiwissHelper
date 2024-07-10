@@ -156,7 +156,7 @@ public static class IServiceCollectionExtensions
         services.AddKeyedTransient<ILogger>(KeyedService.AnyKey, (sp, key) =>
         {
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-            return loggerFactory.CreateLogger(key as string ?? (key.ToString() ?? "Unknown"));
+            return loggerFactory.CreateLogger(key is string keyString ? keyString : "Unknown");
         });
 
         if (RuntimeFeature.IsDynamicCodeSupported)

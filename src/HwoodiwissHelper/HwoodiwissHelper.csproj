@@ -3,6 +3,7 @@
     <RootNamespace>HwoodiwissHelper</RootNamespace>
     <IsAotCompatible>true</IsAotCompatible>
     <NoWarn>$(NoWarn);CA1716</NoWarn>
+    <WarningsNotAsErrors>IL2075;$(WarningsNotAsErrors)</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ArgumentativeFilters" />
