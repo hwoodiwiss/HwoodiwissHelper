@@ -45,7 +45,8 @@ public static class IServiceCollectionExtensions
             .ConfigureResource(TelemetryResourceBuilder)
             .WithMetrics(metrics =>
             {
-                metrics.AddAspNetCoreInstrumentation()
+                metrics.AddRuntimeInstrumentation()
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddMeter("Microsoft.AspNetCore.Hosting")
                     .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
@@ -68,7 +69,9 @@ public static class IServiceCollectionExtensions
                     new ("service.branch", ApplicationMetadata.GitBranch),
                     new ("service.version", ApplicationMetadata.Version),
                     new ("service.host", Environment.MachineName),
-                ]);
+                ])
+                .AddContainerDetector()
+                .AddHostDetector();
         }
 
         return services;
