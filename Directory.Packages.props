@@ -1,21 +1,21 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="ArgumentativeFilters" Version="0.0.12" />
-    <PackageVersion Include="Bogus" Version="35.5.1" />
+    <PackageVersion Include="Bogus" Version="35.6.0" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
     <PackageVersion Include="Dunet" Version="1.11.2" />
-    <PackageVersion Include="Github.Octokit.SDK" Version="0.0.21" />
+    <PackageVersion Include="Github.Octokit.SDK" Version="0.0.25" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
     <PackageVersion Include="JustEat.HttpClientInterception" Version="4.3.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0-preview.6.24328.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.6.24328.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0-preview.6.24328.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.6.24328.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.6.24328.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="9.0.0-preview.6.24353.1" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.6.24353.1" />
-    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.0.0-preview.6.24353.1" />
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.6.3" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0-preview.7.24406.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.7.24406.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0-preview.7.24406.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.7.24406.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.7.24406.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="9.0.0-preview.7.24412.10" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0-preview.7.24412.10" />
+    <PackageVersion Include="Microsoft.Extensions.Telemetry" Version="9.0.0-preview.7.24412.10" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="OpenTelemetry" Version="1.9.0" />
@@ -27,7 +27,7 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Resources.Container" Version="1.0.0-beta.9" />
     <PackageVersion Include="OpenTelemetry.Resources.Host" Version="0.1.0-beta.2" />
-    <PackageVersion Include="ReportGenerator" Version="5.3.7" />
+    <PackageVersion Include="ReportGenerator" Version="5.3.8" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="xunit" Version="2.9.0" />

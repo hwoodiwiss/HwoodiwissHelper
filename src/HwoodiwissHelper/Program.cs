@@ -8,7 +8,4 @@ await app
     .ConfigureRequestPipeline()
     .RunAsync();
 
-public partial class Program
-{
-
-}
+public partial class Program;

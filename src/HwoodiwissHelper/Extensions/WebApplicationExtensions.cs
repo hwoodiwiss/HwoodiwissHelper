@@ -16,10 +16,7 @@ public static class WebApplicationExtensions
         app.UseHttpLogging();
         app.MapEndpoints(app.Environment);
 
-        if (RuntimeFeature.IsDynamicCodeSupported)
-        {
-            app.MapOpenApi();
-        }
+        app.MapOpenApi();
 
         app.UseStaticFiles();
         return app;
