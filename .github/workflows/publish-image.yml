@@ -73,7 +73,7 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /p:StaticallyLinked=true /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.architecture == 'arm64' && inputs.set-latest && ';latest' || '' }}"'
+          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.architecture == 'arm64' && inputs.set-latest && ';latest' || '' }}"'
 
       - name: Publish Image (Non-AOT)
         if: matrix.architecture == 'arm64'
