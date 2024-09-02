@@ -48,4 +48,7 @@
     <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
     <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
   </PropertyGroup>
+  <ItemGroup Condition=" $(RuntimeIdentifier.StartsWith('linux')) ">
+    <NativeLibrary Include="$(IlcSdkPath)libz.a" />
+  </ItemGroup>
 </Project>

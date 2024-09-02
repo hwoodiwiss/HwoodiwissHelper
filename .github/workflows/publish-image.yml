@@ -6,6 +6,9 @@ on:
       tag-version:
         description: "The tag version to use for the image"
         required: true
+      code-ref:
+        description: "Which version of the code should be checked out?"
+        required: false
       set-latest:
         description: "Should the latest tag be set for this publish"
         type: boolean
@@ -42,6 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          ref: ${{ inputs.code-ref }}
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -74,7 +78,7 @@ jobs:
       - name: Publish Image (Non-AOT)
         if: matrix.architecture == 'arm64'
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer /p:PublishAot=false -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}-jit${{ inputs.set-latest == true && ';latest-jit'}}"'
+          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer /p:PublishAot=false -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}-jit${{ inputs.set-latest == true && ';latest-jit' || ''}}"'
 
   create-tag:
     permissions:
