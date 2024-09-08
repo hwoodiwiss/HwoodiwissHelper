@@ -70,6 +70,7 @@ public static class IServiceCollectionExtensions
                     new ("service.branch", ApplicationMetadata.GitBranch),
                     new ("service.version", ApplicationMetadata.Version),
                     new ("service.host", Environment.MachineName),
+                    new ("service.aot", !(RuntimeFeature.IsDynamicCodeSupported & RuntimeFeature.IsDynamicCodeCompiled)),
                 ])
                 .AddContainerDetector()
                 .AddHostDetector();
