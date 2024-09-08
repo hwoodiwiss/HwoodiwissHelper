@@ -12,40 +12,13 @@ public static class WebApplicationExtensions
         app.Use(UserAgentBlockMiddleware.Middleware);
         app.UseDefaultFiles();
 
-        app.UseBlazorFrameworkFiles();
         app.UseHttpLogging();
         app.MapEndpoints(app.Environment);
 
         app.MapOpenApi();
 
-        app.UseStaticFiles();
-        return app;
-    }
-
-    private static WebApplication UseStaticFiles(this WebApplication app)
-    {
-        var opts = new StaticFileOptions
-        {
-            FileProvider =
-                new PrecompressedStaticFileProvider(app.Environment,
-                    app.Services.GetRequiredService<IHttpContextAccessor>()),
-            OnPrepareResponse = ctx =>
-            {
-                var filename = ctx.File;
-                var contentEncoding = ctx.File.Name[^2..] switch
-                {
-                    "gz" => "gzip",
-                    "br" => "br",
-                    _ => null,
-                };
-                if (contentEncoding is not null)
-                {
-                    ctx.Context.Response.Headers["Content-Encoding"] = contentEncoding;
-                }
-            }
-        };
-        app.UseStaticFiles(opts);
-
+        app.MapStaticAssets();
+        app.MapFallbackToFile("/", "/index.html");
         return app;
     }
 
