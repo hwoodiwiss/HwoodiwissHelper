@@ -6,6 +6,10 @@ on:
       tag-version:
         description: "The tag version to use for the image"
         required: true
+      generate-binlog:
+        description: "Should we generate binlogs for the builds"
+        type: boolean
+        required: false
   push:
     tags:
       - "v*"
@@ -22,7 +26,7 @@ jobs:
     steps:
       - name: Get Tag Version
         id: get_tag
-        run: echo "tag-version=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag-version || github.ref_name }}" >> $GITHUB_OUTPUT
+        run: echo "tag-version=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag-version || github.ref_name }}" >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: [get-tag-version]
@@ -64,9 +68,16 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} \
+          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj ${{ inputs.generate-binlog && '-bl' || '' }} --os linux --arch ${{ matrix.architecture }} \
           /t:PublishContainer ${{ matrix.mode == 'jit' && '/p:PublishAot=false' || '' }} \
           -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.mode == 'jit' && '-jit' || '' }}${{ matrix.architecture == 'arm64' && ';latest' || '' }}${{ (matrix.architecture == 'arm64' && matrix.mode == 'jit') && '-jit' || '' }}"'
+
+      - name: Publish Binlog
+        if: inputs.generate-binlog == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: binlog-${{ matrix.architecture }}-${{ matrix.mode }}
+          path: ./msbuild.binlog
 
   create-tag:
     permissions:
