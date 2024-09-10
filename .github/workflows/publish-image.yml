@@ -66,7 +66,7 @@ jobs:
         run: |
           dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} \
           /t:PublishContainer ${{ matrix.mode == 'jit' && '/p:PublishAot=false' || '' }} \
-          -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.mode == 'aot' && '' || '-jit'}}${{ matrix.architecture == 'arm64' && ';latest' || '' }}${{ (matrix.architecture == 'arm64' && matrix.mode == 'aot') && '' || '-jit'}}"'
+          -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.mode == 'jit' && '-jit' || '' }}${{ matrix.architecture == 'arm64' && ';latest' || '' }}${{ (matrix.architecture == 'arm64' && matrix.mode == 'jit') && '-jit' || '' }}"'
 
   create-tag:
     permissions:
