@@ -28,9 +28,9 @@ jobs:
     needs: [get-tag-version]
     strategy:
       matrix:
-        architecture:
-          - arm64
-          - amd64
+        architecture: [arm64, amd64]
+        aot: [true, false]
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,7 +49,7 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
 
       - name: Install ARM64 native dependencies
-        if: matrix.architecture == 'arm64'
+        if: matrix.architecture == 'arm64' && matrix.aot == true
         run: |
           sudo dpkg --add-architecture arm64
           sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
@@ -64,12 +64,7 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.architecture == 'arm64' && ';latest' || '' }}"'
-
-      - name: Publish Image (Non-AOT)
-        if: matrix.architecture == 'arm64'
-        run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer /p:PublishAot=false -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}-jit;latest-jit"'
+          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch ${{ matrix.architecture }} /t:PublishContainer -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.aot && '-jit' || ''}}${{ matrix.architecture == 'arm64' && ';latest' || '' }}${{ (matrix.architecture == 'arm64' && matrix.aot) && '-jit' || ''}}"'
 
   create-tag:
     permissions:
