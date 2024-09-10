@@ -40,13 +40,26 @@ jobs:
         shell: pwsh
         run: .\build\build.ps1
 
-      - name: Build AOT (ARM64)
-        env:
-          DOCKER_BUILDKIT: 1
-        run: docker build -f ./build/Dockerfile.build-cross --platform linux/arm64 --output artifacts/aot .
+      - name: Install ARM64 native dependencies
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+          EOF'
+          sudo sed -i -e 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+          sudo sed -i -e 's/deb mirror/deb [arch=amd64] mirror/g' /etc/apt/sources.list
+          sudo apt update
+          sudo apt install --yes clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
+
+      - name: Publish AOT (ARM64)
+        shell: pwsh
+        run: |
+          .\build\publish-aot.ps1 -RuntimeIdentifier linux-arm64
 
       - name: Publish AOT Build
         uses: actions/upload-artifact@v4
         with:
           name: publish-aot-arm64
-          path: ./artifacts/aot/publish/HwoodiwissHelper/release
+          path: ./artifacts/publish/HwoodiwissHelper/release_linux-arm64
