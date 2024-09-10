@@ -53,9 +53,10 @@ jobs:
           sudo apt update
           sudo apt install --yes clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
-      - name: Publish Image
+      - name: Publish AOT (ARM64)
+        shell: pwsh
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj --os linux --arch arm64
+          .\build\publish-aot.ps1 -RuntimeIdentifier linux-arm64
 
       - name: Publish AOT Build
         uses: actions/upload-artifact@v4
