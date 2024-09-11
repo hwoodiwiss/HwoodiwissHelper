@@ -40,7 +40,23 @@ jobs:
         shell: pwsh
         run: .\build\build.ps1
 
+  publish-aot:
+    strategy:
+      matrix:
+        architecture: [arm64, amd64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+
+      - name: Install .NET Workloads
+        run: dotnet workload restore
+
       - name: Install ARM64 native dependencies
+        if: ${{ matrix.architecture == 'arm64' }}
         run: |
           sudo dpkg --add-architecture arm64
           sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
@@ -53,13 +69,13 @@ jobs:
           sudo apt update
           sudo apt install --yes clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
-      - name: Publish AOT (ARM64)
+      - name: Publish AOT
         shell: pwsh
         run: |
-          .\build\publish-aot.ps1 -RuntimeIdentifier linux-arm64
+          .\build\publish-aot.ps1 -RuntimeIdentifier linux-${{ matrix.architecture }}
 
       - name: Publish AOT Build
         uses: actions/upload-artifact@v4
         with:
-          name: publish-aot-arm64
-          path: ./artifacts/publish/HwoodiwissHelper/release_linux-arm64
+          name: publish-aot-${{ matrix.architecture }}
+          path: ./artifacts/publish/HwoodiwissHelper/release_linux-${{ matrix.architecture == 'amd64' && 'x64' || matrix.architecture }}

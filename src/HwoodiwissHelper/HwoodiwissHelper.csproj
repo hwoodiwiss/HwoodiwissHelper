@@ -37,7 +37,6 @@
     <PublishAot>true</PublishAot>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
-    <UseSystemZlib>false</UseSystemZlib>
   </PropertyGroup>
   <PropertyGroup>
     <ContainerRegistry>ghcr.io</ContainerRegistry>
