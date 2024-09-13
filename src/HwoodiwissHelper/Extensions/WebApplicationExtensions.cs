@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using HwoodiwissHelper.Endpoints;
+using HwoodiwissHelper.Features.GitHub.Endpoints;
 using HwoodiwissHelper.Infrastructure;
 using HwoodiwissHelper.Middleware;
 
@@ -9,7 +10,7 @@ public static class WebApplicationExtensions
 {
     public static WebApplication ConfigureRequestPipeline(this WebApplication app)
     {
-        app.Use(UserAgentBlockMiddleware.Middleware);
+        app.UseMiddleware<UserAgentBlockMiddleware>();
         app.UseDefaultFiles();
 
         app.UseHttpLogging();
@@ -27,5 +28,5 @@ public static class WebApplicationExtensions
             .MapConfigurationEndpoints(environment)
             .MapHealthEndpoints()
             .MapSurpriseEndpoints()
-            .MapGithubEndpoints();
+            .MapGitHubEndpoints();
 }

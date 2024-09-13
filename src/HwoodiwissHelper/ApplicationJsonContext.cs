@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using HwoodiwissHelper.Events.Github;
+using HwoodiwissHelper.Features.GitHub.Events;
 
 namespace HwoodiwissHelper;
 

@@ -1,22 +1,15 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Events.Github;
-using HwoodiwissHelper.Handlers;
-using HwoodiwissHelper.Handlers.Github;
-using HwoodiwissHelper.Infrastructure.Github;
+using HwoodiwissHelper.Features.GitHub.Extension;
 using HwoodiwissHelper.Middleware;
-using HwoodiwissHelper.Services;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using WorkflowCompleteHandler = HwoodiwissHelper.Handlers.Github.WorkflowCompleteHandler;
 
 namespace HwoodiwissHelper.Extensions;
 
@@ -98,18 +91,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-
-    public static IServiceCollection ConfigureGithubServices(this IServiceCollection services)
-    {
-        services.AddSingleton<IGithubSignatureValidator, GithubSignatureValidator>();
-        services.AddSingleton<IGithubAppAuthProvider, GithubAppAuthProvider>();
-        services.AddScoped<IGithubClientFactory, GithubClientFactory>();
-        services.AddScoped<IGithubService, GithubService>();
-        services.AddGithubWebhookHandlers();
-
-        return services;
-    }
-
+    
     public static IServiceCollection ConfigureJsonOptions(this IServiceCollection services, Action<JsonOptions> configureOptions)
     {
         services.ConfigureHttpJsonOptions(configureOptions);
@@ -129,24 +111,6 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-
-    private static IServiceCollection AddGithubWebhookHandlers(this IServiceCollection services)
-    {
-        services.AddGithubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
-        services.AddGithubEventHandler<PullRequestOpenedHandler, PullRequest.Opened>();
-        services.AddGithubEventHandler<PullRequestSynchronizeHandler, PullRequest.Synchronize>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddGithubEventHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler, TEvent>(this IServiceCollection services)
-        where TEvent : GithubWebhookEvent
-        where THandler : GithubWebhookRequestHandler<TEvent>
-    {
-        services.AddKeyedScoped<IRequestHandler<GithubWebhookEvent>, THandler>(typeof(TEvent));
-        return services;
-    }
-
 
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfigurationRoot configurationRoot)
     {
@@ -183,7 +147,7 @@ public static class IServiceCollectionExtensions
             options.RequestHeaders.Add("X-Real-IP");
         });
 
-        services.ConfigureGithubServices();
+        services.AddGithubHandlerServices();
 
         return services;
     }
