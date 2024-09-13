@@ -123,7 +123,7 @@ public static class IServiceCollectionExtensions
         services.AddKeyedTransient(KeyedService.AnyKey, (sp, key) =>
         {
             var optionsSnapshot = sp.GetRequiredService<IOptionsSnapshot<JsonOptions>>();
-            var jsonOptions = optionsSnapshot.Get(key.ToString());
+            var jsonOptions = optionsSnapshot.Get(key?.ToString() ?? string.Empty);
             return jsonOptions;
         });
 
