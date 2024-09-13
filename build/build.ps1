@@ -75,7 +75,7 @@ $testProjectPaths = @(
 $packageProjectPaths = @(
 )
 
-dotnet workload restore
+& $dotnet workload restore
 
 foreach ($buildProjectPath in $buildProjectPaths) {
     & $dotnet build $buildProjectPath --configuration $Configuration

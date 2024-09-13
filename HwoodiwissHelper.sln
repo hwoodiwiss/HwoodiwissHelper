@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 		.github\dependabot.yml = .github\dependabot.yml
 		Directory.Build.targets = Directory.Build.targets
-		.dockerignore = .dockerignore
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HwoodiwissHelper", "src\HwoodiwissHelper\HwoodiwissHelper.csproj", "{5FACCCDC-4AB1-4A52-9987-3D49A52A68B4}"
@@ -39,8 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{00CC538C
 	ProjectSection(SolutionItems) = preProject
 		build\build.ps1 = build\build.ps1
 		build\publish-aot.ps1 = build\publish-aot.ps1
-		build\Dockerfile = build\Dockerfile
-		build\Dockerfile.build-cross = build\Dockerfile.build-cross
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HwoodiwissHelper.Tests.Integration", "tests\HwoodiwissHelper.Tests.Integration\HwoodiwissHelper.Tests.Integration.csproj", "{EEC0909B-ABCE-47BE-8FA1-42B9549F19C0}"
