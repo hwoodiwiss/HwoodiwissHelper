@@ -1,4 +1,5 @@
 ﻿using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -47,8 +48,8 @@ public class GitHubSignatureValidatorTests
 
     private static GitHubSignatureValidator CreateSut(string key)
     {
-        var mockOptionsMonitor = Substitute.For<IOptionsMonitor<GithubConfiguration>>();
-        mockOptionsMonitor.CurrentValue.Returns(new GithubConfiguration
+        var mockOptionsMonitor = Substitute.For<IOptionsMonitor<GitHubConfiguration>>();
+        mockOptionsMonitor.CurrentValue.Returns(new GitHubConfiguration
         {
             WebhookKey = key,
             EnableRequestLogging = false,

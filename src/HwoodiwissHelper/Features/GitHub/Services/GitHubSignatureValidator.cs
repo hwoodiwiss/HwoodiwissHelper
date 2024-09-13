@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Features.GitHub.Services;
@@ -10,7 +11,7 @@ public sealed class GitHubSignatureValidator : IGitHubSignatureValidator
 {
     private byte[] _keyBytes;
 
-    public GitHubSignatureValidator(IOptionsMonitor<GithubConfiguration> githubConfiguration)
+    public GitHubSignatureValidator(IOptionsMonitor<GitHubConfiguration> githubConfiguration)
     {
         _keyBytes = Encoding.UTF8.GetBytes(githubConfiguration.CurrentValue.WebhookKey);
         githubConfiguration.OnChange(value =>

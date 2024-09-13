@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
 using HwoodiwissHelper.Features.GitHub.Events.Models;
 using HwoodiwissHelper.Features.GitHub.Services;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Features.GitHub.Handlers;
 
-public sealed partial class PullRequestSynchronizeHandler(IGitHubService gitHubService, IOptions<GithubConfiguration> githubOptions, ILogger<PullRequestOpenedHandler> logger, ActivitySource activitySource) : Features.GitHub.Handlers.GithubWebhookRequestHandler<PullRequest.Synchronize>(logger, activitySource)
+public sealed partial class PullRequestSynchronizeHandler(IGitHubService gitHubService, IOptions<GitHubConfiguration> githubOptions, ILogger<PullRequestOpenedHandler> logger, ActivitySource activitySource) : Features.GitHub.Handlers.GithubWebhookRequestHandler<PullRequest.Synchronize>(logger, activitySource)
 {
     protected override async ValueTask<object?> HandleGithubEventAsync(PullRequest.Synchronize request)
     {

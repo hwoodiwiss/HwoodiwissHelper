@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Text;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Features.GitHub.Extension;
 using HwoodiwissHelper.Middleware;
@@ -18,16 +17,6 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions();
-        services.Configure<GithubConfiguration>(configuration.GetSection(GithubConfiguration.SectionName));
-        services.PostConfigure<GithubConfiguration>(config =>
-        {
-            var approxDecodedLength = config.AppPrivateKey.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
-            Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
-            if (Convert.TryFromBase64String(config.AppPrivateKey, buffer, out var bytesWritten))
-            {
-                config.AppPrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
-            }
-        });
         services.Configure<ApplicationConfiguration>(configuration);
 
         return services;
@@ -147,7 +136,7 @@ public static class IServiceCollectionExtensions
             options.RequestHeaders.Add("X-Real-IP");
         });
 
-        services.AddGithubHandlerServices();
+        services.ConfigureGitHubServices(configurationRoot);
 
         return services;
     }

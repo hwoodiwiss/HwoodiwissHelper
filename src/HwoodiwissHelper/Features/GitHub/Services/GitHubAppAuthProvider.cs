@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using HwoodiwissHelper.Configuration;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -7,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HwoodiwissHelper.Features.GitHub.Services;
 
-public sealed class GitHubAppAuthProvider(TimeProvider timeProvider, IOptionsMonitor<GithubConfiguration> githubConfiguration) : IGitHubAppAuthProvider
+public sealed class GitHubAppAuthProvider(TimeProvider timeProvider, IOptionsMonitor<GitHubConfiguration> githubConfiguration) : IGitHubAppAuthProvider
 {
     private TokenWithExpiration<JsonWebToken> _githubJwt = new(timeProvider, token => token.ValidTo.AddSeconds(-30));
 

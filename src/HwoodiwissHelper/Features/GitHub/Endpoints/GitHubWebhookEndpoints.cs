@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
 using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Extensions;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
+using HwoodiwissHelper.Features.GitHub.Filters;
 using HwoodiwissHelper.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using GithubSecretValidatorFilter = HwoodiwissHelper.Features.GitHub.Filters.GithubSecretValidatorFilter;
 
 namespace HwoodiwissHelper.Features.GitHub.Endpoints;
 
@@ -21,7 +22,7 @@ public static partial class GitHubWebhookEndpoints
                 [FromServices] IOptions<JsonOptions> jsonOptions,
                 HttpRequest request,
                 IServiceProvider serviceProvider,
-                IOptionsSnapshot<GithubConfiguration> githubConfiguration) =>
+                IOptionsSnapshot<GitHubConfiguration> githubConfiguration) =>
             {
                 using var _ = logger.BeginScope(new Dictionary<string, object>
                 {
@@ -45,7 +46,7 @@ public static partial class GitHubWebhookEndpoints
                 return await requestHandler.HandleAsync(githubEventBase);
             })
             .WithBufferedRequest()
-            .AddEndpointFilterFactory(GithubSecretValidatorFilter.Factory)
+            .AddEndpointFilterFactory(GitHubSecretValidatorFilter.Factory)
             .Produces(201);
 
         return builder;

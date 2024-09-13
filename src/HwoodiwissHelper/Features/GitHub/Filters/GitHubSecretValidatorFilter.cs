@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HwoodiwissHelper.Features.GitHub.Filters;
 
-public static partial class GithubSecretValidatorFilter
+public static partial class GitHubSecretValidatorFilter
 {
     [ArgumentativeFilter]
     private static async ValueTask<object?> ValidateGithubSecret(
         [FromServices] IGitHubSignatureValidator gitHubSignatureValidator,
-        [FromKeyedServices(nameof(GithubSecretValidatorFilter))] ILogger logger,
+        [FromKeyedServices(nameof(GitHubSecretValidatorFilter))] ILogger logger,
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
