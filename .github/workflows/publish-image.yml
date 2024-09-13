@@ -68,8 +68,8 @@ jobs:
 
       - name: Publish Image
         run: |
-          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj ${{ inputs.generate-binlog && '-bl' || '' }} --os linux --arch ${{ matrix.architecture }} \
-          /t:PublishContainer ${{ matrix.mode == 'jit' && '/p:PublishAot=false' || '' }} \
+          dotnet publish ./src/HwoodiwissHelper/HwoodiwissHelper.csproj ${{ inputs.generate-binlog && '-bl' || '' }} --self-contained --os linux --arch ${{ matrix.architecture }} \
+          /t:PublishContainer ${{ matrix.mode == 'jit' && '/p:PublishAot=false /p:PublishTrimmed=true' || '' }} \
           -p ContainerImageTags='"${{ needs.get-tag-version.outputs.tag-version }}-${{ matrix.architecture }}${{ matrix.mode == 'jit' && '-jit' || '' }}${{ matrix.architecture == 'arm64' && ';latest' || '' }}${{ (matrix.architecture == 'arm64' && matrix.mode == 'jit') && '-jit' || '' }}"'
 
       - name: Publish Binlog
