@@ -2,7 +2,8 @@
 
 namespace HwoodiwissHelper.Tests.Integration.Endpoints;
 
-public class HealthEndpointTests(IntegrationFixture fixture) : IClassFixture<IntegrationFixture>
+[Collection(IntegrationTestCollection.Name)]
+public class HealthEndpointTests(IntegrationFixture fixture)
 {
     private readonly HttpClient _client = fixture.CreateClient();
 

@@ -18,8 +18,16 @@ public static class WebApplicationExtensions
 
         app.MapOpenApi();
 
-        app.MapStaticAssets();
-        app.MapFallbackToFile("/", "/index.html");
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseStaticFiles();
+        }
+        else
+        {
+            app.MapStaticAssets();
+            app.MapFallbackToFile("/", "/index.html");
+        }
+
         return app;
     }
 

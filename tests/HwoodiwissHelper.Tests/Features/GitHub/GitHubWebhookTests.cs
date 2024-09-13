@@ -11,7 +11,8 @@ using HwoodiwissHelper.Tests.Integration.Extensions;
 
 namespace HwoodiwissHelper.Tests.Integration.Features.Github;
 
-public sealed class GitHubWebhookTests(IntegrationFixture fixture) : IClassFixture<IntegrationFixture>
+[Collection(IntegrationTestCollection.Name)]
+public sealed class GitHubWebhookTests(IntegrationFixture fixture)
 {
     private readonly HttpClient _client = fixture.CreateClient();
 

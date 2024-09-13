@@ -2,7 +2,8 @@
 
 namespace HwoodiwissHelper.Tests.Integration.Middleware;
 
-public class UserAgentBlockMiddlewareTests(IntegrationFixture fixture) : IClassFixture<IntegrationFixture>
+[Collection(IntegrationTestCollection.Name)]
+public class UserAgentBlockMiddlewareTests(IntegrationFixture fixture)
 {
     private readonly HttpClient _client = fixture.CreateClient();
 

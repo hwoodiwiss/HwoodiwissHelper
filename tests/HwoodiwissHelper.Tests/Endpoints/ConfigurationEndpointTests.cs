@@ -5,7 +5,8 @@ using HwoodiwissHelper.Tests.Integration.Assertions;
 
 namespace HwoodiwissHelper.Tests.Integration.Endpoints;
 
-public class ConfigurationEndpointTests(IntegrationFixture fixture) : IClassFixture<IntegrationFixture>
+[Collection(IntegrationTestCollection.Name)]
+public class ConfigurationEndpointTests(IntegrationFixture fixture)
 {
     private readonly HttpClient _client = fixture.CreateClient();
 
