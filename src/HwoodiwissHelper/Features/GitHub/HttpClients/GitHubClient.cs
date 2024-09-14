@@ -25,7 +25,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         request.Content = JsonContent.Create(reviewRequest, GitHubClientJsonSerializerContext.Default.SubmitReviewRequest);
         using var response = await httpClient.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             Log.FailedToApprovePullRequest(logger, pullRequestNumber, repoOwner, repoName, installationId, (int)response.StatusCode);
             return new Problem.Reason("Failed to approve pull request");
