@@ -6,3 +6,4 @@ $configurEnv = Join-Path $PSScriptRoot "build" "configure-env.ps1"
 & $configurEnv
 
 rider $PSScriptRoot
+ 
