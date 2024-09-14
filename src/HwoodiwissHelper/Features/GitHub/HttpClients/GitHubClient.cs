@@ -94,7 +94,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
     {
         var permissionsString = string.Join('_', permissions.Select(s => $"{s.Key}:{s.Value}"));
         var repositoriesString = repositories is not null ? $"_for_{string.Join('_', repositories)}" : "";
-        return $"installation_token_{installationId}_with_{permissions}{repositoriesString}";
+        return $"installation_token_{installationId}_with_{permissionsString}{repositoriesString}";
     }
 
     private static partial class Log
