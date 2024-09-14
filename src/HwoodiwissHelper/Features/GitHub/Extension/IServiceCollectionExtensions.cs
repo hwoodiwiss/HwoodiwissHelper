@@ -3,6 +3,7 @@ using System.Text;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
 using HwoodiwissHelper.Features.GitHub.Handlers;
+using HwoodiwissHelper.Features.GitHub.HttpClients;
 using HwoodiwissHelper.Features.GitHub.Services;
 using HwoodiwissHelper.Handlers;
 
@@ -28,6 +29,11 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IGitHubClientFactory, GitHubClientFactory>();
         services.AddScoped<IGitHubService, GitHubService>();
         services.AddGitHubWebhookHandlers();
+
+        services.AddHttpClient<GitHubClient>(cfg =>
+        {
+            cfg.BaseAddress = new Uri("https://api.github.com");
+        });
 
         return services;
     }

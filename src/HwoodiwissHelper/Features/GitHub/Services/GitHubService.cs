@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
-using GitHub;
-using GitHub.Models;
-using GitHub.Repos.Item.Item.Pulls.Item.Reviews;
+using HwoodiwissHelper.Features.GitHub.HttpClients;
 using Microsoft.Kiota.Abstractions;
 
 namespace HwoodiwissHelper.Features.GitHub.Services;
 
-public sealed partial class GitHubService(IGitHubClientFactory gitHubClientFactory, ActivitySource activitySource, ILogger<GitHubService> logger) : IGitHubService
+public sealed partial class GitHubService(IGitHubClient githubClient, ActivitySource activitySource, ILogger<GitHubService> logger) : IGitHubService
 {
 
     public async Task ApprovePullRequestAsync(string repoOwner, string repoName, int pullRequestNumber, int installationId)
@@ -14,19 +12,14 @@ public sealed partial class GitHubService(IGitHubClientFactory gitHubClientFacto
         using var activity = activitySource.StartActivity();
         activity?.SetTag("pullrequest.number", pullRequestNumber);
         activity?.SetTag("pullrequest.repo", $"{repoOwner}/{repoName}");
-
-        var permissions = new AppPermissions() { PullRequests = AppPermissions_pull_requests.Write };
-        var client = await gitHubClientFactory.CreateInstallationClient(installationId, permissions);
-
-        if (client is Option<GitHubClient>.None) return;
-
+        
         try
         {
-            await client.UnwrapSome().Value.Repos[repoOwner][repoName].Pulls[pullRequestNumber].Reviews.PostAsync(
-                new ReviewsPostRequestBody
+            await githubClient.CreatePullRequestReview(repoOwner, repoName, pullRequestNumber, installationId,
+                new SubmitReviewRequest
                 {
                     Body = "Automatically approving pull request",
-                    Event = ReviewsPostRequestBody_event.APPROVE,
+                    Event = SubmitReviewEvent.Approve,
                 });
         }
         catch (Exception error)
