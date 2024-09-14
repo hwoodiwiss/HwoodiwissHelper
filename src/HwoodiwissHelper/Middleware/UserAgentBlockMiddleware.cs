@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Middleware;
 
-public sealed partial class UserAgentBlockMiddleware : IDisposable
+public sealed partial class UserAgentBlockMiddleware : IMiddleware
 {
     private readonly ILogger<UserAgentBlockMiddleware> _logger;
     private ApplicationConfiguration _configuration;
@@ -16,7 +16,7 @@ public sealed partial class UserAgentBlockMiddleware : IDisposable
         _configurationSubscription = configuration.OnChange(config => _configuration = config);
     }
 
-    private async Task HandleAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var userAgent = context.Request.Headers.UserAgent.ToString();
         var disallowedUaParts = _configuration.BlockedUserAgents;
@@ -46,12 +46,6 @@ public sealed partial class UserAgentBlockMiddleware : IDisposable
     public void Dispose()
     {
         _configurationSubscription?.Dispose();
-    }
-
-    public static Task Middleware(HttpContext context, RequestDelegate next)
-    {
-        var middleware = context.RequestServices.GetRequiredService<UserAgentBlockMiddleware>();
-        return middleware.HandleAsync(context, next);
     }
 
     private static partial class Log
