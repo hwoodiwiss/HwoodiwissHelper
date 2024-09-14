@@ -21,46 +21,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-
-    public static IServiceCollection AddTelemetry(this IServiceCollection services)
-    {
-        services.AddOpenTelemetry()
-            .ConfigureResource(TelemetryResourceBuilder)
-            .WithMetrics(metrics =>
-            {
-                metrics.AddRuntimeInstrumentation()
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddMeter("Microsoft.AspNetCore.Hosting")
-                    .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-                    .AddMeter("Microsoft.AspNetCore.Diagnostics")
-                    .AddOtlpExporter();
-            })
-            .WithTracing(tracing =>
-            {
-                tracing.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter();
-            });
-
-        static void TelemetryResourceBuilder(ResourceBuilder resourceBuilder)
-        {
-            resourceBuilder
-                .AddService(ApplicationMetadata.Name)
-                .AddAttributes([
-                    new ("service.commit", ApplicationMetadata.GitCommit),
-                    new ("service.branch", ApplicationMetadata.GitBranch),
-                    new ("service.version", ApplicationMetadata.Version),
-                    new ("service.host", Environment.MachineName),
-                    new ("service.aot", !(RuntimeFeature.IsDynamicCodeSupported & RuntimeFeature.IsDynamicCodeCompiled)),
-                ])
-                .AddContainerDetector()
-                .AddHostDetector();
-        }
-
-        return services;
-    }
-
+    
     public static IServiceCollection ConfigureHttpClients(this IServiceCollection services)
     {
         services.ConfigureHttpClientDefaults(builder =>
@@ -121,12 +82,7 @@ public static class IServiceCollectionExtensions
 
         services.AddTelemetry();
 
-        services.AddHttpClient("Github", client =>
-        {
-            client.BaseAddress = new Uri("https://api.github.com");
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
-        });
-
+        services.AddMemoryCache();
         services.AddSingleton(configurationRoot);
         services.AddSingleton<UserAgentBlockMiddleware>();
         services.AddHttpLogging(options =>

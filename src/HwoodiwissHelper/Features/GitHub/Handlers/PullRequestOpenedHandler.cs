@@ -15,7 +15,7 @@ public sealed partial class PullRequestOpenedHandler(IGitHubService gitHubServic
         using var activity = ActivitySource.StartActivity("Handling Pull Request Opened Event");
         Actor pullRequestUser = request.PullRequest.User;
 
-        activity?.SetTag("pullrequest.repository.owner", request.Repository.Owner);
+        activity?.SetTag("pullrequest.repository.owner", request.Repository.Owner.Login);
         activity?.SetTag("pullrequest.repository.name", request.Repository.Name);
         activity?.SetTag("pullrequest.number", request.Number);
         activity?.SetTag("pullrequest.user", pullRequestUser.Name);
