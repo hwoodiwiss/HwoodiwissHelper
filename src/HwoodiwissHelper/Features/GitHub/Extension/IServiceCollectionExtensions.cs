@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using System.Text;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
@@ -29,9 +30,10 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IGitHubService, GitHubService>();
         services.AddGitHubWebhookHandlers();
 
-        services.AddHttpClient<IGitHubClient, GitHubClient>(cfg =>
+        services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
         {
-            cfg.BaseAddress = new Uri("https://api.github.com");
+            client.BaseAddress = new Uri("https://api.github.com");
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
         });
 
         return services;
