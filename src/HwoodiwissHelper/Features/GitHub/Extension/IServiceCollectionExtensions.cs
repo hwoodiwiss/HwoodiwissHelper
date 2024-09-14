@@ -26,11 +26,10 @@ public static class IServiceCollectionExtensions
         
         services.AddSingleton<IGitHubSignatureValidator, GitHubSignatureValidator>();
         services.AddSingleton<IGitHubAppAuthProvider, GitHubAppAuthProvider>();
-        services.AddScoped<IGitHubClientFactory, GitHubClientFactory>();
         services.AddScoped<IGitHubService, GitHubService>();
         services.AddGitHubWebhookHandlers();
 
-        services.AddHttpClient<GitHubClient>(cfg =>
+        services.AddHttpClient<IGitHubClient, GitHubClient>(cfg =>
         {
             cfg.BaseAddress = new Uri("https://api.github.com");
         });

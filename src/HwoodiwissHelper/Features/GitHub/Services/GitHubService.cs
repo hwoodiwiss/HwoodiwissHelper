@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using HwoodiwissHelper.Features.GitHub.HttpClients;
-using Microsoft.Kiota.Abstractions;
 
 namespace HwoodiwissHelper.Features.GitHub.Services;
 
@@ -25,10 +24,6 @@ public sealed partial class GitHubService(IGitHubClient githubClient, ActivitySo
         catch (Exception error)
         {
             activity?.SetTag("exception.type", error.GetType().Name);
-            if (error is ApiException apiException)
-            {
-                activity?.SetTag("exception.status-code", apiException.ResponseStatusCode);
-            }
             Log.FailedToApprovePullRequest(logger, pullRequestNumber, repoOwner, repoName, installationId);
         }
     }
