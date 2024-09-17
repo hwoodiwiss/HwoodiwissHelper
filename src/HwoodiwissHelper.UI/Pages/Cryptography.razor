@@ -1,5 +1,6 @@
 ﻿@page "/cryptography"
 @using System.Security.Cryptography
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Cryptography</PageTitle>
 
@@ -7,24 +8,29 @@
 
 <p><i>Cryptography is the practice and study of techniques for secure communication in the presence of adversarial behavior</i></p>
 
-<h2>Cryptographically Random String</h2>
+<h2>Generate Cryptographically Random String</h2>
 
 <div>
     <label for="bytes-length">Byte Length</label>
-    <input id="bytes-length-txt" type="number" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthText" />
-    <input id="bytes-length" type="range" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthSlider" />
+    <input class="form-control" id="bytes-length-txt" type="number" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthText" />
+    <input class="form-range" id="bytes-length" type="range" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthSlider" />
+    <textarea readonly id="encoded-crng-string" class="form-control" @bind="_randomString" @ref="_encodedStringOutput"></textarea>
 </div>
-<div>
-    <label for="base64-encoded">Random Bytes (b64)</label>
-    <textarea readonly id="base64-encoded" class="form-control" @bind="_randomString"></textarea>
-</div>
+
+<script>
+    function fitTextAreaToContent(element) {
+        element.style.height = "1px";
+        element.style.height = (25+element.scrollHeight)+"px";
+    }
+</script>
 
 @code {
     private int _bytesLengthText = 512;
     private int _bytesLengthSlider = 512;
     private string _randomString = GetNSecureBytes(512);
-
-    private void OnBytesLengthChanged(ChangeEventArgs args)
+    ElementReference _encodedStringOutput;
+    
+    private async Task OnBytesLengthChanged(ChangeEventArgs args)
     {
         if (args is not { Value: string valueString } || !int.TryParse(valueString, out var value))
         {
@@ -34,6 +40,8 @@
         _bytesLengthSlider = value;
         _bytesLengthText = value;
         _randomString = GetNSecureBytes(value);
+        await Task.Delay(50);
+        await JsRuntime.InvokeVoidAsync("fitTextAreaToContent", _encodedStringOutput);
     }
 
     private static string GetNSecureBytes(int bytes)
