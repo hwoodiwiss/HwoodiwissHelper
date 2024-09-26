@@ -35,6 +35,8 @@ public static class ConfigurationEndpoints
             ["isDynamicCodeSupported"] = JsonValue.Create(RuntimeFeature.IsDynamicCodeSupported),
             ["isNativeAot"] = JsonValue.Create(!(RuntimeFeature.IsDynamicCodeSupported & RuntimeFeature.IsDynamicCodeCompiled)),
             ["isKubernetes"] = JsonValue.Create(ApplicationMetadata.IsKubernetes),
+            ["isUnreferencedCodeCompiledFlag"] = JsonValue.Create(AppContext.TryGetSwitch("System.Runtime.CompilerServices.EnableTrimAnalyzer", out bool isEnabled)),
+            ["isUnreferencedCodeCompiled"] = JsonValue.Create(!isEnabled),
         }));
 
         group.MapGet("/reload", ([FromServices] IConfigurationRoot config) =>
