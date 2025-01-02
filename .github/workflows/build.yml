@@ -60,12 +60,26 @@ jobs:
         run: |
           sudo dpkg --add-architecture arm64
           sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+
+          Types: deb
+          URIs: http://ports.ubuntu.com/ubuntu-ports/
+          Suites: noble
+          Components: main restricted
+          arch: arm64
+
+          Types: deb deb-src
+          URIs: http://ports.ubuntu.com/ubuntu-ports/
+          Suites: noble-updates
+          Components: main restricted
+          arch: arm64
+
+          Types: deb deb-src
+          URIs: http://ports.ubuntu.com/ubuntu-ports/
+          Suites: noble-backports
+          Components: main restricted universe multiverse
+          arch: arm64
+
           EOF'
-          sudo sed -i -e 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
-          sudo sed -i -e 's/deb mirror/deb [arch=amd64] mirror/g' /etc/apt/sources.list
           sudo apt update
           sudo apt install --yes clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
