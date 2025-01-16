@@ -62,7 +62,7 @@ jobs:
         mode: [aot, jit]
       fail-fast: false
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.architecture == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,49 +79,6 @@ jobs:
       - name: Login to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u hwoodiwiss --password-stdin
-
-      - name: Install ARM64 native dependencies
-        if: matrix.architecture == 'arm64' && matrix.mode == 'aot'
-        run: |
-          apt_sources=/etc/apt/sources.list.d/ubuntu.sources
-          codename=$(lsb_release -c | awk '{print $2}')
-          sudo dpkg --add-architecture arm64
-          sudo bash -c "cat > ${apt_sources} <<EOF
-
-          Types: deb
-          URIs: http://archive.ubuntu.com/ubuntu/
-          Suites: ${codename}
-          Components: main restricted universe
-          Architectures: amd64
-
-          Types: deb
-          URIs: http://security.ubuntu.com/ubuntu/
-          Suites: ${codename}-security 
-          Components: main restricted universe
-          Architectures: amd64
-
-          Types: deb
-          URIs: http://archive.ubuntu.com/ubuntu/
-          Suites: ${codename}-updates
-          Components: main restricted universe
-          Architectures: amd64
-
-          Types: deb
-          URIs: http://ports.ubuntu.com/ubuntu-ports/
-          Suites: ${codename}
-          Components: main restricted multiverse universe
-          Architectures: arm64
-
-          Types: deb
-          URIs: http://ports.ubuntu.com/ubuntu-ports/
-          Suites: ${codename}-updates
-          Components: main restricted multiverse universe
-          Architectures: arm64
-          EOF"
-          sudo sed -i -e 's/deb http/deb [arch=amd64] http/g' "${apt_sources}"
-          sudo sed -i -e 's/deb mirror/deb [arch=amd64] mirror/g' "${apt_sources}"
-          sudo apt update
-          sudo apt install --yes clang llvm binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu zlib1g-dev:arm64
 
       - name: Publish Image
         run: |
