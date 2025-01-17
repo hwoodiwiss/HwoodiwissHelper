@@ -1,5 +1,27 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Primitives;
+@using System.Web
+@inject NavigationManager NavManager
 
 <PageTitle>Hwoodiwiss Helper</PageTitle>
 
 <h1>Hwoodiwiss Helper</h1>
+
+<div>
+
+</div>
+
+@code {
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryString = HttpUtility.ParseQueryString(uri.Query);
+        if(queryString["pageLink"] is { } pageName && !string.IsNullOrEmpty(pageName))
+        {
+            queryString.Remove("pageLink");
+            NavManager.NavigateTo($"/{pageName}?{queryString.ToString()}");
+        }
+        await base.OnInitializedAsync();
+    }
+}
