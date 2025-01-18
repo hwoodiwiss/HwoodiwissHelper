@@ -15,4 +15,10 @@ public sealed class GitHubConfiguration : INamedConfiguration
     public required string AppPrivateKey { get; set; }
 
     public required string[] AllowedBots { get; set; }
+
+    public required string ClientId { get; set; }
+
+    public required string ClientSecret { get; set; }
+
+    public required string[] AllowedRedirectHosts { get; set; }
 }
