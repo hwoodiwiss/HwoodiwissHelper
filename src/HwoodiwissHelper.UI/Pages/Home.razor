@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Microsoft.Extensions.Primitives;
 @using System.Web
 @inject NavigationManager NavManager
 
@@ -20,7 +19,7 @@
         if(queryString["pageLink"] is { } pageName && !string.IsNullOrEmpty(pageName))
         {
             queryString.Remove("pageLink");
-            NavManager.NavigateTo($"/{pageName}?{queryString.ToString()}");
+            NavManager.NavigateTo($"/{pageName}?{queryString}");
         }
         await base.OnInitializedAsync();
     }
