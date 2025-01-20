@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="ArgumentativeFilters" Version="0.0.12" />
     <PackageVersion Include="Bogus" Version="35.6.1" />
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.3" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="Dunet" Version="1.11.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
     <PackageVersion Include="JustEat.HttpClientInterception" Version="5.0.0" />
