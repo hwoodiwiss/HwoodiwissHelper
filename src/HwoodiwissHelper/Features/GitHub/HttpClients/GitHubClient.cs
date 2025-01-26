@@ -1,11 +1,13 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
-public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger) : IGitHubClient
+public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger, IOptions<GitHubConfiguration> githubOptions) : IGitHubClient
 {
     public async Task<Result<Unit>> CreatePullRequestReview(string repoOwner, string repoName, int pullRequestNumber, int installationId, SubmitReviewRequest reviewRequest)
     {
@@ -32,6 +34,37 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         }
 
         return Unit.Instance;
+    }
+    
+    public async Task<Result<AuthorizeUserResponse>> AuthorizeUserAsync(string code, string redirectUri)
+    {
+        var requestContent = new AuthorizeUserRequest
+        {
+            ClientId = githubOptions.Value.ClientId,
+            ClientSecret = githubOptions.Value.ClientSecret,
+            Code = code,
+            RedirectUri = redirectUri,
+        };
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
+        httpRequest.Headers.Accept.Add(new("application/json"));
+        httpRequest.Content = JsonContent.Create(requestContent, GitHubClientJsonSerializerContext.Default.AuthorizeUserRequest);
+
+        using var response = await httpClient.SendAsync(httpRequest);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            Log.FailedToAuthorizeUser(logger, (int)response.StatusCode);
+            return new Problem.Reason("Failed to authorize user");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
+
+        if (result is null)
+        {
+            return new Problem.Reason("Failed to authorize user");
+        }
+
+        return result;
     }
 
     private async Task<string> GetInstallationToken(int installationId, Dictionary<InstallationScope, InstallationOperation> permissions, string[]? repositories)
@@ -101,6 +134,9 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
     {
         [LoggerMessage(LogLevel.Information, "Requesting new Installation access token for {InstallationId}")]
         public static partial void RefreshingInstallationToken(ILogger logger, long installationId);
+        
+        [LoggerMessage(LogLevel.Information, "Failed to authorize user sign-in with status {httpStatusCode}")]
+        public static partial void FailedToAuthorizeUser(ILogger logger, int httpStatusCode);
 
         [LoggerMessage(LogLevel.Error, "Installation token request for {InstallationId} failed with Status {StatusCode} and Response {ResponseContent}")]
         public static partial void InstallationsTokenRequestFailed(ILogger logger, long installationId, int statusCode, string responseContent);

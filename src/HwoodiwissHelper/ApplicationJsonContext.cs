@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using HwoodiwissHelper.Features.GitHub.Events;
+using HwoodiwissHelper.Features.GitHub.HttpClients;
 
 namespace HwoodiwissHelper;
 
@@ -10,5 +11,6 @@ namespace HwoodiwissHelper;
 [JsonSerializable(typeof(Dictionary<string, string>))]
 [JsonSerializable(typeof(WorkflowRun))]
 [JsonSerializable(typeof(PullRequest))]
+[JsonSerializable(typeof(AuthorizeUserResponse))]
 public partial class ApplicationJsonContext : JsonSerializerContext;
 
