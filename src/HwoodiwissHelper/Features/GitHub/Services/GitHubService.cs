@@ -5,7 +5,6 @@ namespace HwoodiwissHelper.Features.GitHub.Services;
 
 public sealed partial class GitHubService(IGitHubClient githubClient, ActivitySource activitySource, ILogger<GitHubService> logger) : IGitHubService
 {
-
     public async Task ApprovePullRequestAsync(string repoOwner, string repoName, int pullRequestNumber, int installationId)
     {
         using var activity = activitySource.StartActivity();
