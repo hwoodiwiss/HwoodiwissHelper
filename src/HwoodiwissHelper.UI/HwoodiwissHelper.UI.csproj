@@ -14,6 +14,17 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.WebUtilities">
+      <HintPath>c:\program files\dotnet\shared\Microsoft.AspNetCore.App\9.0.1\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\GitHubForkList.razor" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,37 @@
+﻿@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Models
+@inject GitHubClient GitHubClient
+
+<h3>GitHubForkList</h3>
+
+<p>Hey @User?.Login.</p>
+
+@if (Forks is not null)
+{
+    @foreach (var fork in Forks!)
+    {
+        <div>
+            <p>@fork.Name</p>
+        </div>
+    }
+}
+else
+{
+    <h2>Loading fork list...</h2>
+}
+
+@code {
+    [Parameter]
+    public string? GitHubToken { get; set; }
+    
+    private User? User { get; set; }
+    private Repository[]? Forks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ArgumentException.ThrowIfNullOrEmpty(GitHubToken);
+        
+        User = await GitHubClient.GetUserInfo(GitHubToken);
+        Forks = await GitHubClient.GetUserForks(User.Login, GitHubToken);
+    }
+}

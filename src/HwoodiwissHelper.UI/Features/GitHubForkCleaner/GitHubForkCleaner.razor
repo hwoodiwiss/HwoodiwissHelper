@@ -1,0 +1,76 @@
+﻿@page "/fork-cleaner"
+@using System.Diagnostics.CodeAnalysis
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Models
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using Microsoft.AspNetCore.WebUtilities
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Components
+@inject IWebAssemblyHostEnvironment HostEnvironment
+@inject IJSRuntime JsRuntime
+@inject GitHubClient GitHubClient
+
+<PageTitle>Fork Cleaner</PageTitle>
+
+<h1>Fork Cleaner</h1>
+
+<p>Tired of having repo forks gather dust?</p>
+
+@if (IsAuthenticated)
+{
+    <GitHubForkList GitHubToken="@GitHubToken" />
+}
+else
+{
+    <div class="row">
+        <a href="@LoginUri">
+            <button>Login With GitHub</button>
+        </a>
+    </div>
+}
+
+@code {
+
+    private string? LoginUri { get; set; }
+
+    [MemberNotNullWhen(false, nameof(LoginUri))]
+    [MemberNotNullWhen(true, nameof(GitHubToken))]
+    private bool IsAuthenticated => GitHubToken is not null;
+
+    private string? GitHubToken { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GitHubToken = await JsRuntime.InvokeAsync<string?>("get_github_token");
+
+        if (!IsAuthenticated)
+        {
+            LoginUri = CalculateLoginUri();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private string CalculateLoginUri()
+    {
+        var callbackUriQuery = new Dictionary<string, string?>();
+        var loginUriQuery = new Dictionary<string, string?>();
+        string? loginUriBase;
+        
+        if (HostEnvironment.IsDevelopment())
+        {
+            loginUriBase = "http://localhost:8080";
+            callbackUriQuery.Add("redirectUri", "http://localhost:5238?pageLink=fork-cleaner");
+        }
+        else
+        {
+            loginUriBase = HostEnvironment.BaseAddress;
+            callbackUriQuery.Add("redirectUri", $"{HostEnvironment.BaseAddress}?pageLink=fork-cleaner");
+        }
+        
+        loginUriQuery.Add("redirectUri", QueryHelpers.AddQueryString($"{loginUriBase}/github/login/callback", callbackUriQuery));
+
+        var loginUriBuilder = QueryHelpers.AddQueryString($"{loginUriBase}/github/login", loginUriQuery);
+        
+        return loginUriBuilder;
+    }
+}

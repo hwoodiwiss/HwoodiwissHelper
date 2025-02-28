@@ -10,6 +10,7 @@ using HwoodiwissHelper.Features.GitHub.HttpClients;
 using HwoodiwissHelper.Handlers;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Features.GitHub.Endpoints;
@@ -108,15 +109,16 @@ public static partial class GitHubEndpoints
 
         var clientId = githubConfiguration.Value.ClientId;
 
-        var authorizeQs = HttpUtility.ParseQueryString(string.Empty);
-        authorizeQs.Add("client_id", clientId);
-        authorizeQs.Add("redirect_uri", redirectUri);
-        var authorizeUrl = new UriBuilder("https://github.com/login/oauth/authorize");
-        authorizeUrl.Query = authorizeQs.ToString();
+        var authorizeQs = new Dictionary<string, string?>
+        {
+            ["client_id"] = clientId,
+            ["redirect_uri"] = redirectUri,
+        };
+        var authorizeUrl = QueryHelpers.AddQueryString("https://github.com/login/oauth/authorize", authorizeQs);
 
-        return TypedResults.Redirect(authorizeUrl.ToString());
+        return TypedResults.Redirect(authorizeUrl);
     }
-
+    
     private static bool TryValidateRedirectUri(string redirectUri, string[] allowedRedirectHosts, [NotNullWhen(true)] out Uri? validateRedirectUri)
     {
         validateRedirectUri = null;
@@ -165,18 +167,24 @@ public static partial class GitHubEndpoints
 
     private static RedirectHttpResult RedirectOnAuthSuccess(HttpResponse response, AuthorizeUserResponse authResponse, Uri redirectUri, IHostEnvironment environment)
     {
-        var cookieDomain = new StringBuilder(redirectUri.Host);
-        if (redirectUri.Port != 80 && redirectUri.Port != 443)
-        {
-            cookieDomain.Append(':').Append(redirectUri.Port);
-        }
         var authCookieOptions = new CookieOptions
         {
-            Domain = cookieDomain.ToString(),
             HttpOnly = false,
             Secure = environment.IsProduction(),
             Expires = DateTimeOffset.UtcNow.AddDays(180),
         };
+
+        if (!redirectUri.IsLoopback)
+        {
+            var cookieDomain = new StringBuilder(redirectUri.Host);
+            if (redirectUri.Port != 80 && redirectUri.Port != 443)
+            {
+                cookieDomain.Append(':').Append(redirectUri.Port);
+            }
+            
+            authCookieOptions.Domain = cookieDomain.ToString();
+        }
+        
         response.Cookies.Append("github_token", authResponse.AccessToken, authCookieOptions);
 
         return TypedResults.Redirect(redirectUri.ToString());
