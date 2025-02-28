@@ -10,7 +10,7 @@
     <NoWarn>$(NoWarn);CA2007;CA1515</NoWarn>
     <Nullable>enable</Nullable>
     <RepositoryType>git</RepositoryType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <UseArtifactsOutput>true</UseArtifactsOutput>
   </PropertyGroup>

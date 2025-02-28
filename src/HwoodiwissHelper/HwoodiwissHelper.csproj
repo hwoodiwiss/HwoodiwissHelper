@@ -38,6 +38,8 @@
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
   </PropertyGroup>
   <PropertyGroup>
+    <!-- HACK: Workaround for nightly aot images not being available -->
+    <ContainerBaseImage Condition=" '$(PublishAot)' == 'True' ">mcr.microsoft.com/dotnet/runtime-deps:10.0.0-preview.1-noble-chiseled-extra</ContainerBaseImage>
     <ContainerRegistry>ghcr.io</ContainerRegistry>
     <ContainerRepository>hwoodiwiss/hwoodiwiss-helper</ContainerRepository>
     <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
