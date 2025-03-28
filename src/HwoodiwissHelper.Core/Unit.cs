@@ -1,4 +1,4 @@
-﻿namespace HwoodiwissHelper;
+﻿namespace HwoodiwissHelper.Core;
 
 public sealed record Unit
 {

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
-using System.Web;
+using HwoodiwissHelper.Core;
 using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
@@ -160,7 +160,7 @@ public static partial class GitHubEndpoints
         
         return authResult switch
         {
-            Result<AuthorizeUserResponse>.Success { Value: {} resultValue } => RedirectOnAuthSuccess(response, resultValue, validateRedirectUri, environment),
+            Result<AuthorizeUserResponse, Problem>.Success { Value: {} resultValue } => RedirectOnAuthSuccess(response, resultValue, validateRedirectUri, environment),
             _ => TypedResults.BadRequest(),
         };
     }

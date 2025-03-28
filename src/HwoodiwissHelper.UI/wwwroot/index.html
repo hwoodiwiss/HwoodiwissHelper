@@ -13,6 +13,7 @@
 
   <body>
     <script>
+      const githubTokenCookieName = "github_token"; 
       function getCookie(cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -29,8 +30,17 @@
         return null;
       }
 
+      function deleteCookie(cookieName) {
+          const cookieValue = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie += cookieValue;
+      }
+
       function get_github_token() {
-        return getCookie("github_token");
+        return getCookie(githubTokenCookieName);
+      }
+
+      function clear_github_token() {
+          deleteCookie(githubTokenCookieName);
       }
     </script>
     <div id="app">

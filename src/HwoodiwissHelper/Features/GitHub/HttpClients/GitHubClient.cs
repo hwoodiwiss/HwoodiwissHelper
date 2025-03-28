@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using HwoodiwissHelper.Core;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,7 +10,7 @@ namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
 public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger, IOptions<GitHubConfiguration> githubOptions) : IGitHubClient
 {
-    public async Task<Result<Unit>> CreatePullRequestReview(string repoOwner, string repoName, int pullRequestNumber, int installationId, SubmitReviewRequest reviewRequest)
+    public async Task<Result<Unit, Problem>> CreatePullRequestReview(string repoOwner, string repoName, int pullRequestNumber, int installationId, SubmitReviewRequest reviewRequest)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, $"/repos/{repoOwner}/{repoName}/pulls/{pullRequestNumber}/reviews");
         request.Headers.Accept.Add(new("application/vnd.github+json"));
@@ -36,7 +37,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         return Unit.Instance;
     }
     
-    public async Task<Result<AuthorizeUserResponse>> AuthorizeUserAsync(string code, string redirectUri)
+    public async Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync(string code, string redirectUri)
     {
         var requestContent = new AuthorizeUserRequest
         {
@@ -73,7 +74,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         {
             var tokenResult = await RequestInstallationAccessToken(installationId, permissions, repositories);
 
-            if (tokenResult is not Result<InstallationTokenResponse>.Success { Value: {} tokenResponse })
+            if (tokenResult is not Result<InstallationTokenResponse, Problem>.Success { Value: {} tokenResponse })
             {
                 return entry.Value as string ?? string.Empty;
             }
@@ -84,7 +85,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         }) ?? string.Empty;
     }
 
-    private async Task<Result<InstallationTokenResponse>> RequestInstallationAccessToken(int installationId, Dictionary<InstallationScope, InstallationOperation> permissions, string[]? repositories)
+    private async Task<Result<InstallationTokenResponse, Problem>> RequestInstallationAccessToken(int installationId, Dictionary<InstallationScope, InstallationOperation> permissions, string[]? repositories)
     {
         try
         {

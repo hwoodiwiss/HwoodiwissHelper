@@ -33,8 +33,7 @@ public static class IServiceCollectionExtensions
 
             });
 
-            // Note - Disabled for now due to an issue with AOT compatibility
-            // builder.AddStandardResilienceHandler();
+            builder.AddStandardResilienceHandler();
         });
 
         services.AddHttpClient();

@@ -1,6 +1,10 @@
-﻿@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients
+﻿@using HwoodiwissHelper.Core
+@using HwoodiwissHelper.Core.Extensions
+@using HwoodiwissHelper.Core.Features.GitHub
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients
 @using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Models
 @inject GitHubClient GitHubClient
+@inject IJSRuntime JsRuntime
 
 <h3>GitHubForkList</h3>
 
@@ -11,7 +15,7 @@
     @foreach (var fork in Forks!)
     {
         <div>
-            <p>@fork.Name</p>
+            <p>@fork.FullName</p>
         </div>
     }
 }
@@ -30,8 +34,19 @@ else
     protected override async Task OnInitializedAsync()
     {
         ArgumentException.ThrowIfNullOrEmpty(GitHubToken);
-        
-        User = await GitHubClient.GetUserInfo(GitHubToken);
-        Forks = await GitHubClient.GetUserForks(User.Login, GitHubToken);
+
+        var setUserResult = await GitHubClient.GetUserInfo(GitHubToken)
+            .ThenAsync<User, User, GitHubError>(result => User = result)
+            .ThenAsync<User, Repository[], GitHubError>(async user => await GitHubClient.GetUserForks(user.Login, GitHubToken))
+            .ThenAsync<Repository[], Unit, GitHubError>(repos =>
+            {
+                Forks = repos;
+                return Unit.Instance;
+            });
+
+        if (setUserResult is Result<Unit, GitHubError>.Failure { Error: GitHubError.Unauthorized })
+        {
+            await JsRuntime.InvokeVoidAsync("clear_github_token");
+        }
     }
 }

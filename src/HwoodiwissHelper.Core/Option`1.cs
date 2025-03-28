@@ -1,6 +1,6 @@
 ﻿using Dunet;
 
-namespace HwoodiwissHelper;
+namespace HwoodiwissHelper.Core;
 
 [Union]
 public partial record Option<T>
