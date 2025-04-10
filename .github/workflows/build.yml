@@ -23,6 +23,6 @@ env:
 
 jobs:
   build-and-publish:
-    uses: hwoodiwiss/shared-workflows/.github/workflows/build.yml@add-shared-workflows
+    uses: hwoodiwiss/shared-workflows/.github/workflows/build-publish-aot.yml@add-shared-workflows
     with:
       project: "HwoodiwissHelper"

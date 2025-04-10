@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   build-images:
-    uses: hwoodiwiss/shared-workflows/.github/workflows/publish-containers.yml@add-shared-workflows
+    uses: hwoodiwiss/shared-workflows/.github/workflows/publish-containers-aot.yml@add-shared-workflows
     with:
       project: "HwoodiwissHelper"
       ghcr-username: "hwoodiwiss"
