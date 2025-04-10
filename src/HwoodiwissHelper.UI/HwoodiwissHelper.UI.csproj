@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Components\GitHubForkList.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HwoodiwissHelper.Core\HwoodiwissHelper.Core.csproj" />
   </ItemGroup>
 
