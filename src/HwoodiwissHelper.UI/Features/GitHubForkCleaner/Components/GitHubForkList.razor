@@ -14,8 +14,11 @@
 {
     @foreach (var fork in Forks!)
     {
-        <div>
-            <p>@fork.FullName</p>
+        <div class="row">
+            <div class="col-1">
+                <input type="checkbox" value="@fork.Id"/>
+            </div>
+            <p class="col-3">@fork.FullName</p>
         </div>
     }
 }
@@ -25,19 +28,15 @@ else
 }
 
 @code {
-    [Parameter]
-    public string? GitHubToken { get; set; }
-    
     private User? User { get; set; }
     private Repository[]? Forks { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        ArgumentException.ThrowIfNullOrEmpty(GitHubToken);
 
-        var setUserResult = await GitHubClient.GetUserInfo(GitHubToken)
+        var setUserResult = await GitHubClient.GetUserInfo()
             .ThenAsync<User, User, GitHubError>(result => User = result)
-            .ThenAsync<User, Repository[], GitHubError>(async user => await GitHubClient.GetUserForks(user.Login, GitHubToken))
+            .ThenAsync<User, Repository[], GitHubError>(async user => await GitHubClient.GetUserForks(user.Login))
             .ThenAsync<Repository[], Unit, GitHubError>(repos =>
             {
                 Forks = repos;

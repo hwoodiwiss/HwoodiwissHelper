@@ -5,42 +5,43 @@ using System.Text.Json.Serialization.Metadata;
 using HwoodiwissHelper.Core;
 using HwoodiwissHelper.Core.Extensions;
 using HwoodiwissHelper.Core.Features.GitHub;
+using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Authentication;
 using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Models;
 
 namespace HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients;
 
-public class GitHubClient(HttpClient httpClient)
+public class GitHubClient(HttpClient httpClient, GitHubAuthentication gitHubAuthentication)
 {
-    public async Task<Result<User, GitHubError>> GetUserInfo(string authToken)
+    private const int MaxPageSize = 100;
+    
+    public async Task<Result<User, GitHubError>> GetUserInfo()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "/user");
-        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await gitHubAuthentication.GetAccessToken());
 
         using var response = await httpClient.SendAsync(httpRequestMessage);
 
         return await HandleGitHubResponse(response, GitHubClientJsonSerializerContext.Default.User);
     }
 
-    public async Task<Result<Repository[], GitHubError>> GetUserForks(string userLogin, string authToken)
+    public async Task<Result<Repository[], GitHubError>> GetUserForks(string userLogin)
     {
-        List<Repository> repositories = new(100);
-        bool lastPageEmpty = false;
+        List<Repository> repositories = new(MaxPageSize);
+        bool seenFinalPage = false;
         
-        while(lastPageEmpty is false)
+        while(seenFinalPage is false)
         {
-            var page = repositories.Count / 100 + 1;
+            var page = repositories.Count / MaxPageSize + 1;
 
-            var result = await GetUserForkPage(userLogin, authToken, page);
+            var result = await GetUserForkPage(userLogin, await gitHubAuthentication.GetAccessToken(), page);
             if (result is Result<Repository[], GitHubError>.Success { Value: var pageRepositories})
             {
-                if(pageRepositories.Length == 0)
+                if(pageRepositories.Length < MaxPageSize)
                 {
-                    lastPageEmpty = true;
+                    seenFinalPage = true;
                 }
-                else
-                {
-                    repositories.AddRange(pageRepositories);
-                }
+                
+                repositories.AddRange(pageRepositories);
             }
             else
             {

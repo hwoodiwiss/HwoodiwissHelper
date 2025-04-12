@@ -9,16 +9,28 @@
     <WasmEnableSIMD>true</WasmEnableSIMD>
     <RunAOTCompilation>true</RunAOTCompilation>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <TypeScriptModuleKind>esnext</TypeScriptModuleKind>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HwoodiwissHelper.Core\HwoodiwissHelper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\js\cookieManager.ts" />
   </ItemGroup>
 
 </Project>

@@ -2,9 +2,11 @@
 using System.Text;
 using System.Text.Json;
 using HwoodiwissHelper.Core;
+using HwoodiwissHelper.Core.Features.Models;
 using HwoodiwissHelper.Extensions;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
+using HwoodiwissHelper.Features.GitHub.Extension;
 using HwoodiwissHelper.Features.GitHub.Filters;
 using HwoodiwissHelper.Features.GitHub.HttpClients;
 using HwoodiwissHelper.Handlers;
@@ -114,6 +116,9 @@ public static partial class GitHubEndpoints
             ["client_id"] = clientId,
             ["redirect_uri"] = redirectUri,
         };
+        
+        Log.LogLoginRedirectUri(logger, redirectUri);
+        
         var authorizeUrl = QueryHelpers.AddQueryString("https://github.com/login/oauth/authorize", authorizeQs);
 
         return TypedResults.Redirect(authorizeUrl);
@@ -147,8 +152,10 @@ public static partial class GitHubEndpoints
     {
         using var _ = logger.BeginScope(new Dictionary<string, object>
         {
-            ["GitHubEndpoint"] = "login",
+            ["GitHubEndpoint"] = "login-callback",
         });
+        
+        Log.LogCallbackRedirectUri(logger, redirectUri);
 
         var authResult = await gitHubClient.AuthorizeUserAsync(code, redirectUri);
         
@@ -184,14 +191,24 @@ public static partial class GitHubEndpoints
             
             authCookieOptions.Domain = cookieDomain.ToString();
         }
+
+        var userAuthDetails = authResponse.ToUserAuthDetails();
         
-        response.Cookies.Append("github_token", authResponse.AccessToken, authCookieOptions);
+        var authCookieB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(userAuthDetails, GitHubJsonSerializerContext.Default.UserAuthenticationDetails)));
+        
+        response.Cookies.Append("github_auth", authCookieB64, authCookieOptions);
 
         return TypedResults.Redirect(redirectUri.ToString());
     }
 
     private static partial class Log
     {
+        [LoggerMessage(LogLevel.Information, "Received login request with RedirectUri {RedirectUri}")]
+        public static partial void LogLoginRedirectUri(ILogger logger, string redirectUri);
+        
+        [LoggerMessage(LogLevel.Information, "Received login callback with RedirectUri {RedirectUri}")]
+        public static partial void LogCallbackRedirectUri(ILogger logger, string redirectUri);
+        
         [LoggerMessage(LogLevel.Warning, "Failed to deserialize github event {GithubEventBody}")]
         public static partial void DeserializationFailed(ILogger logger, string githubEventBody, Exception exception);
 

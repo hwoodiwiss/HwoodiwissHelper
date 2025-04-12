@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using HwoodiwissHelper.Core;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
@@ -58,14 +60,37 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
             return new Problem.Reason("Failed to authorize user");
         }
 
-        var result = await response.Content.ReadFromJsonAsync(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var responseDocument = JsonSerializer.Deserialize(responseString, ApplicationJsonContext.Default.JsonObject);
 
-        if (result is null)
+        if (responseDocument is null)
         {
+            Log.FailedToDeserializeResponse(logger, responseString);
+            return new Problem.Reason("Failed to deserialize response");
+        }
+        
+        if (responseDocument.TryGetPropertyValue("error", out var errorNode))
+        {
+            Log.ErrorAuthorizingUser(logger, errorNode?.ToString());
             return new Problem.Reason("Failed to authorize user");
         }
+        
+        try
+        {
+            var result = responseDocument.Deserialize(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
 
-        return result;
+            if (result is null)
+            {
+                return new Problem.Reason("Failed to authorize user");
+            }
+
+            return result;
+        }
+        catch (JsonException ex)
+        {
+            Log.FailedToDeserializeResponseException(logger, responseString, ex);
+            return new Problem.Exceptional(ex);
+        }
     }
 
     private async Task<string> GetInstallationToken(int installationId, Dictionary<InstallationScope, InstallationOperation> permissions, string[]? repositories)
@@ -138,6 +163,15 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         
         [LoggerMessage(LogLevel.Information, "Failed to authorize user sign-in with status {httpStatusCode}")]
         public static partial void FailedToAuthorizeUser(ILogger logger, int httpStatusCode);
+        
+        [LoggerMessage(LogLevel.Error, "Failed to authorize user sign-in with error {errorMessage}")]
+        public static partial void ErrorAuthorizingUser(ILogger logger, string? errorMessage);
+        
+        [LoggerMessage(LogLevel.Error, "Failed to deserialize response content {ResponseContent}")]
+        public static partial void FailedToDeserializeResponse(ILogger logger, string responseContent);        
+        
+        [LoggerMessage(LogLevel.Error, "Failed to deserialize response content {ResponseContent}")]
+        public static partial void FailedToDeserializeResponseException(ILogger logger, string responseContent, Exception ex);
 
         [LoggerMessage(LogLevel.Error, "Installation token request for {InstallationId} failed with Status {StatusCode} and Response {ResponseContent}")]
         public static partial void InstallationsTokenRequestFailed(ILogger logger, long installationId, int statusCode, string responseContent);

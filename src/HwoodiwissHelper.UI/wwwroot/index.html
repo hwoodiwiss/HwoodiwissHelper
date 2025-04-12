@@ -36,7 +36,8 @@
       }
 
       function get_github_token() {
-        return getCookie(githubTokenCookieName);
+        const cookieB64 = getCookie(githubTokenCookieName);
+        return atob(cookieB64);
       }
 
       function clear_github_token() {
