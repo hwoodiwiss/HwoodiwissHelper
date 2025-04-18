@@ -2,7 +2,7 @@
 
 namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
-public sealed class AuthorizeUserRequest
+public sealed class RefreshUserRequest
 {
     [JsonPropertyName("client_id")]
     public required string ClientId { get; init; }
@@ -10,9 +10,9 @@ public sealed class AuthorizeUserRequest
     [JsonPropertyName("client_secret")]
     public required string ClientSecret { get; init; }
 
-    [JsonPropertyName("code")]
-    public required string Code { get; init; }
+    [JsonPropertyName("refresh_token")]
+    public required string RefreshToken { get; init; }
 
-    [JsonPropertyName("redirect_uri")]
-    public string? RedirectUri { get; init; }
+    [JsonPropertyName("grant_type")]
+    public string GrantType { get; } = "refresh_token";
 }

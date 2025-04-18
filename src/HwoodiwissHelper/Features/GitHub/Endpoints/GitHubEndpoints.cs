@@ -21,7 +21,7 @@ public static partial class GitHubEndpoints
 {
     public static IEndpointRouteBuilder MapGitHubEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("/github");
+        RouteGroupBuilder group = builder.MapGroup("/github");
 
         group.MapPost("/webhook", async (
                 [FromKeyedServices(nameof(GitHubEndpoints))] ILogger logger,
@@ -31,7 +31,7 @@ public static partial class GitHubEndpoints
                 IServiceProvider serviceProvider,
                 IOptionsSnapshot<GitHubConfiguration> githubConfiguration) =>
             {
-                using var _ = logger.BeginScope(new Dictionary<string, object>
+                using IDisposable? _ = logger.BeginScope(new Dictionary<string, object>
                 {
                     ["GitHubEvent"] = githubEvent,
                     ["GitHubEndpoint"] = "webhook",
@@ -44,26 +44,29 @@ public static partial class GitHubEndpoints
                     request.Body.Seek(0, SeekOrigin.Begin);
                 }
 
-                var githubEventBase = await GetGithubEvent(logger, githubEvent, request.Body);
+                GitHubWebhookEvent? githubEventBase = await GetGithubEvent(logger, githubEvent, request.Body);
 
-                var requestHandler = serviceProvider.GetKeyedService<IRequestHandler<GitHubWebhookEvent>>(githubEventBase?.GetType());
+                IRequestHandler<GitHubWebhookEvent>? requestHandler = serviceProvider.GetKeyedService<IRequestHandler<GitHubWebhookEvent>>(githubEventBase?.GetType());
 
-                if (githubEventBase is null || requestHandler is null)
-                    return Results.NoContent();
-
-                return await requestHandler.HandleAsync(githubEventBase);
+                return githubEventBase is null || requestHandler is null
+                    ? Results.NoContent()
+                    : await requestHandler.HandleAsync(githubEventBase);
             })
             .WithBufferedRequest()
             .AddEndpointFilterFactory(GitHubSecretValidatorFilter.Factory)
             .Produces(201);
 
-        group.MapGet("/login", HandleLoginRequest)
+        group.MapGet("/auth/login", HandleLoginRequest)
             .Produces(302)
             .Produces(400);
-        
-        group.MapGet("/login/callback", HandleLoginCallback)
+
+        group.MapGet("/auth/login/callback", HandleLoginCallback)
             .Produces(302)
             .Produces(400);
+
+        group.MapGet("/auth/refresh", HandleRefresh)
+                .Produces(302)
+                .Produces(400);
 
         return builder;
     }
@@ -104,7 +107,7 @@ public static partial class GitHubEndpoints
         [FromKeyedServices(nameof(GitHubEndpoints))] ILogger logger,
         IOptionsSnapshot<GitHubConfiguration> githubConfiguration)
     {
-        using var _ = logger.BeginScope(new Dictionary<string, object>
+        using IDisposable? _ = logger.BeginScope(new Dictionary<string, object>
         {
             ["GitHubEndpoint"] = "login",
         });
@@ -116,18 +119,18 @@ public static partial class GitHubEndpoints
             ["client_id"] = clientId,
             ["redirect_uri"] = redirectUri,
         };
-        
+
         Log.LogLoginRedirectUri(logger, redirectUri);
-        
+
         var authorizeUrl = QueryHelpers.AddQueryString("https://github.com/login/oauth/authorize", authorizeQs);
 
         return TypedResults.Redirect(authorizeUrl);
     }
-    
+
     private static bool TryValidateRedirectUri(string redirectUri, string[] allowedRedirectHosts, [NotNullWhen(true)] out Uri? validateRedirectUri)
     {
         validateRedirectUri = null;
-        if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out var uri))
+        if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out Uri? uri))
         {
             return false;
         }
@@ -140,7 +143,7 @@ public static partial class GitHubEndpoints
 
         return false;
     }
-    
+
     private static async Task<IResult> HandleLoginCallback(
         [FromQuery] string redirectUri,
         [FromQuery] string code,
@@ -150,65 +153,114 @@ public static partial class GitHubEndpoints
         IOptionsSnapshot<GitHubConfiguration> githubConfiguration,
         IHostEnvironment environment)
     {
-        using var _ = logger.BeginScope(new Dictionary<string, object>
+        using IDisposable? _ = logger.BeginScope(new Dictionary<string, object>
         {
             ["GitHubEndpoint"] = "login-callback",
         });
-        
+
         Log.LogCallbackRedirectUri(logger, redirectUri);
 
-        var authResult = await gitHubClient.AuthorizeUserAsync(code, redirectUri);
-        
-        if (!TryValidateRedirectUri(redirectUri, githubConfiguration.Value.AllowedRedirectHosts, out var validateRedirectUri))
+        Result<AuthorizeUserResponse, Problem> authResult = await gitHubClient.AuthorizeUserAsync(code, redirectUri);
+
+        if (!TryValidateRedirectUri(redirectUri, githubConfiguration.Value.AllowedRedirectHosts, out Uri? validatedRedirectUri))
         {
             Log.DisallowedRedirectUri(logger, redirectUri);
             return TypedResults.BadRequest();
         }
-        
+
         return authResult switch
         {
-            Result<AuthorizeUserResponse, Problem>.Success { Value: {} resultValue } => RedirectOnAuthSuccess(response, resultValue, validateRedirectUri, environment),
+            Result<AuthorizeUserResponse, Problem>.Success { Value: { } resultValue } => RedirectOnAuthSuccess(response, resultValue, validatedRedirectUri, environment),
+            _ => TypedResults.BadRequest(),
+        };
+    }
+
+    private static async Task<IResult> HandleRefresh(
+        [FromQuery] string redirectUri,
+        HttpContext httpContext,
+        [FromKeyedServices(nameof(GitHubEndpoints))] ILogger logger,
+        IOptionsSnapshot<GitHubConfiguration> githubConfiguration,
+        IGitHubClient gitHubClient,
+        IHostEnvironment environment)
+    {
+        using IDisposable? _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            ["GitHubEndpoint"] = "refresh",
+        });
+
+        if (!TryValidateRedirectUri(redirectUri, githubConfiguration.Value.AllowedRedirectHosts, out Uri? validatedRedirectUri))
+        {
+            Log.DisallowedRedirectUri(logger, redirectUri);
+            return TypedResults.BadRequest();
+        }
+
+        if (!httpContext.Request.Cookies.TryGetValue("github_auth", out var authCookieValue)
+            || DeserializeAuthCookie(logger, authCookieValue) is not UserAuthenticationDetails userAuthDetails)
+        {
+            return TypedResults.BadRequest();
+        }
+
+        Result<AuthorizeUserResponse, Problem> authResult = await gitHubClient.RefreshUserAsync(userAuthDetails.RefreshToken);
+
+        return authResult switch
+        {
+            Result<AuthorizeUserResponse, Problem>.Success { Value: { } resultValue } => RedirectOnAuthSuccess(httpContext.Response, resultValue, validatedRedirectUri, environment),
             _ => TypedResults.BadRequest(),
         };
     }
 
     private static RedirectHttpResult RedirectOnAuthSuccess(HttpResponse response, AuthorizeUserResponse authResponse, Uri redirectUri, IHostEnvironment environment)
     {
+        UserAuthenticationDetails userAuthDetails = authResponse.ToUserAuthDetails();
+
         var authCookieOptions = new CookieOptions
         {
             HttpOnly = false,
             Secure = environment.IsProduction(),
-            Expires = DateTimeOffset.UtcNow.AddDays(180),
+            Expires = userAuthDetails.RefreshTokenExpiresAt,
         };
 
         if (!redirectUri.IsLoopback)
         {
             var cookieDomain = new StringBuilder(redirectUri.Host);
-            if (redirectUri.Port != 80 && redirectUri.Port != 443)
+            if (redirectUri.Port is not 80 and not 443)
             {
                 cookieDomain.Append(':').Append(redirectUri.Port);
             }
-            
+
             authCookieOptions.Domain = cookieDomain.ToString();
         }
 
-        var userAuthDetails = authResponse.ToUserAuthDetails();
-        
         var authCookieB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(userAuthDetails, GitHubJsonSerializerContext.Default.UserAuthenticationDetails)));
-        
+
         response.Cookies.Append("github_auth", authCookieB64, authCookieOptions);
 
         return TypedResults.Redirect(redirectUri.ToString());
+    }
+
+    private static UserAuthenticationDetails? DeserializeAuthCookie(ILogger logger, string authCookieValue)
+    {
+        try
+        {
+            var authCookieBytes = Convert.FromBase64String(authCookieValue);
+            var authCookieJson = Encoding.UTF8.GetString(authCookieBytes);
+            return JsonSerializer.Deserialize(authCookieJson, GitHubJsonSerializerContext.Default.UserAuthenticationDetails);
+        }
+        catch (Exception ex)
+        {
+            Log.DeserializationFailed(logger, authCookieValue, ex);
+            return null;
+        }
     }
 
     private static partial class Log
     {
         [LoggerMessage(LogLevel.Information, "Received login request with RedirectUri {RedirectUri}")]
         public static partial void LogLoginRedirectUri(ILogger logger, string redirectUri);
-        
+
         [LoggerMessage(LogLevel.Information, "Received login callback with RedirectUri {RedirectUri}")]
         public static partial void LogCallbackRedirectUri(ILogger logger, string redirectUri);
-        
+
         [LoggerMessage(LogLevel.Warning, "Failed to deserialize github event {GithubEventBody}")]
         public static partial void DeserializationFailed(ILogger logger, string githubEventBody, Exception exception);
 

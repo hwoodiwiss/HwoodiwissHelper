@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using HwoodiwissHelper.Core;
@@ -12,6 +13,11 @@ namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
 public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger, IOptions<GitHubConfiguration> githubOptions) : IGitHubClient
 {
+    private static readonly JsonSerializerOptions GitHubJsonSerializerOptions = new(JsonSerializerDefaults.General)
+    {
+        TypeInfoResolver = GitHubClientJsonSerializerContext.Default,
+    };
+
     public async Task<Result<Unit, Problem>> CreatePullRequestReview(string repoOwner, string repoName, int pullRequestNumber, int installationId, SubmitReviewRequest reviewRequest)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, $"/repos/{repoOwner}/{repoName}/pulls/{pullRequestNumber}/reviews");
@@ -28,7 +34,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", installationToken);
         request.Content = JsonContent.Create(reviewRequest, GitHubClientJsonSerializerContext.Default.SubmitReviewRequest);
-        using var response = await httpClient.SendAsync(request);
+        using HttpResponseMessage response = await httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -38,8 +44,8 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
 
         return Unit.Instance;
     }
-    
-    public async Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync(string code, string redirectUri)
+
+    public Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync(string code, string redirectUri)
     {
         var requestContent = new AuthorizeUserRequest
         {
@@ -48,11 +54,26 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
             Code = code,
             RedirectUri = redirectUri,
         };
-        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
-        httpRequest.Headers.Accept.Add(new("application/json"));
-        httpRequest.Content = JsonContent.Create(requestContent, GitHubClientJsonSerializerContext.Default.AuthorizeUserRequest);
+        return AuthorizeUserAsync(requestContent);
+    }
 
-        using var response = await httpClient.SendAsync(httpRequest);
+    public Task<Result<AuthorizeUserResponse, Problem>> RefreshUserAsync(string refreshToken)
+    {
+        var requestContent = new RefreshUserRequest
+        {
+            ClientId = githubOptions.Value.ClientId,
+            ClientSecret = githubOptions.Value.ClientSecret,
+            RefreshToken = refreshToken,
+        };
+        return AuthorizeUserAsync(requestContent);
+    }
+
+    private async Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync<T>(T request)
+    {
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
+        httpRequest.Content = new StringContent(GitHubJsonSerializerOptions.Serialize(request), new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
+
+        using HttpResponseMessage response = await httpClient.SendAsync(httpRequest);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -61,30 +82,27 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         }
 
         var responseString = await response.Content.ReadAsStringAsync();
-        var responseDocument = JsonSerializer.Deserialize(responseString, ApplicationJsonContext.Default.JsonObject);
+        JsonObject? responseDocument = JsonSerializer.Deserialize(responseString, ApplicationJsonContext.Default.JsonObject);
 
         if (responseDocument is null)
         {
             Log.FailedToDeserializeResponse(logger, responseString);
             return new Problem.Reason("Failed to deserialize response");
         }
-        
-        if (responseDocument.TryGetPropertyValue("error", out var errorNode))
+
+        if (responseDocument.TryGetPropertyValue("error", out JsonNode? errorNode))
         {
             Log.ErrorAuthorizingUser(logger, errorNode?.ToString());
             return new Problem.Reason("Failed to authorize user");
         }
-        
+
         try
         {
-            var result = responseDocument.Deserialize(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
+            AuthorizeUserResponse? result = responseDocument.Deserialize(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
 
-            if (result is null)
-            {
-                return new Problem.Reason("Failed to authorize user");
-            }
-
-            return result;
+            return result is null
+            ? new Problem.Reason("Failed to authorize user")
+            : result;
         }
         catch (JsonException ex)
         {
@@ -97,9 +115,9 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
     {
         return await cache.GetOrCreateAsync<string>(CreateCacheKey(installationId, permissions, repositories), async (entry) =>
         {
-            var tokenResult = await RequestInstallationAccessToken(installationId, permissions, repositories);
+            Result<InstallationTokenResponse, Problem> tokenResult = await RequestInstallationAccessToken(installationId, permissions, repositories);
 
-            if (tokenResult is not Result<InstallationTokenResponse, Problem>.Success { Value: {} tokenResponse })
+            if (tokenResult is not Result<InstallationTokenResponse, Problem>.Success { Value: { } tokenResponse })
             {
                 return entry.Value as string ?? string.Empty;
             }
@@ -125,7 +143,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
             }, GitHubClientJsonSerializerContext.Default.InstallationTokenRequest);
 
             Log.RefreshingInstallationToken(logger, installationId);
-            using var response = await httpClient.SendAsync(request);
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
 
             if (response.StatusCode != HttpStatusCode.Created)
             {
@@ -133,14 +151,11 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
                 return new Problem.Reason("Failed to create installation token.");
             }
 
-            var result = await response.Content.ReadFromJsonAsync(GitHubClientJsonSerializerContext.Default.InstallationTokenResponse);
+            InstallationTokenResponse? result = await response.Content.ReadFromJsonAsync(GitHubClientJsonSerializerContext.Default.InstallationTokenResponse);
 
-            if (result is null)
-            {
-                return new Problem.Reason("Installation token request succeeded but the response was null or could not be deserialized.");
-            }
-
-            return result;
+            return result is null
+                ? new Problem.Reason("Installation token request succeeded but the response was null or could not be deserialized.")
+                : result;
         }
         catch (Exception ex)
         {
@@ -160,16 +175,16 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
     {
         [LoggerMessage(LogLevel.Information, "Requesting new Installation access token for {InstallationId}")]
         public static partial void RefreshingInstallationToken(ILogger logger, long installationId);
-        
+
         [LoggerMessage(LogLevel.Information, "Failed to authorize user sign-in with status {httpStatusCode}")]
         public static partial void FailedToAuthorizeUser(ILogger logger, int httpStatusCode);
-        
+
         [LoggerMessage(LogLevel.Error, "Failed to authorize user sign-in with error {errorMessage}")]
         public static partial void ErrorAuthorizingUser(ILogger logger, string? errorMessage);
-        
+
         [LoggerMessage(LogLevel.Error, "Failed to deserialize response content {ResponseContent}")]
-        public static partial void FailedToDeserializeResponse(ILogger logger, string responseContent);        
-        
+        public static partial void FailedToDeserializeResponse(ILogger logger, string responseContent);
+
         [LoggerMessage(LogLevel.Error, "Failed to deserialize response content {ResponseContent}")]
         public static partial void FailedToDeserializeResponseException(ILogger logger, string responseContent, Exception ex);
 
