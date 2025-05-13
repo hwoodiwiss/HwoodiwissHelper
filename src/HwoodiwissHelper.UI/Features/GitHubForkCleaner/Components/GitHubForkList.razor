@@ -1,10 +1,15 @@
 ﻿@using HwoodiwissHelper.Core
 @using HwoodiwissHelper.Core.Extensions
 @using HwoodiwissHelper.Core.Features.GitHub
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Authentication
+@using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Extensions
 @using HwoodiwissHelper.UI.Features.GitHubForkCleaner.HttpClients
 @using HwoodiwissHelper.UI.Features.GitHubForkCleaner.Models
+@using HwoodiwissHelper.UI.Services
+@using Unit = HwoodiwissHelper.Core.Unit
 @inject GitHubClient GitHubClient
-@inject IJSRuntime JsRuntime
+@inject ICookieManager CookieManager
+@inject ILogger<GitHubForkList> Logger
 
 <h3>GitHubForkList</h3>
 
@@ -12,15 +17,18 @@
 
 @if (Forks is not null)
 {
-    @foreach (var fork in Forks!)
+    @foreach (var fork in Forks)
     {
         <div class="row">
             <div class="col-1">
-                <input type="checkbox" value="@fork.Id"/>
+                <input type="checkbox" @bind="@fork.Selected" @bind:after="UpdateSelected" />
             </div>
-            <p class="col-3">@fork.FullName</p>
+            <div class="col-3"><p>@fork.FullName</p></div>
         </div>
     }
+
+    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteForks">Delete?</Button>
+    <ConfirmDialog @ref="_confirmDeleteForksDialog"></ConfirmDialog>
 }
 else
 {
@@ -28,24 +36,63 @@ else
 }
 
 @code {
+    private ConfirmDialog _confirmDeleteForksDialog = new();
+
     private User? User { get; set; }
-    private Repository[]? Forks { get; set; }
+    private ForkViewModel[]? Forks { get; set; }
+    private ForkViewModel[] _selectedForks = [];
 
     protected override async Task OnInitializedAsync()
     {
-
         var setUserResult = await GitHubClient.GetUserInfo()
-            .ThenAsync<User, User, GitHubError>(result => User = result)
-            .ThenAsync<User, Repository[], GitHubError>(async user => await GitHubClient.GetUserForks(user.Login))
-            .ThenAsync<Repository[], Unit, GitHubError>(repos =>
-            {
-                Forks = repos;
-                return Unit.Instance;
-            });
+        .ThenAsync<User, User, GitHubError>(result => User = result)
+        .ThenAsync<User, Repository[], GitHubError>(async user => await GitHubClient.GetUserForks(user.Login))
+        .ThenAsync<Repository[], Unit, GitHubError>(repos =>
+        {
+            Forks = repos.Select(RepositoryExtensions.ToForkViewModel).ToArray();
+            return Unit.Instance;
+        });
 
         if (setUserResult is Result<Unit, GitHubError>.Failure { Error: GitHubError.Unauthorized })
         {
-            await JsRuntime.InvokeVoidAsync("clear_github_token");
+            await CookieManager.DeleteCookieAsync(GitHubAuthentication.GitHubAuthCookieName);
         }
+    }
+
+    private void UpdateSelected()
+    {
+        _selectedForks = Forks?.Where(w => w.Selected).ToArray() ?? [];
+    }
+
+    private async Task ConfirmDeleteForks()
+    {
+        Log.ConfirmForkDeletion(Logger, _selectedForks.Length);
+        if (_selectedForks is [])
+        {
+            return;
+        }
+        
+        var confirmed = await _confirmDeleteForksDialog.ShowAsync(
+            "Are you sure you want to delete the selected forks?",
+            $"This will delete: <ul>{string.Join('\n', _selectedForks.Where(w => w.Selected).Select(s => $"<li>{s.FullName}</li>") ?? [])}</ul>",
+            new ConfirmDialogOptions
+            {
+                NoButtonColor = ButtonColor.Secondary,
+                NoButtonText = "Cancel",
+                YesButtonColor = ButtonColor.Danger,
+                YesButtonText = "Confirm",
+            });
+
+        if (confirmed)
+        {
+            await Task.WhenAll(_selectedForks.Select(DeleteFork));
+        }
+    }
+
+    private async Task DeleteFork(ForkViewModel forkViewModel)
+    {
+        forkViewModel.IsDeleting = true;
+        await GitHubClient.DeleteUserFork(forkViewModel.Owner, forkViewModel.Name)
+            .ThenAsync<Unit, bool, GitHubError>((_) => forkViewModel.IsDeleted = true);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Text;
 using HwoodiwissHelper.Features.GitHub.Configuration;
@@ -17,11 +18,14 @@ public static class IServiceCollectionExtensions
         services.Configure<GitHubConfiguration>(configuration.GetSection(GitHubConfiguration.SectionName));
         services.PostConfigure<GitHubConfiguration>(config =>
         {
-            var approxDecodedLength = config.AppPrivateKey.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
-            Span<byte> buffer = approxDecodedLength < 2000 ? stackalloc byte[approxDecodedLength] : new byte[approxDecodedLength];
-            if (Convert.TryFromBase64String(config.AppPrivateKey, buffer, out var bytesWritten))
+            foreach (var appConfig in config.AppConfigurations.Values)
             {
-                config.AppPrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
+                var approxDecodedLength = appConfig.PrivateKey.Length / 4 * 3; // Base64 is roughly 4 bytes per 3 chars
+                Span<byte> buffer = ArrayPool<byte>.Shared.Rent(approxDecodedLength);
+                if (Convert.TryFromBase64String(appConfig.PrivateKey, buffer, out var bytesWritten))
+                {
+                    appConfig.PrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
+                }
             }
         });
         

@@ -9,6 +9,10 @@ insert_final_newline = true
 [*.{xml,csproj,props,targets,config,vsixmanifest,resx,yml}]
 indent_size = 2
 
+# Html files
+[*.html]
+indent_size = 2
+
 # C# files
 [*.cs]
 

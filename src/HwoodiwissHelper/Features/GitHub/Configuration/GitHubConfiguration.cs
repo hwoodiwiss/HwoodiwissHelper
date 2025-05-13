@@ -2,23 +2,19 @@
 
 namespace HwoodiwissHelper.Features.GitHub.Configuration;
 
-public sealed class GitHubConfiguration : INamedConfiguration
+public sealed class GitHubConfiguration
 {
     public static string SectionName => "Github";
 
     public required string WebhookKey { get; set; }
 
     public required bool EnableRequestLogging { get; set; }
-
-    public required string AppId { get; set; }
-
-    public required string AppPrivateKey { get; set; }
+    
+    public Dictionary<string, GitHubAppConfiguration> AppConfigurations { get; set; } = new();
+    
+    public required string HelperAppId { get; set; }
 
     public required string[] AllowedBots { get; set; }
-
-    public required string ClientId { get; set; }
-
-    public required string ClientSecret { get; set; }
 
     public required string[] AllowedRedirectHosts { get; set; }
 }

@@ -57,6 +57,22 @@ public class GitHubClient(HttpClient httpClient, GitHubAuthentication gitHubAuth
         
         return repositories.Where(w => w.Fork).ToArray();
     }
+
+    public async Task<Result<Unit, GitHubError>> DeleteUserFork(string user, string repository)
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/repos/{user}/{repository}");
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await gitHubAuthentication.GetAccessToken());
+        
+        using var response = await httpClient.SendAsync(httpRequestMessage);
+        
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK or HttpStatusCode.Accepted => Unit.Instance,
+            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => new GitHubError.Unauthorized(),
+            _ => new GitHubError.UnexpectedResponse("GitHub API returned an unexpected status code {response.StatusCode}",
+                await response.Content.ReadAsStringAsync())
+        };
+    }
     
     private async Task<Result<Repository[], GitHubError>> GetUserForkPage(string userLogin, string authToken, int page)
     {

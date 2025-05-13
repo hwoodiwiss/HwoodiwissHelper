@@ -118,6 +118,7 @@ public static partial class GitHubEndpoints
         {
             ["client_id"] = clientId,
             ["redirect_uri"] = redirectUri,
+            ["scopes"] = "delete_repo",
         };
 
         Log.LogLoginRedirectUri(logger, redirectUri);

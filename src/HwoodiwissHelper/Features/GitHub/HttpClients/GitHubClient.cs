@@ -72,6 +72,8 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
     {
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
         httpRequest.Content = new StringContent(GitHubJsonSerializerOptions.Serialize(request), new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
+        httpRequest.Headers.Accept.Add(new("application/vnd.github+json"));
+        httpRequest.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
 
         using HttpResponseMessage response = await httpClient.SendAsync(httpRequest);
 
@@ -82,22 +84,23 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         }
 
         var responseString = await response.Content.ReadAsStringAsync();
-        JsonObject? responseDocument = JsonSerializer.Deserialize(responseString, ApplicationJsonContext.Default.JsonObject);
-
-        if (responseDocument is null)
-        {
-            Log.FailedToDeserializeResponse(logger, responseString);
-            return new Problem.Reason("Failed to deserialize response");
-        }
-
-        if (responseDocument.TryGetPropertyValue("error", out JsonNode? errorNode))
-        {
-            Log.ErrorAuthorizingUser(logger, errorNode?.ToString());
-            return new Problem.Reason("Failed to authorize user");
-        }
 
         try
         {
+            JsonObject? responseDocument = JsonSerializer.Deserialize(responseString, ApplicationJsonContext.Default.JsonObject);
+
+            if (responseDocument is null)
+            {
+                Log.FailedToDeserializeResponse(logger, responseString);
+                return new Problem.Reason("Failed to deserialize response");
+            }
+
+            if (responseDocument.TryGetPropertyValue("error", out JsonNode? errorNode))
+            {
+                Log.ErrorAuthorizingUser(logger, errorNode?.ToString());
+                return new Problem.Reason("Failed to authorize user");
+            }
+
             AuthorizeUserResponse? result = responseDocument.Deserialize(GitHubClientJsonSerializerContext.Default.AuthorizeUserResponse);
 
             return result is null

@@ -5,45 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HwoodiwissHelper</title>
     <base href="/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.12.1/font/bootstrap-icons.min.css">
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="HwoodiwissHelper.UI.styles.css" rel="stylesheet" />
   </head>
 
   <body>
-    <script>
-      const githubTokenCookieName = "github_token"; 
-      function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(";");
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == " ") {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return null;
-      }
-
-      function deleteCookie(cookieName) {
-          const cookieValue = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-          document.cookie += cookieValue;
-      }
-
-      function get_github_token() {
-        const cookieB64 = getCookie(githubTokenCookieName);
-        return atob(cookieB64);
-      }
-
-      function clear_github_token() {
-          deleteCookie(githubTokenCookieName);
-      }
-    </script>
     <div id="app">
       <svg class="loading-progress">
         <circle r="40%" cx="50%" cy="50%" />
@@ -58,5 +28,7 @@
       <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
   </body>
 </html>

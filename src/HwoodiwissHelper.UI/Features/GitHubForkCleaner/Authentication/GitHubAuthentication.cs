@@ -14,9 +14,10 @@ public sealed partial class GitHubAuthentication(
     ICookieManager cookieManager,
     IWebAssemblyHostEnvironment hostEnvironment,
     NavigationManager navigationManager,
+    TimeProvider timeProvider,
     ILogger<GitHubAuthentication> logger)
 {
-    private const string GitHubAuthCookieName = "github_auth";
+    public const string GitHubAuthCookieName = "github_auth";
     private UserAuthenticationDetails? _gitHubAuthDetails;
 
     public async Task<string> GetAccessToken()
@@ -59,24 +60,34 @@ public sealed partial class GitHubAuthentication(
 
     private async Task EnsureAuthDetails(bool redirectToLogin)
     {
-        var authCookieBase64 = await cookieManager.GetCookie(GitHubAuthCookieName);
+        if (_gitHubAuthDetails is not null)
+        {
+            if (_gitHubAuthDetails.ExpiresAt < timeProvider.GetUtcNow().AddMinutes(-2))
+            {
+                RedirectToRefresh();
+            }
+
+            return;
+        }
+
+        var authCookieBase64 = await cookieManager.GetCookieAsync(GitHubAuthCookieName);
         if (string.IsNullOrEmpty(authCookieBase64))
         {
-            goto loginfailed;
+            goto login_failed;
         }
 
         var authCookieValue = Convert.FromBase64String(authCookieBase64);
         Log.LogGitHubAuthenticationCookie(logger, Encoding.UTF8.GetString(authCookieValue));
-        UserAuthenticationDetails? authDetails = JsonSerializer.Deserialize<UserAuthenticationDetails>(authCookieValue, GitHubJsonSerializerContext.Default.UserAuthenticationDetails);
+        UserAuthenticationDetails? authDetails = JsonSerializer.Deserialize(authCookieValue, GitHubJsonSerializerContext.Default.UserAuthenticationDetails);
         if (authDetails is null)
         {
-            goto loginfailed;
+            goto login_failed;
         }
 
-        _gitHubAuthDetails = authDetails!;
+        _gitHubAuthDetails = authDetails;
         return;
 
-    loginfailed:
+    login_failed:
         if (redirectToLogin)
         {
             RedirectToLogin();
@@ -118,11 +129,33 @@ public sealed partial class GitHubAuthentication(
         return loginUriBuilder;
     }
 
-    private string CalculateRefreshUri() =>
-        // TODO: Implement refresh redirect logic
-        string.Empty;
+    private string CalculateRefreshUri()
+    {
+        var refreshUriQuery = new Dictionary<string, string?>();
+        string? refreshUriBase;
 
-    public static partial class Log
+        if (hostEnvironment.IsDevelopment())
+        {
+            refreshUriBase = "http://localhost:8080";
+            refreshUriQuery.Add("redirectUri", "http://localhost:5238?pageLink=fork-cleaner");
+        }
+        else
+        {
+            refreshUriBase = hostEnvironment.BaseAddress;
+            refreshUriQuery.Add("redirectUri", $"{refreshUriBase}?pageLink=fork-cleaner");
+        }
+
+        var refreshUriWithPath = new UriBuilder(refreshUriBase)
+        {
+            Path = "/github/auth/refresh",
+        };
+
+        var refreshUri = QueryHelpers.AddQueryString(refreshUriWithPath.ToString(), refreshUriQuery);
+
+        return refreshUri;
+    }
+
+    private static partial class Log
     {
         [LoggerMessage(LogLevel.Debug, "GitHub authentication cookie value: {AuthenticationCookie}")]
         public static partial void LogGitHubAuthenticationCookie(ILogger logger, string authenticationCookie);
