@@ -2,14 +2,8 @@
 
 namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
-public sealed class AuthorizeUserRequest
+public sealed class AuthorizeUserRequest : ClientCredentialsRequest
 {
-    [JsonPropertyName("client_id")]
-    public required string ClientId { get; init; }
-
-    [JsonPropertyName("client_secret")]
-    public required string ClientSecret { get; init; }
-
     [JsonPropertyName("code")]
     public required string Code { get; init; }
 

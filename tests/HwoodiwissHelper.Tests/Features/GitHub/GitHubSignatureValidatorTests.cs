@@ -53,11 +53,18 @@ public class GitHubSignatureValidatorTests
         {
             WebhookKey = key,
             EnableRequestLogging = false,
-            AppId = string.Empty,
-            AppPrivateKey = string.Empty,
+            DefaultApplicationName = "HwoodiwissHelper",
+            AppConfigurations = new()
+            {
+                ["HwoodiwissHelper"] = new()
+                {
+                    AppId = string.Empty,
+                    PrivateKey = string.Empty,
+                    ClientId = string.Empty,
+                    ClientSecret = string.Empty,
+                },
+            },
             AllowedBots = [],
-            ClientId = string.Empty,
-            ClientSecret = string.Empty,
             AllowedRedirectHosts = []
         });
 

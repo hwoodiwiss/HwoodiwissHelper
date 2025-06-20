@@ -1,6 +1,4 @@
-﻿using HwoodiwissHelper.Configuration;
-
-namespace HwoodiwissHelper.Features.GitHub.Configuration;
+﻿namespace HwoodiwissHelper.Features.GitHub.Configuration;
 
 public sealed class GitHubConfiguration
 {
@@ -12,8 +10,8 @@ public sealed class GitHubConfiguration
     
     public Dictionary<string, GitHubAppConfiguration> AppConfigurations { get; set; } = new();
     
-    public required string HelperAppId { get; set; }
-
+    public required string DefaultApplicationName { get; set; }
+    
     public required string[] AllowedBots { get; set; }
 
     public required string[] AllowedRedirectHosts { get; set; }

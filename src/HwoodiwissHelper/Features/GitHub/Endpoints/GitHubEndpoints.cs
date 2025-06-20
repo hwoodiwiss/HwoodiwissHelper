@@ -58,15 +58,18 @@ public static partial class GitHubEndpoints
 
         group.MapGet("/auth/login", HandleLoginRequest)
             .Produces(302)
-            .Produces(400);
+            .Produces(400)
+            .ForForkCleaner();
 
         group.MapGet("/auth/login/callback", HandleLoginCallback)
             .Produces(302)
-            .Produces(400);
+            .Produces(400)
+            .ForForkCleaner();
 
         group.MapGet("/auth/refresh", HandleRefresh)
                 .Produces(302)
-                .Produces(400);
+                .Produces(400)
+                .ForForkCleaner();
 
         return builder;
     }
@@ -105,14 +108,14 @@ public static partial class GitHubEndpoints
     private static RedirectHttpResult HandleLoginRequest(
         [FromQuery] string redirectUri,
         [FromKeyedServices(nameof(GitHubEndpoints))] ILogger logger,
-        IOptionsSnapshot<GitHubConfiguration> githubConfiguration)
+        GitHubAppConfiguration appConfiguration)
     {
         using IDisposable? _ = logger.BeginScope(new Dictionary<string, object>
         {
             ["GitHubEndpoint"] = "login",
         });
 
-        var clientId = githubConfiguration.Value.ClientId;
+        var clientId = appConfiguration.ClientId;
 
         var authorizeQs = new Dictionary<string, string?>
         {
@@ -196,7 +199,7 @@ public static partial class GitHubEndpoints
         }
 
         if (!httpContext.Request.Cookies.TryGetValue("github_auth", out var authCookieValue)
-            || DeserializeAuthCookie(logger, authCookieValue) is not UserAuthenticationDetails userAuthDetails)
+            || DeserializeAuthCookie(logger, authCookieValue) is not { } userAuthDetails)
         {
             return TypedResults.BadRequest();
         }

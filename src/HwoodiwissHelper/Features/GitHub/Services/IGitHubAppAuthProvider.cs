@@ -2,5 +2,5 @@
 
 public interface IGitHubAppAuthProvider
 {
-    string GetGithubJwt();
+    string GetGithubJwt(string appId);
 }

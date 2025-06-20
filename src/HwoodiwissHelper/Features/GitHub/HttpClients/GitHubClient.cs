@@ -7,11 +7,10 @@ using HwoodiwissHelper.Core;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace HwoodiwissHelper.Features.GitHub.HttpClients;
 
-public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger, IOptions<GitHubConfiguration> githubOptions) : IGitHubClient
+public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthProvider authProvider, IMemoryCache cache, ILogger<GitHubClient> logger, GitHubAppConfiguration appConfiguration) : IGitHubClient
 {
     private static readonly JsonSerializerOptions GitHubJsonSerializerOptions = new(JsonSerializerDefaults.General)
     {
@@ -47,29 +46,28 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
 
     public Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync(string code, string redirectUri)
     {
-        var requestContent = new AuthorizeUserRequest
+        return AuthorizeUserAsync(static (state, config) => new AuthorizeUserRequest
         {
-            ClientId = githubOptions.Value.ClientId,
-            ClientSecret = githubOptions.Value.ClientSecret,
-            Code = code,
-            RedirectUri = redirectUri,
-        };
-        return AuthorizeUserAsync(requestContent);
+            ClientId = config.ClientId,
+            ClientSecret = config.ClientSecret,
+            Code = state.code,
+            RedirectUri = state.redirectUri,
+        }, (code, redirectUri));
     }
 
     public Task<Result<AuthorizeUserResponse, Problem>> RefreshUserAsync(string refreshToken)
     {
-        var requestContent = new RefreshUserRequest
+        return AuthorizeUserAsync(static (refreshToken, config) => new RefreshUserRequest
         {
-            ClientId = githubOptions.Value.ClientId,
-            ClientSecret = githubOptions.Value.ClientSecret,
+            ClientId = config.ClientId,
+            ClientSecret = config.ClientSecret,
             RefreshToken = refreshToken,
-        };
-        return AuthorizeUserAsync(requestContent);
+        }, refreshToken);
     }
 
-    private async Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync<T>(T request)
+    private async Task<Result<AuthorizeUserResponse, Problem>> AuthorizeUserAsync<T, TState>(Func<TState, GitHubAppConfiguration, T> requestFactory, TState state)
     {
+        T request = requestFactory.Invoke(state, appConfiguration);
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
         httpRequest.Content = new StringContent(GitHubJsonSerializerOptions.Serialize(request), new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
         httpRequest.Headers.Accept.Add(new("application/vnd.github+json"));
@@ -136,7 +134,7 @@ public sealed partial class GitHubClient(HttpClient httpClient, IGitHubAppAuthPr
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, $"/app/installations/{installationId}/access_tokens");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authProvider.GetGithubJwt());
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authProvider.GetGithubJwt(appConfiguration.AppId));
             request.Headers.Accept.Add(new("application/vnd.github+json"));
             request.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
             request.Content = JsonContent.Create(new InstallationTokenRequest
