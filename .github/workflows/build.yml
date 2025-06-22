@@ -22,46 +22,7 @@ env:
   TERM: xterm
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-
-      - name: Install .NET Workloads
-        run: dotnet workload restore
-
-      - name: Build & Test
-        shell: pwsh
-        run: .\build\build.ps1
-
-  publish-aot:
-    strategy:
-      matrix:
-        architecture: [arm64, amd64]
-    runs-on: ${{ matrix.architecture == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-
-      - name: Install .NET Workloads
-        run: dotnet workload restore
-
-      - name: Publish AOT
-        shell: pwsh
-        run: |
-          .\build\publish-aot.ps1 -RuntimeIdentifier linux-${{ matrix.architecture }}
-
-      - name: Publish AOT Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: publish-aot-${{ matrix.architecture }}
-          path: ./artifacts/publish/HwoodiwissHelper/release_linux-${{ matrix.architecture == 'amd64' && 'x64' || matrix.architecture }}
+  build-and-publish:
+    uses: hwoodiwiss/shared-workflows/.github/workflows/build-publish-aot.yml@add-shared-workflows
+    with:
+      project: "HwoodiwissHelper"
