@@ -71,7 +71,7 @@ jobs:
           ref: ${{ needs.get-tag-version.outputs.ref }}
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
 
       - name: Install .NET Workloads
         run: dotnet workload restore
