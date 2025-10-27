@@ -88,7 +88,7 @@ jobs:
 
       - name: Publish Binlog
         if: inputs.generate-binlog == true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: binlog-${{ matrix.architecture }}-${{ matrix.mode }}
           path: ./msbuild.binlog
