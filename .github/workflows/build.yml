@@ -61,7 +61,7 @@ jobs:
           .\build\publish-aot.ps1 -RuntimeIdentifier linux-${{ matrix.architecture }}
 
       - name: Publish AOT Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: publish-aot-${{ matrix.architecture }}
           path: ./artifacts/publish/HwoodiwissHelper/release_linux-${{ matrix.architecture == 'amd64' && 'x64' || matrix.architecture }}
