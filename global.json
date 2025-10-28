@@ -1,6 +1,6 @@
 {
   "sdk": {
-    "version": "10.0.100-rc.1.25451.107",
+    "version": "10.0.100-rc.2.25502.107",
     "allowPrerelease": false,
     "paths": ["./build/.dotnetcli", "$host$"],
     "errorMessage": "The required .NET SDK version is not installed, run ./build/build.ps1 to install it locally to the project."
