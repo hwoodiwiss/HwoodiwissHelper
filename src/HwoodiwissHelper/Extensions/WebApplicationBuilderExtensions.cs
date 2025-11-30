@@ -1,39 +1,14 @@
-using Microsoft.Extensions.Logging.Console;
-using OpenTelemetry.Logs;
+using Hwoodiwiss.Extensions.Hosting;
 
 namespace HwoodiwissHelper.Extensions;
 
 public static class WebApplicationBuilderExtensions
 {
-    public static WebApplication ConfigureAndBuild(this WebApplicationBuilder builder)
+    public static HwoodiwissApplicationBuilder ConfigureApplication(this HwoodiwissApplicationBuilder builder)
     {
-        builder.Configuration.ConfigureConfiguration();
-        builder.ConfigureLogging(builder.Configuration);
-        builder.Services.ConfigureOptions(builder.Configuration);
+        builder.Services.Configure<HwoodiwissApplicationOptions>(builder.Configuration.GetSection("HwoodiwissApplication"));
         builder.Services.ConfigureHttpClients();
         builder.Services.ConfigureServices(builder.Configuration);
-
-        return builder.Build();
-    }
-
-    private static WebApplicationBuilder ConfigureLogging(this WebApplicationBuilder builder, ConfigurationManager configuration)
-    {
-        var loggingBuilder = builder.Logging.AddConfiguration(configuration)
-            .AddOpenTelemetry(opt =>
-            {
-                opt.IncludeScopes = true;
-                opt.AddOtlpExporter();
-            });
-
-#if DEBUG
-        loggingBuilder.AddConsole()
-            .AddDebug();
-
-        builder.Services.Configure<ConsoleFormatterOptions>(options =>
-        {
-            options.IncludeScopes = true;
-        });
-#endif
 
         return builder;
     }

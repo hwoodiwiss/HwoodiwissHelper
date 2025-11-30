@@ -1,40 +1,20 @@
-﻿using System.Runtime.CompilerServices;
-using HwoodiwissHelper.Endpoints;
+﻿using HwoodiwissHelper.Endpoints;
 using HwoodiwissHelper.Features.GitHub.Endpoints;
-using HwoodiwissHelper.Infrastructure;
-using HwoodiwissHelper.Middleware;
+using Hwoodiwiss.Extensions.Hosting;
 
 namespace HwoodiwissHelper.Extensions;
 
 public static class WebApplicationExtensions
 {
-    public static WebApplication ConfigureRequestPipeline(this WebApplication app)
+    public static HwoodiwissApplication ConfigureRequestPipeline(this HwoodiwissApplication app)
     {
-        app.UseMiddleware<UserAgentBlockMiddleware>();
-        app.UseDefaultFiles();
-
-        app.UseHttpLogging();
-        app.MapEndpoints(app.Environment);
-
-        app.MapOpenApi();
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseStaticFiles();
-        }
-        else
-        {
-            app.MapStaticAssets();
-            app.MapFallbackToFile("/", "/index.html");
-        }
+        app.MapEndpoints();
 
         return app;
     }
 
-    private static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder, IWebHostEnvironment environment)
+    private static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
         => builder
-            .MapConfigurationEndpoints(environment)
-            .MapHealthEndpoints()
             .MapSurpriseEndpoints()
             .MapGitHubEndpoints();
 }

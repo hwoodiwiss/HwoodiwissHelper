@@ -1,11 +1,10 @@
+using Hwoodiwiss.Extensions.Hosting;
 using HwoodiwissHelper.Extensions;
 
-var app = WebApplication
-    .CreateSlimBuilder(args)
-    .ConfigureAndBuild();
+var app = HwoodiwissApplication.CreateBuilder(args)
+    .ConfigureApplication()
+    .Build();
 
 await app
     .ConfigureRequestPipeline()
     .RunAsync();
-
-public partial class Program;

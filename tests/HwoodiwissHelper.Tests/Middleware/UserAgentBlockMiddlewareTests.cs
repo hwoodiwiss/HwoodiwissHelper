@@ -13,7 +13,7 @@ public class UserAgentBlockMiddlewareTests(IntegrationFixture fixture)
     public async Task Get_KnownEndpoint_ReturnsNotFound_WhenUserAgentIsBlocked(string userAgent)
     {
         // Arrange
-        using var _ = fixture.SetScopedConfiguration("BlockedUserAgents:0", userAgent);
+        using var _ = fixture.SetScopedConfiguration("HwoodiwissApplication:BlockedUserAgents:0", userAgent);
         _client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
         // Act
@@ -29,7 +29,7 @@ public class UserAgentBlockMiddlewareTests(IntegrationFixture fixture)
     public async Task Get_KnownEndpoint_ReturnsNotFound_WhenUserAgentComponentIsBlocked(string userAgent)
     {
         // Arrange
-        using var _ = fixture.SetScopedConfiguration("BlockedUserAgents:0", "BigBot");
+        using var _ = fixture.SetScopedConfiguration("HwoodiwissApplication:BlockedUserAgents:0", "BigBot");
         _client.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
         // Act
