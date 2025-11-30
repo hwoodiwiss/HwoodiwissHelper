@@ -78,7 +78,7 @@ jobs:
 
       - name: Add GH Package Source
         run: |
-          dotnet nuget add source --name GitHub --username hwoodiwiss --password ${{ secrets.GITHUB_TOKEN }} https://nuget.pkg.github.com/hwoodiwiss/index.json
+          dotnet nuget add source --name GitHub --username hwoodiwiss --password ${{ secrets.GITHUB_TOKEN }} https://nuget.pkg.github.com/hwoodiwiss/index.json --store-password-in-clear-text
 
       - name: Login to GHCR
         run: |
