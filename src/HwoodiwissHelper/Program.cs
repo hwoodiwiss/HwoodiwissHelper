@@ -1,11 +1,16 @@
 using Hwoodiwiss.Extensions.Hosting;
-using HwoodiwissHelper.Extensions;
+using HwoodiwissHelper.Endpoints;
+using HwoodiwissHelper.Features.GitHub.Endpoints;
+using HwoodiwissHelper.Features.GitHub.Extension;
 
-var app = HwoodiwissApplication.CreateBuilder(args)
-    .ConfigureApplication()
-    .ConfigureOptions(opt => opt.HostStaticAssets = true)
-    .Build();
+var builder = HwoodiwissApplication.CreateBuilder(args)
+    .ConfigureOptions(opt => opt.HostStaticAssets = true);
+
+builder.Services.ConfigureGitHubServices(builder.Configuration);
+
+var app = builder.Build();
 
 await app
-    .ConfigureRequestPipeline()
+    .MapSurpriseEndpoints()
+    .MapGitHubEndpoints()
     .RunAsync();

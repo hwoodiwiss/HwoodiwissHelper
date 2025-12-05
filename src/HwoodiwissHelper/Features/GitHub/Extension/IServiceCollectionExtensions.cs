@@ -24,7 +24,7 @@ public static class IServiceCollectionExtensions
                 config.AppPrivateKey = Encoding.UTF8.GetString(buffer[..bytesWritten]);
             }
         });
-        
+
         services.AddSingleton<IGitHubSignatureValidator, GitHubSignatureValidator>();
         services.AddSingleton<IGitHubAppAuthProvider, GitHubAppAuthProvider>();
         services.AddScoped<IGitHubService, GitHubService>();
@@ -33,12 +33,11 @@ public static class IServiceCollectionExtensions
         services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
         {
             client.BaseAddress = new Uri("https://api.github.com");
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("HwoodiwissHelper", $"{ApplicationMetadata.Version}+{ApplicationMetadata.GitCommit}"));
         });
 
         return services;
     }
-    
+
     private static IServiceCollection AddGitHubWebhookHandlers(this IServiceCollection services)
     {
         services.AddGitHubEventHandler<WorkflowCompleteHandler, WorkflowRun.Completed>();
@@ -47,7 +46,7 @@ public static class IServiceCollectionExtensions
 
         return services;
     }
-    
+
     private static IServiceCollection AddGitHubEventHandler<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler, TEvent>(this IServiceCollection services)
         where TEvent : GitHubWebhookEvent
         where THandler : Features.GitHub.Handlers.GithubWebhookRequestHandler<TEvent>

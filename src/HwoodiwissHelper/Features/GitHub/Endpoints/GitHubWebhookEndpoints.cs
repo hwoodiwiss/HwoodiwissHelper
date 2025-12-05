@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
-using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Extensions;
+using Hwoodiwiss.Extensions.Hosting.Extensions;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
 using HwoodiwissHelper.Features.GitHub.Filters;
@@ -12,10 +11,10 @@ namespace HwoodiwissHelper.Features.GitHub.Endpoints;
 
 public static partial class GitHubWebhookEndpoints
 {
-    public static IEndpointRouteBuilder MapGitHubEndpoints(this IEndpointRouteBuilder builder)
+    public static T MapGitHubEndpoints<T>(this T builder) where T : IEndpointRouteBuilder
     {
         var group = builder.MapGroup("/github");
-        
+
         group.MapPost("/webhook", async (
                 [FromKeyedServices(nameof(GitHubWebhookEndpoints))] ILogger logger,
                 [FromHeader(Name = "X-Github-Event")] string githubEvent,

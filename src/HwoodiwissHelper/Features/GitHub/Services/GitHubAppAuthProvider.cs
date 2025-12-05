@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography;
-using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Infrastructure;
 using Microsoft.Extensions.Options;
