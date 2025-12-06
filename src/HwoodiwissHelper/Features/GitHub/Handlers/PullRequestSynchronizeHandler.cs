@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
 using HwoodiwissHelper.Features.GitHub.Events.Models;

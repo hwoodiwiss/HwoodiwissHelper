@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
-using HwoodiwissHelper.Configuration;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using Microsoft.Extensions.Options;
 

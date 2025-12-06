@@ -1,5 +1,4 @@
-﻿using HwoodiwissHelper.Configuration;
-using HwoodiwissHelper.Features.GitHub.Configuration;
+﻿using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Services;
 using Microsoft.Extensions.Options;
 using NSubstitute;

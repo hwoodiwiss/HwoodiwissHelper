@@ -2,7 +2,7 @@
 
 public static class SurpriseEndpoints
 {
-    public static IEndpointRouteBuilder MapSurpriseEndpoints(this IEndpointRouteBuilder builder)
+    public static T MapSurpriseEndpoints<T>(this T builder) where T : IEndpointRouteBuilder
     {
         var group = builder.MapGroup("/surprise");
 
