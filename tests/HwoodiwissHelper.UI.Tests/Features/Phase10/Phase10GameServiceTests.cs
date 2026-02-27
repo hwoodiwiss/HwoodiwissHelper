@@ -119,8 +119,8 @@ public class Phase10GameServiceTests
 
         _sut.State.ShouldBeOfType<Phase10GameState.InProgress>();
         InProgress.Game.Players.Count.ShouldBe(2);
-        InProgress.Game.Players[0].Name.ShouldBe("Alice");
-        InProgress.Game.Players[1].Name.ShouldBe("Bob");
+        InProgress.Game.Players[0].ShouldBeOfType<Phase10Player.Active>().PlayerName.ShouldBe("Alice");
+        InProgress.Game.Players[1].ShouldBeOfType<Phase10Player.Active>().PlayerName.ShouldBe("Bob");
     }
 
     [Fact]
@@ -179,8 +179,8 @@ public class Phase10GameServiceTests
 
         await _sut.SubmitRoundAsync();
 
-        InProgress.Game.Players[0].TotalScore.ShouldBe(15);
-        InProgress.Game.Players[1].TotalScore.ShouldBe(5);
+        InProgress.Game.Players[0].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(15);
+        InProgress.Game.Players[1].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(5);
     }
 
     [Fact]
@@ -377,9 +377,50 @@ public class Phase10GameServiceTests
 
         var standings = InProgress.ActiveStandings.ToList();
 
-        standings[0].Name.ShouldBe("Bob");     // phase 3, score 5
-        standings[1].Name.ShouldBe("Alice");   // phase 3, score 10
-        standings[2].Name.ShouldBe("Charlie"); // phase 1
+        standings[0].ShouldBeOfType<Phase10Player.Active>().PlayerName.ShouldBe("Bob");     // phase 3, score 5
+        standings[1].ShouldBeOfType<Phase10Player.Active>().PlayerName.ShouldBe("Alice");   // phase 3, score 10
+        standings[2].ShouldBeOfType<Phase10Player.Active>().PlayerName.ShouldBe("Charlie"); // phase 1
+    }
+
+    // ── Phase10RoundEntry.TryCreate ───────────────────────────────────────────
+
+    [Fact]
+    public void TryCreate_WithNegativePoints_ReturnsNull()
+    {
+        var result = Phase10RoundEntry.TryCreate("Alice", 1, false, -5);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void TryCreate_WithZeroPoints_Succeeds()
+    {
+        var result = Phase10RoundEntry.TryCreate("Alice", 1, false, 0);
+
+        result.ShouldNotBeNull();
+        result.PointsAdded.ShouldBe(0);
+    }
+
+    [Fact]
+    public void TryCreate_WithPositivePoints_Succeeds()
+    {
+        var result = Phase10RoundEntry.TryCreate("Alice", 1, false, 25);
+
+        result.ShouldNotBeNull();
+        result.PointsAdded.ShouldBe(25);
+    }
+
+    [Fact]
+    public async Task SubmitRoundAsync_WhenEntryPointsAreNegative_RecordsZeroPointsForPlayer()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].Points = -10;
+        InProgress.Entries[1].Points = 5;
+
+        await _sut.SubmitRoundAsync();
+
+        InProgress.Game.Players[0].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(0);
+        InProgress.Game.Players[1].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(5);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

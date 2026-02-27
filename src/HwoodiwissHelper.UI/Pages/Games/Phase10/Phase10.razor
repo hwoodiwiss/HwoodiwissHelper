@@ -43,14 +43,14 @@
 else if (GameService.State is Phase10GameState.Complete complete)
 {
     <div class="alert alert-success">
-        <strong>@complete.Winner.Name wins!</strong>
+        <strong>@complete.Winner.PlayerName wins!</strong>
         @if (complete.CompletedPlayerCount > 1)
         {
             <span> (@complete.CompletedPlayerCount players completed Phase 10 this round — winner has lowest score.)</span>
         }
         else
         {
-            <span> Completed Phase 10 with @complete.Winner.TotalScore penalty points.</span>
+            <span> Completed Phase 10 with @complete.Winner.Score penalty points.</span>
         }
     </div>
 
@@ -69,9 +69,9 @@ else if (GameService.State is Phase10GameState.Complete complete)
             {
                 <tr class="@(player is Phase10Player.Completed ? "table-success" : "")">
                     <td>@place</td>
-                    <td>@player.Name</td>
+                    <td>@(player switch { Phase10Player.Active a => a.PlayerName, Phase10Player.Completed c => c.PlayerName, _ => "" })</td>
                     <td>@(player switch { Phase10Player.Completed => "Completed", Phase10Player.Active a => $"Phase {a.Phase}", _ => "" })</td>
-                    <td>@player.TotalScore</td>
+                    <td>@(player switch { Phase10Player.Active a => a.Score, Phase10Player.Completed c => c.Score, _ => 0 })</td>
                 </tr>
             }
         </tbody>
@@ -85,7 +85,7 @@ else if (GameService.State is Phase10GameState.Complete complete)
                     <th>Round</th>
                     @foreach (var p in complete.Game.Players)
                     {
-                        <th>@p.Name</th>
+                        <th>@(p switch { Phase10Player.Active a => a.PlayerName, Phase10Player.Completed c => c.PlayerName, _ => "" })</th>
                     }
                 </tr>
             </thead>
@@ -132,9 +132,9 @@ else if (GameService.State is Phase10GameState.InProgress active)
             @foreach (var player in active.ActiveStandings)
             {
                 <tr>
-                    <td>@player.Name</td>
+                    <td>@(player switch { Phase10Player.Active a => a.PlayerName, Phase10Player.Completed c => c.PlayerName, _ => "" })</td>
                     <td>@(player switch { Phase10Player.Active a => $"Phase {a.Phase}", Phase10Player.Completed => "Completed", _ => "" })</td>
-                    <td>@player.TotalScore</td>
+                    <td>@(player switch { Phase10Player.Active a => a.Score, Phase10Player.Completed c => c.Score, _ => 0 })</td>
                 </tr>
             }
         </tbody>
@@ -151,7 +151,7 @@ else if (GameService.State is Phase10GameState.InProgress active)
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">@player.Name</h5>
+                        <h5 class="card-title">@(player switch { Phase10Player.Active a => a.PlayerName, Phase10Player.Completed c => c.PlayerName, _ => "" })</h5>
                         <p class="card-subtitle text-muted mb-3">@(player switch { Phase10Player.Active a => $"Phase {a.Phase}", Phase10Player.Completed => "Completed", _ => "" })</p>
                         <div class="mb-3">
                             <label class="form-label" for="points-@index">Penalty Points</label>
@@ -183,7 +183,7 @@ else if (GameService.State is Phase10GameState.InProgress active)
                             <th>Round</th>
                             @foreach (var p in active.Game.Players)
                             {
-                                <th>@p.Name</th>
+                                <th>@(p switch { Phase10Player.Active a => a.PlayerName, Phase10Player.Completed c => c.PlayerName, _ => "" })</th>
                             }
                         </tr>
                     </thead>

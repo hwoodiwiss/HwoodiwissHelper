@@ -25,11 +25,14 @@ internal partial record Phase10GameState
             Game.Players
                 .OrderByDescending(p => p switch
                 {
-                    Phase10Player.Active a   => a.Phase,
-                    Phase10Player.Completed  => 11,
-                    _                        => 0,
+                    Phase10Player.Active a  => a.Phase,
+                    Phase10Player.Completed => 11,
                 })
-                .ThenBy(p => p.TotalScore);
+                .ThenBy(p => p switch
+                {
+                    Phase10Player.Active a   => a.Score,
+                    Phase10Player.Completed c => c.Score,
+                });
     }
 
     public partial record Complete
@@ -40,14 +43,16 @@ internal partial record Phase10GameState
                 {
                     Phase10Player.Completed => 1,
                     Phase10Player.Active    => 0,
-                    _                       => 0,
                 })
                 .ThenByDescending(p => p switch
                 {
                     Phase10Player.Active a  => a.Phase,
                     Phase10Player.Completed => 10,
-                    _                       => 0,
                 })
-                .ThenBy(p => p.TotalScore);
+                .ThenBy(p => p switch
+                {
+                    Phase10Player.Active a   => a.Score,
+                    Phase10Player.Completed c => c.Score,
+                });
     }
 }

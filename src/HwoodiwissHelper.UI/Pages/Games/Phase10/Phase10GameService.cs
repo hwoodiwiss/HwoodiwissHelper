@@ -59,22 +59,21 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
             if (game.Players[i] is not Phase10Player.Active active) continue;
 
             var entry = entries[i];
+            var points = Math.Max(0, entry.Points);
 
-            round.Entries.Add(new Phase10RoundEntry
-            {
-                PlayerName = active.Name,
-                Phase = active.Phase,
-                PhaseCompleted = entry.PhaseCompleted,
-                PointsAdded = entry.Points,
-            });
+            round.Entries.Add(Phase10RoundEntry.TryCreate(
+                playerName: active.PlayerName,
+                phase: active.Phase,
+                phaseCompleted: entry.PhaseCompleted,
+                pointsAdded: points)!);
 
-            var newScore = active.TotalScore + entry.Points;
+            var newScore = active.Score + points;
 
             game.Players[i] = (entry.PhaseCompleted, active.Phase >= 10) switch
             {
-                (true, true)  => new Phase10Player.Completed(active.Name, newScore),
-                (true, false) => new Phase10Player.Active(active.Name, active.Phase + 1, newScore),
-                _             => new Phase10Player.Active(active.Name, active.Phase, newScore),
+                (true, true)  => new Phase10Player.Completed(active.PlayerName, newScore),
+                (true, false) => new Phase10Player.Active(active.PlayerName, active.Phase + 1, newScore),
+                _             => new Phase10Player.Active(active.PlayerName, active.Phase, newScore),
             };
         }
 
@@ -88,7 +87,7 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
 
         if (completedPlayers.Count > 0)
         {
-            var winner = completedPlayers.OrderBy(p => p.TotalScore).First();
+            var winner = completedPlayers.OrderBy(p => p.Score).First();
             _state = new Phase10GameState.Complete(game, winner, completedPlayers.Count);
         }
         else
@@ -127,7 +126,7 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
         {
             Phase10GameState.InProgress inProgress => ToStoredGame(inProgress.Game, isComplete: false),
             Phase10GameState.Complete complete      => ToStoredGame(complete.Game, isComplete: true),
-            _                                      => null,
+            Phase10GameState.Setup                  => null,
         };
 
         if (stored is not null)
@@ -154,7 +153,7 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
             var winner = players
                 .Where(p => p is Phase10Player.Completed)
                 .Cast<Phase10Player.Completed>()
-                .OrderBy(p => p.TotalScore)
+                .OrderBy(p => p.Score)
                 .First();
             var completedCount = players.Count(p => p is Phase10Player.Completed);
             return new Phase10GameState.Complete(game, winner, completedCount);
@@ -171,19 +170,18 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
                 {
                     Phase10Player.Active a => new Phase10StoredPlayer
                     {
-                        Name = a.Name,
+                        Name = a.PlayerName,
                         CurrentPhase = a.Phase,
-                        TotalScore = a.TotalScore,
+                        TotalScore = a.Score,
                         CompletedGame = false,
                     },
                     Phase10Player.Completed c => new Phase10StoredPlayer
                     {
-                        Name = c.Name,
+                        Name = c.PlayerName,
                         CurrentPhase = 10,
-                        TotalScore = c.TotalScore,
+                        TotalScore = c.Score,
                         CompletedGame = true,
                     },
-                    _ => throw new InvalidOperationException("Unknown Phase10Player variant"),
                 })
                 .ToList(),
             Rounds = game.Rounds,
