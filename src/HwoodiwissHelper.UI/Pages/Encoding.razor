@@ -1,25 +1,56 @@
-﻿@page "/encoding"
+@page "/encoding"
 
 <PageTitle>Encoding</PageTitle>
 
-<h1>Encoding</h1>
-
-<p>Encoding is the process of converting a sequence of characters into a sequence of bytes. The .NET platform provides a number of classes for encoding and decoding text,
-    including:</p>
-
-<h2>Base 64</h2>
-
-<div>
-    <label for="base64-cleartext">Cleartext</label>
-    <textarea id="base64-cleartext" class="form-control" placeholder="Enter text to encode" @oninput="OnBase64CleartextInputChanged" @bind="_base64Cleartext"></textarea>
+<div class="page-header mb-4">
+    <h1>Encoding</h1>
+    <p>Convert text between plain and encoded forms. All three fields stay in sync — edit any one of them.</p>
 </div>
-<div>
-    <label for="base64-encoded">Base 64</label>
-    <textarea id="base64-encoded" class="form-control" placeholder="Base 64 encoded text" @oninput="OnBase64EncodedInputChanged" @bind="_base64Encoded"></textarea>
-</div>
-<div>
-    <label for="base64-url-encoded">Base 64 Url Encoded</label>
-    <textarea id="base64-url-encoded" class="form-control" placeholder="Base 64 URL encoded text" @oninput="OnBase64UrlEncodedInputChanged" @bind="_base64UrlEncoded"></textarea>
+
+<div class="encoding-grid">
+
+    <div class="encoding-field">
+        <label class="form-label" for="base64-cleartext">
+            Cleartext
+            <span class="field-badge">plain text</span>
+        </label>
+        <textarea id="base64-cleartext"
+                  class="form-control encoding-textarea"
+                  placeholder="Type or paste text here&hellip;"
+                  @oninput="OnBase64CleartextInputChanged"
+                  @bind="_base64Cleartext"></textarea>
+    </div>
+
+    <div class="encoding-divider" aria-hidden="true">
+        <div class="encoding-divider-line"></div>
+        <span class="encoding-divider-label">Base 64</span>
+        <div class="encoding-divider-line"></div>
+    </div>
+
+    <div class="encoding-field">
+        <label class="form-label" for="base64-encoded">
+            Base 64
+            <span class="field-badge">standard</span>
+        </label>
+        <textarea id="base64-encoded"
+                  class="form-control encoding-textarea font-mono"
+                  placeholder="Base64 encoded value"
+                  @oninput="OnBase64EncodedInputChanged"
+                  @bind="_base64Encoded"></textarea>
+    </div>
+
+    <div class="encoding-field">
+        <label class="form-label" for="base64-url-encoded">
+            Base 64 URL
+            <span class="field-badge">URL-safe, no padding</span>
+        </label>
+        <textarea id="base64-url-encoded"
+                  class="form-control encoding-textarea font-mono"
+                  placeholder="Base64-URL encoded value"
+                  @oninput="OnBase64UrlEncodedInputChanged"
+                  @bind="_base64UrlEncoded"></textarea>
+    </div>
+
 </div>
 
 @code {

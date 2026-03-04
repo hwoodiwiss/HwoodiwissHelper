@@ -3,12 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b" />
     <title>HwoodiwissHelper</title>
     <base href="/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="HwoodiwissHelper.UI.styles.css" rel="stylesheet" />
+    <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        function applyTheme(e) {
+          document.documentElement.setAttribute('data-bs-theme', e.matches ? 'dark' : 'light');
+        }
+        applyTheme(mq);
+        mq.addEventListener('change', applyTheme);
+      })();
+    </script>
   </head>
 
   <body>
@@ -23,7 +36,7 @@
     <div id="blazor-error-ui">
       An unhandled error has occurred.
       <a href="." class="reload">Reload</a>
-      <span class="dismiss">🗙</span>
+      <span class="dismiss">&#x2715;</span>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
   </body>
