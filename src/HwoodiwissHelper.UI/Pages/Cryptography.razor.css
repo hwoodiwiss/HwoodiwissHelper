@@ -1,0 +1,96 @@
+.page-header {
+    padding-top: 0.25rem;
+}
+
+.page-header p {
+    max-width: 520px;
+}
+
+/* =========================================================
+   CRNG Panel
+   ========================================================= */
+.crng-panel {
+    max-width: 720px;
+}
+
+/* =========================================================
+   Length row: [number input] [slider] [hint]
+   ========================================================= */
+.crng-length-row {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+}
+
+.crng-number-input {
+    font-family: var(--app-font-mono);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.375rem 0.5rem;
+}
+
+/* Remove browser number spinners — the slider handles it */
+.crng-number-input::-webkit-outer-spin-button,
+.crng-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.crng-number-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.crng-slider {
+    width: 100%;
+}
+
+.crng-range-hint {
+    font-size: 0.75rem;
+    color: var(--app-text-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Output header row (label + byte/char count)
+   ========================================================= */
+.crng-output-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.crng-byte-label {
+    font-size: 0.75rem;
+    color: var(--app-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Output textarea
+   ========================================================= */
+.crng-output {
+    font-family: var(--app-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    resize: none;
+    background-color: var(--app-surface-raised);
+    color: var(--app-text);
+    word-break: break-all;
+    min-height: 7rem;
+    cursor: text;
+}
+
+@media (max-width: 480px) {
+    .crng-length-row {
+        grid-template-columns: 4.5rem 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .crng-range-hint {
+        grid-column: 1 / -1;
+        text-align: right;
+    }
+}

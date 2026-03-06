@@ -1,26 +1,56 @@
-﻿@page "/cryptography"
+@page "/cryptography"
 @using System.Security.Cryptography
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Cryptography</PageTitle>
 
-<h1>Cryptography</h1>
+<div class="page-header mb-4">
+    <h1>Cryptography</h1>
+    <p>Generate cryptographically secure random strings using the OS CSPRNG. Output is Base64-encoded.</p>
+</div>
 
-<p><i>Cryptography is the practice and study of techniques for secure communication in the presence of adversarial behavior</i></p>
+<div class="crng-panel">
 
-<h2>Generate Cryptographically Random String</h2>
+    <div class="crng-controls mb-4">
+        <label class="form-label" for="bytes-length-txt">Byte length</label>
+        <div class="crng-length-row">
+            <input class="form-control crng-number-input"
+                   id="bytes-length-txt"
+                   type="number"
+                   min="10"
+                   max="4096"
+                   @oninput="OnBytesLengthChanged"
+                   @bind="_bytesLengthText" />
+            <input class="form-range crng-slider"
+                   id="bytes-length"
+                   type="range"
+                   min="10"
+                   max="4096"
+                   aria-label="Byte length slider"
+                   @oninput="OnBytesLengthChanged"
+                   @bind="_bytesLengthSlider" />
+            <span class="crng-range-hint">10 &ndash; 4096</span>
+        </div>
+    </div>
 
-<div>
-    <label for="bytes-length">Byte Length</label>
-    <input class="form-control" id="bytes-length-txt" type="number" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthText" />
-    <input class="form-range" id="bytes-length" type="range" min="10" max="4096" @oninput="OnBytesLengthChanged" @bind="_bytesLengthSlider" />
-    <textarea readonly id="encoded-crng-string" class="form-control" @bind="_randomString" @ref="_encodedStringOutput"></textarea>
+    <div>
+        <div class="crng-output-header mb-2">
+            <label class="form-label mb-0" for="encoded-crng-string">Generated string</label>
+            <span class="crng-byte-label">@_bytesLengthText bytes &rarr; ~@((_bytesLengthText * 4 + 2) / 3) chars</span>
+        </div>
+        <textarea readonly
+                  id="encoded-crng-string"
+                  class="form-control crng-output"
+                  @bind="_randomString"
+                  @ref="_encodedStringOutput"></textarea>
+    </div>
+
 </div>
 
 <script>
     function fitTextAreaToContent(element) {
         element.style.height = "1px";
-        element.style.height = (25+element.scrollHeight)+"px";
+        element.style.height = (25 + element.scrollHeight) + "px";
     }
 </script>
 
@@ -29,7 +59,7 @@
     private int _bytesLengthSlider = 512;
     private string _randomString = GetNSecureBytes(512);
     ElementReference _encodedStringOutput;
-    
+
     private async Task OnBytesLengthChanged(ChangeEventArgs args)
     {
         if (args is not { Value: string valueString } || !int.TryParse(valueString, out var value))
