@@ -12,26 +12,27 @@ public class IntegrationFixture : WebApplicationFactory<Program>
 {
     public IntegrationFixture()
     {
-        Environment.SetEnvironmentVariable("OTEL_SDK_DISABLED", "true");
+        // WORKAROUND: https://github.com/open-telemetry/opentelemetry-dotnet/issues/6868
+        // Environment.SetEnvironmentVariable("OTEL_SDK_DISABLED", "true");
     }
-    
+
     public const string WebhookSigningKey = "It's a Secret to Everybody";
 
     private readonly Dictionary<string, string?> _configuration = new();
     private IConfigurationRoot? _configurationRoot;
     public HttpClientInterceptorOptions Interceptor { get; } = new();
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureAppConfiguration(cfg =>
         {
             cfg.AddInMemoryCollection(
-                new Dictionary<string, string?> {["Github:WebhookKey"] = WebhookSigningKey,}
+                new Dictionary<string, string?> { ["Github:WebhookKey"] = WebhookSigningKey, }
             ).Add(new TestConfigurationSource(_configuration));
             _configurationRoot = cfg as IConfigurationRoot;
         });
 
-        builder.ConfigureLogging(loggingBuilder => 
+        builder.ConfigureLogging(loggingBuilder =>
             loggingBuilder
                 .AddConsole()
                 .AddDebug()
@@ -40,7 +41,7 @@ public class IntegrationFixture : WebApplicationFactory<Program>
             services.AddSingleton<IHttpMessageHandlerBuilderFilter, HttpClientInterceptionFilter>(
                 (_) => new HttpClientInterceptionFilter(Interceptor));
         });
-        
+
         base.ConfigureWebHost(builder);
     }
 
@@ -51,7 +52,7 @@ public class IntegrationFixture : WebApplicationFactory<Program>
         _configurationRoot?.Reload();
         return new ConfigurationScope(key, originalValue, _configuration, _configurationRoot);
     }
-    
+
     private sealed class TestConfigurationSource(Dictionary<string, string?> configuration) : IConfigurationSource
     {
         public IConfigurationProvider Build(IConfigurationBuilder builder) =>
@@ -65,7 +66,7 @@ public class IntegrationFixture : WebApplicationFactory<Program>
             }
         }
     }
-    
+
     private sealed class ConfigurationScope(string key, string? originalValue, Dictionary<string, string?> configuration, IConfigurationRoot? configurationRoot) : IDisposable
     {
         public void Dispose()
@@ -78,11 +79,11 @@ public class IntegrationFixture : WebApplicationFactory<Program>
             {
                 configuration.Remove(key);
             }
-            
+
             configurationRoot?.Reload();
         }
     }
-    
+
     public sealed class HttpClientInterceptionFilter(HttpClientInterceptorOptions options) : IHttpMessageHandlerBuilderFilter
     {
         /// <inheritdoc/>
