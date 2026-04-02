@@ -423,6 +423,150 @@ public class Phase10GameServiceTests
         InProgress.Game.Players[1].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(5);
     }
 
+    // ── EditRoundAsync ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task EditRoundAsync_UpdatesPointsForRoundEntry()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].Points = 10;
+        InProgress.Entries[1].Points = 5;
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { Points = 20 }, new RoundEntryModel { Points = 5 }]);
+
+        InProgress.Game.Rounds[0].Entries[0].PointsAdded.ShouldBe(20);
+        InProgress.Game.Rounds[0].Entries[1].PointsAdded.ShouldBe(5);
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_RecalculatesPlayerTotalScore()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].Points = 10;
+        await _sut.SubmitRoundAsync();
+        InProgress.Entries[0].Points = 5;
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+        // Alice should have 15 pts; now correct round 1 to 25 pts
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { Points = 25 }, new RoundEntryModel()]);
+
+        InProgress.Game.Players[0].ShouldBeOfType<Phase10Player.Active>().Score.ShouldBe(30); // 25 + 5
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenPhaseCompletedChanges_RecalculatesPlayerPhases()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].PhaseCompleted = false;
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+        // Alice stayed on phase 1 in round 1; now edit to say she completed it
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { PhaseCompleted = true }, new RoundEntryModel()]);
+
+        InProgress.Game.Players[0].ShouldBeOfType<Phase10Player.Active>().Phase.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_RecalculatesPhaseInSubsequentRoundEntries()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].PhaseCompleted = false;
+        await _sut.SubmitRoundAsync();  // Round 1: Alice stays on Phase 1
+        InProgress.Entries[0].PhaseCompleted = false;
+        await _sut.SubmitRoundAsync();  // Round 2: Alice stays on Phase 1
+        _store.ClearReceivedCalls();
+        // Edit round 1 to say Alice completed phase 1
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { PhaseCompleted = true }, new RoundEntryModel()]);
+
+        // Round 2's entry should now show Phase 2 for Alice
+        InProgress.Game.Rounds[1].Entries[0].Phase.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenNegativePoints_ClampsToZero()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        InProgress.Entries[0].Points = 10;
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { Points = -5 }, new RoundEntryModel()]);
+
+        InProgress.Game.Rounds[0].Entries[0].PointsAdded.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenStateIsSetup_DoesNothing()
+    {
+        // State is Setup by default
+        await _sut.EditRoundAsync(0, [new RoundEntryModel()]);
+
+        _sut.State.ShouldBeOfType<Phase10GameState.Setup>();
+        await _store.DidNotReceive().SetItemAsync(Arg.Any<string>(), Arg.Any<Phase10StoredGame>());
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenRoundIndexIsOutOfRange_DoesNothing()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+
+        await _sut.EditRoundAsync(99, [new RoundEntryModel()]);
+
+        _sut.State.ShouldBeOfType<Phase10GameState.InProgress>();
+        await _store.DidNotReceive().SetItemAsync(Arg.Any<string>(), Arg.Any<Phase10StoredGame>());
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_SavesGameAfterEdit()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+
+        await _sut.EditRoundAsync(0, [new RoundEntryModel { Points = 5 }, new RoundEntryModel()]);
+
+        await _store.Received(1).SetItemAsync(Arg.Any<string>(), Arg.Any<Phase10StoredGame>());
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenEditCausesGameCompletion_TransitionsToComplete()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        await AdvanceAliceThroughPhase9();
+        // Round 10: Alice is on phase 10, submit without completing it
+        InProgress.Entries[0].PhaseCompleted = false;
+        await _sut.SubmitRoundAsync();
+        _store.ClearReceivedCalls();
+
+        // Now edit round 10 to say she completed phase 10
+        await _sut.EditRoundAsync(9, [new RoundEntryModel { PhaseCompleted = true }, new RoundEntryModel()]);
+
+        _sut.State.ShouldBeOfType<Phase10GameState.Complete>();
+        Complete.Winner.PlayerName.ShouldBe("Alice");
+    }
+
+    [Fact]
+    public async Task EditRoundAsync_WhenStateIsComplete_UpdatesRoundAndRecalculates()
+    {
+        await StartGameWithPlayers("Alice", "Bob");
+        await AdvanceAliceThroughPhase9();
+        // Round 10: Alice completes phase 10 with 50 pts
+        InProgress.Entries[0].PhaseCompleted = true;
+        InProgress.Entries[0].Points = 50;
+        InProgress.Entries[1].Points = 30;
+        await _sut.SubmitRoundAsync();  // Game transitions to Complete
+        _store.ClearReceivedCalls();
+
+        // Edit Alice's points down from 50 to 10
+        await _sut.EditRoundAsync(9, [new RoundEntryModel { PhaseCompleted = true, Points = 10 }, new RoundEntryModel { Points = 30 }]);
+
+        _sut.State.ShouldBeOfType<Phase10GameState.Complete>();
+        Complete.Winner.PlayerName.ShouldBe("Alice");
+        Complete.Winner.Score.ShouldBe(10);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private async Task StartGameWithPlayers(params string[] names)
@@ -431,6 +575,16 @@ public class Phase10GameServiceTests
         Setup.PlayerNames.AddRange(names);
         await _sut.StartGameAsync();
         // Reset save call count so tests can assert on calls made after setup
+        _store.ClearReceivedCalls();
+    }
+
+    private async Task AdvanceAliceThroughPhase9()
+    {
+        for (var i = 1; i <= 9; i++)
+        {
+            InProgress.Entries[0].PhaseCompleted = true;
+            await _sut.SubmitRoundAsync();
+        }
         _store.ClearReceivedCalls();
     }
 }
