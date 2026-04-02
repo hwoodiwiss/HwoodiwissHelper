@@ -26,6 +26,12 @@
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <Features>$(Features);runtime-async=on</Features>
+  </PropertyGroup>
+
   <PropertyGroup>
     <ContainerRegistry>ghcr.io</ContainerRegistry>
     <ContainerRepository>hwoodiwiss/hwoodiwiss-helper</ContainerRepository>
