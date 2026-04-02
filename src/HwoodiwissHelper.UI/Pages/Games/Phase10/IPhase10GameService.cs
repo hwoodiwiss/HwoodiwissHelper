@@ -9,6 +9,7 @@ internal interface IPhase10GameService
     void RemovePlayer(int index);
     Task StartGameAsync();
     Task SubmitRoundAsync();
+    Task EditRoundAsync(int roundIndex, RoundEntryModel[] updatedEntries);
     Task AbandonGameAsync();
     Task NewGameAsync();
 }

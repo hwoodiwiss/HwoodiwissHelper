@@ -147,4 +147,103 @@ public class Phase10ComponentTests : BunitContext
 
         cut.Find(".alert-success").TextContent.ShouldContain("winner has lowest score");
     }
+
+    // ── Round edit UI ─────────────────────────────────────────────────────────
+
+    [Fact]
+    public void ActiveGameView_RoundHistory_ShowsEditButtonForEachRound()
+    {
+        var round = new Phase10Round
+        {
+            RoundNumber = 1,
+            Entries =
+            [
+                Phase10RoundEntry.TryCreate("Alice", 1, false, 10)!,
+                Phase10RoundEntry.TryCreate("Bob",   1, false,  5)!,
+            ],
+        };
+        var game = new Phase10Game
+        {
+            CurrentRound = 2,
+            Players =
+            [
+                new Phase10Player.Active("Alice", 1, 10),
+                new Phase10Player.Active("Bob",   1,  5),
+            ],
+            Rounds = [round],
+        };
+        _gameService.State.Returns(new Phase10GameState.InProgress(
+            game,
+            [new RoundEntryModel(), new RoundEntryModel()]));
+
+        var cut = Render<Pages.Games.Phase10.Phase10>();
+        cut.Find("details").SetAttribute("open", "");
+        cut.Render();
+
+        var editButtons = cut.FindAll("button").Where(b => b.TextContent.Trim() == "Edit").ToList();
+        editButtons.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void ActiveGameView_RoundHistory_WhenEditClicked_ShowsInputsAndSaveCancel()
+    {
+        var round = new Phase10Round
+        {
+            RoundNumber = 1,
+            Entries =
+            [
+                Phase10RoundEntry.TryCreate("Alice", 1, false, 10)!,
+                Phase10RoundEntry.TryCreate("Bob",   1, false,  5)!,
+            ],
+        };
+        var game = new Phase10Game
+        {
+            CurrentRound = 2,
+            Players =
+            [
+                new Phase10Player.Active("Alice", 1, 10),
+                new Phase10Player.Active("Bob",   1,  5),
+            ],
+            Rounds = [round],
+        };
+        _gameService.State.Returns(new Phase10GameState.InProgress(
+            game,
+            [new RoundEntryModel(), new RoundEntryModel()]));
+
+        var cut = Render<Pages.Games.Phase10.Phase10>();
+        cut.Find("details").SetAttribute("open", "");
+        cut.Render();
+
+        cut.FindAll("button").First(b => b.TextContent.Trim() == "Edit").Click();
+
+        cut.FindAll("button").ShouldContain(b => b.TextContent.Trim() == "Save");
+        cut.FindAll("button").ShouldContain(b => b.TextContent.Trim() == "Cancel");
+        cut.FindAll("input[type=number]").Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public void GameCompleteView_RoundHistory_ShowsEditButtonForEachRound()
+    {
+        var round = new Phase10Round
+        {
+            RoundNumber = 1,
+            Entries =
+            [
+                Phase10RoundEntry.TryCreate("Alice", 10, true,  20)!,
+                Phase10RoundEntry.TryCreate("Bob",    1, false, 10)!,
+            ],
+        };
+        var winner = new Phase10Player.Completed("Alice", 20);
+        var game = new Phase10Game
+        {
+            Players = [winner, new Phase10Player.Active("Bob", 1, 10)],
+            Rounds = [round],
+        };
+        _gameService.State.Returns(new Phase10GameState.Complete(game, winner, CompletedPlayerCount: 1));
+
+        var cut = Render<Pages.Games.Phase10.Phase10>();
+
+        var editButtons = cut.FindAll("button").Where(b => b.TextContent.Trim() == "Edit").ToList();
+        editButtons.Count.ShouldBe(1);
+    }
 }

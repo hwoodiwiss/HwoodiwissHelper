@@ -102,6 +102,49 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
         await SaveGameAsync();
     }
 
+    public async Task EditRoundAsync(int roundIndex, RoundEntryModel[] updatedEntries)
+    {
+        Phase10Game game;
+        if (_state is Phase10GameState.InProgress inProgress)
+            game = inProgress.Game;
+        else if (_state is Phase10GameState.Complete complete)
+            game = complete.Game;
+        else return;
+
+        if (roundIndex < 0 || roundIndex >= game.Rounds.Count) return;
+
+        var round = game.Rounds[roundIndex];
+        for (var i = 0; i < round.Entries.Count && i < updatedEntries.Length; i++)
+        {
+            var existing = round.Entries[i];
+            var updated = updatedEntries[i];
+            round.Entries[i] = Phase10RoundEntry.TryCreate(
+                existing.PlayerName,
+                existing.Phase,
+                updated.PhaseCompleted,
+                Math.Max(0, updated.Points))!;
+        }
+
+        RecalculateGameState(game);
+
+        var completedPlayers = game.Players
+            .Where(p => p is Phase10Player.Completed)
+            .Cast<Phase10Player.Completed>()
+            .ToList();
+
+        if (completedPlayers.Count > 0)
+        {
+            var winner = completedPlayers.OrderBy(p => p.Score).First();
+            _state = new Phase10GameState.Complete(game, winner, completedPlayers.Count);
+        }
+        else if (_state is Phase10GameState.Complete)
+        {
+            _state = new Phase10GameState.InProgress(game, InitEntries(game));
+        }
+
+        await SaveGameAsync();
+    }
+
     public async Task AbandonGameAsync()
     {
         ResetToSetup();
@@ -116,6 +159,48 @@ internal sealed class Phase10GameService(IAppStateStore store) : IPhase10GameSer
 
     private void ResetToSetup() =>
         _state = new Phase10GameState.Setup(["", ""]);
+
+    private static void RecalculateGameState(Phase10Game game)
+    {
+        var playerNames = game.Players.Select(p => p switch
+        {
+            Phase10Player.Active a => a.PlayerName,
+            Phase10Player.Completed c => c.PlayerName,
+            _ => "",
+        }).ToList();
+
+        var players = playerNames.Select(n => (Phase10Player)new Phase10Player.Active(n, 1, 0)).ToList();
+
+        foreach (var round in game.Rounds)
+        {
+            for (var i = 0; i < players.Count; i++)
+            {
+                if (players[i] is not Phase10Player.Active active) continue;
+
+                var entryIndex = round.Entries.FindIndex(e => e.PlayerName == active.PlayerName);
+                if (entryIndex < 0) continue;
+
+                var entry = round.Entries[entryIndex];
+
+                round.Entries[entryIndex] = Phase10RoundEntry.TryCreate(
+                    active.PlayerName,
+                    active.Phase,
+                    entry.PhaseCompleted,
+                    entry.PointsAdded)!;
+
+                var newScore = active.Score + entry.PointsAdded;
+                players[i] = (entry.PhaseCompleted, active.Phase == 10) switch
+                {
+                    (true, true)  => new Phase10Player.Completed(active.PlayerName, newScore),
+                    (true, false) => new Phase10Player.Active(active.PlayerName, active.Phase + 1, newScore),
+                    _             => new Phase10Player.Active(active.PlayerName, active.Phase, newScore),
+                };
+            }
+        }
+
+        game.Players.Clear();
+        game.Players.AddRange(players);
+    }
 
     private static RoundEntryModel[] InitEntries(Phase10Game game) =>
         game.Players.Select(_ => new RoundEntryModel()).ToArray();

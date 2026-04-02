@@ -90,19 +90,53 @@ else if (GameService.State is Phase10GameState.Complete complete)
                 </tr>
             </thead>
             <tbody>
-                @foreach (var round in complete.Game.Rounds)
+                @foreach (var (roundIndex, round) in complete.Game.Rounds.Select((r, i) => (i, r)))
                 {
-                    <tr>
-                        <td>@round.RoundNumber</td>
-                        @foreach (var entry in round.Entries)
-                        {
-                            <td class="@(entry.PhaseCompleted ? "table-success" : "")">
-                                <span>Phase @entry.Phase</span>
-                                <br />
-                                <small>@(entry.PhaseCompleted ? "Progressed" : "Stayed") &mdash; @entry.PointsAdded pts</small>
+                    @if (_editingRoundIndex == roundIndex && _editEntries is { } completeEditEntries)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">Round @round.RoundNumber</div>
+                                <div class="d-flex gap-1 mt-1">
+                                    <button class="btn btn-sm btn-primary" @onclick="SaveEditAsync">Save</button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                                </div>
                             </td>
-                        }
-                    </tr>
+                            @for (var j = 0; j < round.Entries.Count; j++)
+                            {
+                                var entryIdx = j;
+                                var entry = round.Entries[entryIdx];
+                                <td>
+                                    <div class="mb-1"><small>Phase @entry.Phase</small></div>
+                                    <input class="form-control form-control-sm mb-1" type="number" min="0" step="5"
+                                           @bind="completeEditEntries[entryIdx].Points" />
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="edit-phase-@entryIdx"
+                                               @bind="completeEditEntries[entryIdx].PhaseCompleted" />
+                                        <label class="form-check-label small" for="edit-phase-@entryIdx">Completed</label>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>
+                                <div>@round.RoundNumber</div>
+                                <button class="btn btn-outline-secondary btn-sm mt-1"
+                                        @onclick="() => StartEdit(roundIndex, round)">Edit</button>
+                            </td>
+                            @foreach (var entry in round.Entries)
+                            {
+                                <td class="@(entry.PhaseCompleted ? "table-success" : "")">
+                                    <span>Phase @entry.Phase</span>
+                                    <br />
+                                    <small>@(entry.PhaseCompleted ? "Progressed" : "Stayed") &mdash; @entry.PointsAdded pts</small>
+                                </td>
+                            }
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -188,19 +222,53 @@ else if (GameService.State is Phase10GameState.InProgress active)
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var round in active.Game.Rounds)
+                        @foreach (var (roundIndex, round) in active.Game.Rounds.Select((r, i) => (i, r)))
                         {
-                            <tr>
-                                <td>@round.RoundNumber</td>
-                                @foreach (var entry in round.Entries)
-                                {
-                                    <td class="@(entry.PhaseCompleted ? "table-success" : "")">
-                                        <span>Phase @entry.Phase</span>
-                                        <br />
-                                        <small>@(entry.PhaseCompleted ? "Progressed" : "Stayed") &mdash; @entry.PointsAdded pts</small>
+                            @if (_editingRoundIndex == roundIndex && _editEntries is { } activeEditEntries)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">Round @round.RoundNumber</div>
+                                        <div class="d-flex gap-1 mt-1">
+                                            <button class="btn btn-sm btn-primary" @onclick="SaveEditAsync">Save</button>
+                                            <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                                        </div>
                                     </td>
-                                }
-                            </tr>
+                                    @for (var j = 0; j < round.Entries.Count; j++)
+                                    {
+                                        var entryIdx = j;
+                                        var entry = round.Entries[entryIdx];
+                                        <td>
+                                            <div class="mb-1"><small>Phase @entry.Phase</small></div>
+                                            <input class="form-control form-control-sm mb-1" type="number" min="0" step="5"
+                                                   @bind="activeEditEntries[entryIdx].Points" />
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="edit-phase-@entryIdx"
+                                                       @bind="activeEditEntries[entryIdx].PhaseCompleted" />
+                                                <label class="form-check-label small" for="edit-phase-@entryIdx">Completed</label>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        <div>@round.RoundNumber</div>
+                                        <button class="btn btn-outline-secondary btn-sm mt-1"
+                                                @onclick="() => StartEdit(roundIndex, round)">Edit</button>
+                                    </td>
+                                    @foreach (var entry in round.Entries)
+                                    {
+                                        <td class="@(entry.PhaseCompleted ? "table-success" : "")">
+                                            <span>Phase @entry.Phase</span>
+                                            <br />
+                                            <small>@(entry.PhaseCompleted ? "Progressed" : "Stayed") &mdash; @entry.PointsAdded pts</small>
+                                        </td>
+                                    }
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -212,6 +280,33 @@ else if (GameService.State is Phase10GameState.InProgress active)
 }
 
 @code {
+    private int? _editingRoundIndex;
+    private RoundEntryModel[]? _editEntries;
+
     protected override async Task OnInitializedAsync()
         => await GameService.LoadGameAsync();
+
+    private void StartEdit(int roundIndex, Phase10Round round)
+    {
+        _editingRoundIndex = roundIndex;
+        _editEntries = round.Entries
+            .Select(e => new RoundEntryModel { Points = e.PointsAdded, PhaseCompleted = e.PhaseCompleted })
+            .ToArray();
+    }
+
+    private void CancelEdit()
+    {
+        _editingRoundIndex = null;
+        _editEntries = null;
+    }
+
+    private async Task SaveEditAsync()
+    {
+        if (_editingRoundIndex is { } roundIndex && _editEntries is not null)
+        {
+            await GameService.EditRoundAsync(roundIndex, _editEntries);
+            _editingRoundIndex = null;
+            _editEntries = null;
+        }
+    }
 }
