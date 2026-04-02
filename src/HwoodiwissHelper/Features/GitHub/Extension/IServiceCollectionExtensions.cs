@@ -12,7 +12,7 @@ namespace HwoodiwissHelper.Features.GitHub.Extension;
 
 public static class IServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureGitHubServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureGitHubServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         services.Configure<GitHubConfiguration>(configuration.GetSection(GitHubConfiguration.SectionName));
         services.PostConfigure<GitHubConfiguration>(config =>
@@ -30,10 +30,16 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IGitHubService, GitHubService>();
         services.AddGitHubWebhookHandlers();
 
-        services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
+        var httpClientBuilder = services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
         {
             client.BaseAddress = new Uri("https://api.github.com");
         });
+
+        if (environment.IsEnvironment("Benchmarks"))
+        {
+            httpClientBuilder.AddHttpMessageHandler<NullGitHubHttpHandler>();
+            services.AddTransient<NullGitHubHttpHandler>();
+        }
 
         return services;
     }
