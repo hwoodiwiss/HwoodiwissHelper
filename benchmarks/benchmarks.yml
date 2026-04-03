@@ -1,0 +1,95 @@
+imports:
+  - https://raw.githubusercontent.com/dotnet/crank/main/src/Microsoft.Crank.Jobs.Bombardier/bombardier.yml
+
+jobs:
+  server:
+    executable: "{{publishedBinaryPath}}"
+    readyStateText: Application started.
+    # Set the environment to "Benchmarks" so that benchmark-only endpoints are mapped
+    # and outbound GitHub calls are stubbed via NullGitHubHttpHandler.
+    environmentVariables:
+      ASPNETCORE_ENVIRONMENT: Benchmarks
+      # Minimal GitHub config so the app starts cleanly without real credentials.
+      Github__WebhookKey: "benchmark-placeholder"
+      Github__EnableRequestLogging: "false"
+      Github__AppId: "0"
+      Github__AppPrivateKey: ""
+      Github__AllowedBots__0: "dependabot[bot]"
+
+scenarios:
+  # Baseline: measures framework/middleware overhead only.
+  health:
+    application:
+      job: server
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5000
+        path: /health
+        verb: GET
+
+  # JSON serialisation path: /configuration/version returns a rich JSON object.
+  configuration:
+    application:
+      job: server
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5000
+        path: /configuration/version
+        verb: GET
+
+  # Full webhook pipeline: deserialisation -> handler dispatch -> (stubbed) GitHub call.
+  # Uses a pull_request.opened payload. The endpoint is active because ASPNETCORE_ENVIRONMENT=Benchmarks.
+  webhook:
+    application:
+      job: server
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5000
+        path: /benchmark/webhook
+        verb: POST
+        presetHeaders: json
+        customHeaders:
+          - "X-Github-Event: pull_request"
+        bodyFile: "{{benchmarkPayloadsPath}}/pull_request_opened.json"
+
+profiles:
+  ci:
+    variables:
+      serverAddress: localhost
+      benchmarkPayloadsPath: benchmarks/payloads
+    jobs:
+      application:
+        endpoints:
+          - http://localhost:5010
+      load:
+        endpoints:
+          - http://localhost:5010
+
+  local-win-x64:
+    variables:
+      serverAddress: localhost
+      benchmarkPayloadsPath: benchmarks/payloads
+      publishedBinaryPath: artifacts/publish/HwoodiwissHelper/release_win-x64/HwoodiwissHelper.exe
+    jobs:
+      application:
+        endpoints:
+          - http://localhost:5010
+      load:
+        endpoints:
+          - http://localhost:5010
+
+  local-win-arm64:
+    variables:
+      serverAddress: localhost
+      benchmarkPayloadsPath: benchmarks/payloads
+      publishedBinaryPath: artifacts/publish/HwoodiwissHelper/release_win-arm64/HwoodiwissHelper.exe
+    jobs:
+      application:
+        endpoints:
+          - http://localhost:5010
+      load:
+        endpoints:
+          - http://localhost:5010
