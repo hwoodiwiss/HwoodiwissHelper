@@ -139,12 +139,48 @@ jobs:
 
       - name: Download previous benchmark results
         id: download-previous
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark-results-latest
-          path: benchmarks/results/previous
+        uses: actions/github-script@v8
         # Not a failure if no previous results exist (first run)
         continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs')
+            const { execSync } = require('child_process')
+
+            // Find the most recent benchmark-results-latest artifact,
+            // excluding any that belong to this run (they don't exist yet).
+            const artifacts = await github.paginate(
+              github.rest.actions.listArtifactsForRepo,
+              { owner: context.repo.owner, repo: context.repo.repo, name: 'benchmark-results-latest', per_page: 100 }
+            )
+
+            const previous = artifacts
+              .filter(a => a.workflow_run.id !== context.runId && !a.expired)
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]
+
+            if (!previous) {
+              core.info('No previous benchmark-results-latest artifact found — skipping download.')
+              return
+            }
+
+            core.info(`Downloading artifact ${previous.id} from run ${previous.workflow_run.id} (created ${previous.created_at})`)
+
+            // The /zip endpoint redirects to a blob URL. Use node-fetch (available in the
+            // actions/github-script Node runtime) so we follow the redirect automatically.
+            const token = process.env.GITHUB_TOKEN
+            const zipUrl = `https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/artifacts/${previous.id}/zip`
+            const zipResp = await fetch(zipUrl, {
+              headers: { Authorization: `Bearer ${token}`, 'User-Agent': 'actions/github-script' },
+              redirect: 'follow'
+            })
+            if (!zipResp.ok) throw new Error(`Failed to download artifact zip: ${zipResp.status} ${zipResp.statusText}`)
+
+            const zipPath = '/tmp/benchmark-results-previous.zip'
+            const destDir = 'benchmarks/results/previous'
+            fs.mkdirSync(destDir, { recursive: true })
+            fs.writeFileSync(zipPath, Buffer.from(await zipResp.arrayBuffer()))
+            execSync(`unzip -o ${zipPath} -d ${destDir}`)
+            core.info('Previous benchmark results extracted successfully.')
 
       - name: Compare results and generate summary
         id: compare
