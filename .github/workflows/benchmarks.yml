@@ -142,6 +142,8 @@ jobs:
         uses: actions/github-script@v8
         # Not a failure if no previous results exist (first run)
         continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
             const fs = require('fs')
@@ -165,8 +167,8 @@ jobs:
 
             core.info(`Downloading artifact ${previous.id} from run ${previous.workflow_run.id} (created ${previous.created_at})`)
 
-            // The /zip endpoint redirects to a blob URL. Use node-fetch (available in the
-            // actions/github-script Node runtime) so we follow the redirect automatically.
+            // The /zip endpoint redirects to a blob URL. Use fetch with the token from
+            // the env var we explicitly mapped above so the redirect is followed correctly.
             const token = process.env.GITHUB_TOKEN
             const zipUrl = `https://api.github.com/repos/${context.repo.owner}/${context.repo.repo}/actions/artifacts/${previous.id}/zip`
             const zipResp = await fetch(zipUrl, {
