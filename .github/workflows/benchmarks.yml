@@ -83,6 +83,7 @@ jobs:
           dotnet nuget add source --name GitHub --username github --password ${{ secrets.GITHUB_TOKEN }} https://nuget.pkg.github.com/hwoodiwiss/index.json --store-password-in-clear-text
 
       - name: Publish AOT
+        shell: pwsh
         run: |
           .\build\publish-aot.ps1 -RuntimeIdentifier linux-arm64
 
