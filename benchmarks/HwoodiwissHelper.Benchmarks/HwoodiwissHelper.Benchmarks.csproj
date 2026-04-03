@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>HwoodiwissHelper.Benchmarks</RootNamespace>
+    <NoWarn>$(NoWarn);CA1707;CA1711;CA1001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HwoodiwissHelper\HwoodiwissHelper.csproj" Aliases="HwoodiwissHelperApp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Payloads\**\*.json" />
+  </ItemGroup>
+
+</Project>
