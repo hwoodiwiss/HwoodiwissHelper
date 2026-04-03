@@ -4,12 +4,14 @@
 
 param(
     [switch] $PublishResults,
-    [string] $Filter = ""
+    [Parameter(Mandatory = $false)][string] $Framework = "net10.0",
+    [Parameter(Mandatory = $false)][string] $Filter = "*"
 )
 
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "build" "install-sdk.ps1")
+$dotnet = Join-Path "$env:DOTNET_INSTALL_DIR" "dotnet"
 
 $additionalArgs = @()
 
@@ -23,6 +25,6 @@ if ($Filter) {
 
 $benchmarkProject = Join-Path $PSScriptRoot "benchmarks" "HwoodiwissHelper.Benchmarks" "HwoodiwissHelper.Benchmarks.csproj"
 
-dotnet run --project $benchmarkProject --configuration Release -- $additionalArgs
+& $dotnet run --project $benchmarkProject --configuration Release -- $additionalArgs
 
 exit $LASTEXITCODE
