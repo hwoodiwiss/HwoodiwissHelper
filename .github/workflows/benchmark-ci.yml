@@ -2,7 +2,10 @@ name: benchmark-ci
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - dotnet-vnext
+      - dotnet-nightly
     paths-ignore:
       - "**/*.gitattributes"
       - "**/*.gitignore"
