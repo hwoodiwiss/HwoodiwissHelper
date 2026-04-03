@@ -3,11 +3,7 @@ imports:
 
 jobs:
   server:
-    sources:
-      app:
-        localFolder: ../src/HwoodiwissHelper
-    project: app/HwoodiwissHelper.csproj
-    runtime: linux-arm64
+    executable: "{{publishedBinaryPath}}"
     readyStateText: Application started.
     # Set the environment to "Benchmarks" so that benchmark-only endpoints are mapped
     # and outbound GitHub calls are stubbed via NullGitHubHttpHandler.
@@ -43,7 +39,7 @@ scenarios:
         path: /configuration/version
         verb: GET
 
-  # Full webhook pipeline: deserialisation → handler dispatch → (stubbed) GitHub call.
+  # Full webhook pipeline: deserialisation -> handler dispatch -> (stubbed) GitHub call.
   # Uses a pull_request.opened payload. The endpoint is active because ASPNETCORE_ENVIRONMENT=Benchmarks.
   webhook:
     application:
@@ -60,10 +56,36 @@ scenarios:
         bodyFile: "{{benchmarkPayloadsPath}}/pull_request_opened.json"
 
 profiles:
-  local:
+  ci:
     variables:
       serverAddress: localhost
       benchmarkPayloadsPath: benchmarks/payloads
+    jobs:
+      application:
+        endpoints:
+          - http://localhost:5010
+      load:
+        endpoints:
+          - http://localhost:5010
+
+  local-win-x64:
+    variables:
+      serverAddress: localhost
+      benchmarkPayloadsPath: benchmarks/payloads
+      publishedBinaryPath: artifacts/publish/HwoodiwissHelper/release_win-x64/HwoodiwissHelper.exe
+    jobs:
+      application:
+        endpoints:
+          - http://localhost:5010
+      load:
+        endpoints:
+          - http://localhost:5010
+
+  local-win-arm64:
+    variables:
+      serverAddress: localhost
+      benchmarkPayloadsPath: benchmarks/payloads
+      publishedBinaryPath: artifacts/publish/HwoodiwissHelper/release_win-arm64/HwoodiwissHelper.exe
     jobs:
       application:
         endpoints:

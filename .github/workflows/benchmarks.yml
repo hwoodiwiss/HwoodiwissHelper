@@ -82,6 +82,11 @@ jobs:
         run: |
           dotnet nuget add source --name GitHub --username github --password ${{ secrets.GITHUB_TOKEN }} https://nuget.pkg.github.com/hwoodiwiss/index.json --store-password-in-clear-text
 
+      - name: Publish AOT
+        run: |
+          dotnet publish src/HwoodiwissHelper/HwoodiwissHelper.csproj \
+            -c Release -r linux-arm64 --self-contained
+
       - name: Install crank tools
         run: |
           dotnet tool install -g Microsoft.Crank.Controller --version "0.2.0-*"
@@ -108,28 +113,28 @@ jobs:
         run: |
           crank --config benchmarks/benchmarks.yml \
             --scenario health \
-            --profile local \
+            --profile ci \
             --json benchmarks/results/health.json \
-            --application.options.displayOutput true \
-            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads"
+            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads" \
+            --variable publishedBinaryPath="$(pwd)/artifacts/publish/HwoodiwissHelper/release_linux-arm64/HwoodiwissHelper"
 
       - name: Run configuration scenario
         run: |
           crank --config benchmarks/benchmarks.yml \
             --scenario configuration \
-            --profile local \
+            --profile ci \
             --json benchmarks/results/configuration.json \
-            --application.options.displayOutput true \
-            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads"
+            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads" \
+            --variable publishedBinaryPath="$(pwd)/artifacts/publish/HwoodiwissHelper/release_linux-arm64/HwoodiwissHelper"
 
       - name: Run webhook scenario
         run: |
           crank --config benchmarks/benchmarks.yml \
             --scenario webhook \
-            --profile local \
+            --profile ci \
             --json benchmarks/results/webhook.json \
-            --application.options.displayOutput true \
-            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads"
+            --variable benchmarkPayloadsPath="$(pwd)/benchmarks/payloads" \
+            --variable publishedBinaryPath="$(pwd)/artifacts/publish/HwoodiwissHelper/release_linux-arm64/HwoodiwissHelper"
 
       - name: Download previous benchmark results
         id: download-previous
