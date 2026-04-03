@@ -56,7 +56,7 @@ jobs:
         if: always()
         with:
           name: benchmarks
-          path: ./artifacts/bin/HwoodiwissHelper.Benchmarks/release/BenchmarkDotNet.Artifacts/**
+          path: ./artifacts/bin/HwoodiwissHelper.Benchmarks/release/**
 
       - name: Get repository name
         id: repo
