@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
 using System.Text;
 using HwoodiwissHelper.Features.GitHub.Configuration;
 using HwoodiwissHelper.Features.GitHub.Events;
@@ -12,7 +11,7 @@ namespace HwoodiwissHelper.Features.GitHub.Extension;
 
 public static class IServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureGitHubServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    public static IServiceCollection ConfigureGitHubServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<GitHubConfiguration>(configuration.GetSection(GitHubConfiguration.SectionName));
         services.PostConfigure<GitHubConfiguration>(config =>
@@ -30,16 +29,10 @@ public static class IServiceCollectionExtensions
         services.AddScoped<IGitHubService, GitHubService>();
         services.AddGitHubWebhookHandlers();
 
-        var httpClientBuilder = services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
+        services.AddHttpClient<IGitHubClient, GitHubClient>(client =>
         {
             client.BaseAddress = new Uri("https://api.github.com");
         });
-
-        if (environment.IsEnvironment("Benchmarks"))
-        {
-            httpClientBuilder.AddHttpMessageHandler<NullGitHubHttpHandler>();
-            services.AddTransient<NullGitHubHttpHandler>();
-        }
 
         return services;
     }
