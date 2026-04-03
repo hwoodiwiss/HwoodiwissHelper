@@ -84,8 +84,7 @@ jobs:
 
       - name: Publish AOT
         run: |
-          dotnet publish src/HwoodiwissHelper/HwoodiwissHelper.csproj \
-            -c Release -r linux-arm64 --self-contained
+          .\build\publish-aot.ps1 -RuntimeIdentifier linux-arm64
 
       - name: Install crank tools
         run: |
