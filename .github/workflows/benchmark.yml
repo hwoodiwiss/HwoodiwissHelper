@@ -1,0 +1,118 @@
+name: benchmark
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: {}
+
+env:
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: false
+  DOTNET_MULTILEVEL_LOOKUP: 0
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: 1
+  FORCE_COLOR: 1
+  NUGET_XMLDOC_MODE: skip
+  TERM: xterm
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04-arm
+    if: |
+      github.event.repository.fork == false &&
+      github.event.issue.pull_request != '' &&
+      startsWith(github.event.comment.body, '/benchmark')
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: write
+      statuses: write
+
+    steps:
+      - name: Parse comment and set status
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issueNumber = context.payload.issue.number;
+            const commenterId = context.payload.comment.user.login;
+
+            // Gate to collaborators only
+            try {
+              await github.rest.repos.checkCollaborator({ owner, repo, username: commenterId });
+            } catch {
+              core.setFailed(`@${commenterId} is not a collaborator — ignoring /benchmark comment.`);
+              return;
+            }
+
+            // Get the PR head SHA
+            const pr = await github.rest.pulls.get({ owner, repo, pull_number: issueNumber });
+            const sha = pr.data.head.sha;
+            core.setOutput("commit-sha", sha);
+
+            // Post "started" comment
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issueNumber,
+              body: `Benchmark run started for ${sha}. Results will be posted here when complete.`,
+            });
+
+            // Set pending commit status
+            await github.rest.repos.createCommitStatus({
+              owner, repo, sha,
+              state: "pending",
+              context: "benchmark",
+              description: "Benchmark run in progress...",
+            });
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.parse.outputs.commit-sha }}
+          persist-credentials: false
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+
+      - name: Install .NET Workloads
+        run: dotnet workload restore
+
+      - name: Add GH Package Source
+        run: |
+          dotnet nuget add source --name GitHub --username github --password ${{ secrets.GITHUB_TOKEN }} https://nuget.pkg.github.com/hwoodiwiss/index.json --store-password-in-clear-text
+
+      - name: Run benchmarks
+        shell: pwsh
+        run: ./benchmark.ps1
+
+      - name: Upload BenchmarkDotNet artifacts
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: benchmarks
+          path: ./artifacts/bin/HwoodiwissHelper.Benchmarks/release/BenchmarkDotNet.Artifacts/**
+
+      - name: Post result
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issueNumber = context.payload.issue.number;
+            const sha = "${{ steps.parse.outputs.commit-sha }}";
+            const success = "${{ job.status }}" === "success";
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issueNumber,
+              body: success
+                ? `Benchmark run for ${sha} completed successfully. See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for results.`
+                : `Benchmark run for ${sha} failed. See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.`,
+            });
+
+            await github.rest.repos.createCommitStatus({
+              owner, repo, sha,
+              state: success ? "success" : "failure",
+              context: "benchmark",
+              description: success ? "Benchmark run completed." : "Benchmark run failed.",
+            });
