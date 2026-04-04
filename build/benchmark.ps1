@@ -9,7 +9,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "build" "install-sdk.ps1")
+. (Join-Path $PSScriptRoot "install-sdk.ps1")
 $dotnet = Join-Path "$env:DOTNET_INSTALL_DIR" "dotnet"
 
 $additionalArgs = @()
@@ -18,7 +18,7 @@ if ($PublishResults) {
     $additionalArgs += "--exporters", "json"
 }
 
-$benchmarkProject = Join-Path $PSScriptRoot "benchmarks" "HwoodiwissHelper.Benchmarks" "HwoodiwissHelper.Benchmarks.csproj"
+$benchmarkProject = Join-Path $PSScriptRoot ".." "benchmarks" "HwoodiwissHelper.Benchmarks" "HwoodiwissHelper.Benchmarks.csproj"
 
 & $dotnet run --project $benchmarkProject --configuration Release --framework $Framework -- $additionalArgs --% --filter *
 

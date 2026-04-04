@@ -84,7 +84,7 @@ jobs:
 
       - name: Run benchmarks
         shell: pwsh
-        run: ./benchmark.ps1
+        run: ./build/benchmark.ps1
 
       - name: Upload BenchmarkDotNet artifacts
         uses: actions/upload-artifact@v7
