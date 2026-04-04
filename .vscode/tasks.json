@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/HwoodiwissHelper.sln",
+        "${workspaceFolder}/HwoodiwissHelper.slnx",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -19,7 +19,7 @@
       "type": "process",
       "args": [
         "publish",
-        "${workspaceFolder}/HwoodiwissHelper.sln",
+        "${workspaceFolder}/HwoodiwissHelper.slnx",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -33,7 +33,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/HwoodiwissHelper.sln"
+        "${workspaceFolder}/HwoodiwissHelper.slnx"
       ],
       "problemMatcher": "$msCompile"
     }
