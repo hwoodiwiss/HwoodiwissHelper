@@ -49,7 +49,7 @@ jobs:
 
       - name: Run benchmarks
         shell: pwsh
-        run: ./benchmark.ps1 -PublishResults -Framework net11.0
+        run: ./build/benchmark.ps1 -PublishResults -Framework net11.0
 
       - name: Upload BenchmarkDotNet artifacts
         uses: actions/upload-artifact@v7
