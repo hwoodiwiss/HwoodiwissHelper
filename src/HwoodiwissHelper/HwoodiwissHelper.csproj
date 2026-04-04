@@ -27,10 +27,10 @@
     <UserSecretsId>HwoodiwissHelper</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <!--PropertyGroup>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <Features>$(Features);runtime-async=on</Features>
-  </PropertyGroup>
+  </PropertyGroup-->
 
   <PropertyGroup>
     <ContainerRegistry>ghcr.io</ContainerRegistry>
