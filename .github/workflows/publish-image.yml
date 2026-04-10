@@ -36,7 +36,7 @@ jobs:
 
       - name: Get PR Details
         if: github.event_name == 'issue_comment'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const { owner, repo, number } = context.issue
@@ -65,13 +65,13 @@ jobs:
     runs-on: ${{ matrix.architecture == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: recursive
           ref: ${{ needs.get-tag-version.outputs.ref }}
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
 
       - name: Install .NET Workloads
         run: dotnet workload restore
@@ -92,7 +92,7 @@ jobs:
 
       - name: Publish Binlog
         if: inputs.generate-binlog == true
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: binlog-${{ matrix.architecture }}-${{ matrix.mode }}
           path: ./msbuild.binlog
@@ -105,7 +105,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Create Tag
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             github.rest.git.createRef({
