@@ -8,7 +8,7 @@
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="bunit" Version="2.7.2" />
     <PackageVersion Include="coverlet.msbuild" Version="10.0.0" />
-    <PackageVersion Include="Dunet" Version="1.16.1" />
+    <PackageVersion Include="Dunet" Version="1.16.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.3" />
     <PackageVersion Include="HwoodiwissApplication" Version="1.0.4" />
     <PackageVersion Include="JustEat.HttpClientInterception" Version="5.1.2" />
