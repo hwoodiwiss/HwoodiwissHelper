@@ -28,7 +28,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <Features>$(Features);runtime-async=on</Features>
   </PropertyGroup>
 
@@ -36,8 +35,6 @@
     <ContainerRegistry>ghcr.io</ContainerRegistry>
     <ContainerRepository>hwoodiwiss/hwoodiwiss-helper</ContainerRepository>
     <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
-    <!-- TEMP: Specify base image for container. https://github.com/dotnet/sdk/issues/53370 -->
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime-deps:11.0.0-preview.2-resolute-chiseled</ContainerBaseImage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(GenerateAotMetadata)' == 'True' ">
     <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
