@@ -10,7 +10,7 @@
     <PackageVersion Include="coverlet.msbuild" Version="10.0.0" />
     <PackageVersion Include="Dunet" Version="1.16.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.4" />
-    <PackageVersion Include="HwoodiwissApplication" Version="1.0.0-pr89.185" /> <!-- Keep on the -pr89 branch for the duration of the preview period -->
+    <PackageVersion Include="HwoodiwissApplication" Version="1.0.0-pr89.187" /> <!-- Keep on the -pr89 branch for the duration of the preview period -->
     <PackageVersion Include="JustEat.HttpClientInterception" Version="5.1.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0-preview.4.26230.115" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="11.0.0-preview.4.26230.115" />
