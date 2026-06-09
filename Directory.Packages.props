@@ -10,12 +10,12 @@
     <PackageVersion Include="coverlet.msbuild" Version="10.0.1" />
     <PackageVersion Include="Dunet" Version="1.16.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.4" />
-    <PackageVersion Include="HwoodiwissApplication" Version="1.0.0-pr89.187" /> <!-- Keep on the -pr89 branch for the duration of the preview period -->
+    <PackageVersion Include="HwoodiwissApplication" Version="1.0.0-pr89.204" /> <!-- Keep on the -pr89 branch for the duration of the preview period -->
     <PackageVersion Include="JustEat.HttpClientInterception" Version="5.1.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0-preview.4.26230.115" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="11.0.0-preview.4.26230.115" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="11.0.0-preview.4.26230.115" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="11.0.0-preview.4.26230.115" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Gateway" Version="11.0.0-preview.5.26302.115" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0-preview.5.26302.115" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="11.0.0-preview.5.26302.115" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="11.0.0-preview.5.26302.115" />
     <PackageVersion Include="Microsoft.AspNetCore.Testing" Version="10.4.0" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.16.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
