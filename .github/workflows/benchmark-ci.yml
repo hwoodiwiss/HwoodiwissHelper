@@ -15,6 +15,7 @@ on:
 permissions: {}
 
 env:
+  DOTNET_CLI_ENABLEAOT: true
   DOTNET_GENERATE_ASPNET_CERTIFICATE: false
   DOTNET_MULTILEVEL_LOOKUP: 0
   DOTNET_NOLOGO: true
@@ -49,7 +50,7 @@ jobs:
 
       - name: Run benchmarks
         shell: pwsh
-        run: ./build/benchmark.ps1 -PublishResults
+        run: ./build/benchmark.ps1 -PublishResults -Framework net11.0
 
       - name: Upload BenchmarkDotNet artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
