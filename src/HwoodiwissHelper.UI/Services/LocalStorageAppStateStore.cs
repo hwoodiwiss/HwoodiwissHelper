@@ -18,7 +18,15 @@ internal sealed class LocalStorageAppStateStore(IJSRuntime jsRuntime) : IAppStat
         catch
         {
             // Corrupted or unreadable — remove it so the caller gets a clean slate
-            await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+            try
+            {
+                await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+            }
+            catch
+            {
+                // Ignore cleanup failures; caller still gets default value
+            }
+
             return default;
         }
     }
@@ -26,9 +34,25 @@ internal sealed class LocalStorageAppStateStore(IJSRuntime jsRuntime) : IAppStat
     public async Task SetItemAsync<T>(string key, T value)
     {
         var json = JsonSerializer.Serialize(value);
-        await jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+        try
+        {
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+        }
+        catch
+        {
+            // Storage write failed; continue without persisting state
+        }
     }
 
     public async Task RemoveItemAsync(string key)
-        => await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+    {
+        try
+        {
+            await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+        }
+        catch
+        {
+            // Storage remove failed; continue without throwing
+        }
+    }
 }
