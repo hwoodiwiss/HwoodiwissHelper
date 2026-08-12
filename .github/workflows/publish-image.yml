@@ -20,6 +20,17 @@ permissions:
   contents: read
   packages: write
 
+
+env:
+  DOTNET_CLI_ENABLEAOT: true
+  DOTNET_MULTILEVEL_LOOKUP: 0
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: 1
+  FORCE_COLOR: 1
+  NUGET_XMLDOC_MODE: skip
+  TERM: xterm
+
 jobs:
   get-tag-version:
     if: github.event_name != 'issue_comment' || (github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/publish') && github.triggering_actor == github.repository_owner)

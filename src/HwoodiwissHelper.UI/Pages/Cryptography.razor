@@ -71,7 +71,14 @@
         _bytesLengthText = value;
         _randomString = GetNSecureBytes(value);
         await Task.Delay(50);
-        await JsRuntime.InvokeVoidAsync("fitTextAreaToContent", _encodedStringOutput);
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("fitTextAreaToContent", _encodedStringOutput);
+        }
+        catch
+        {
+            // Ignore resize failures
+        }
     }
 
     private static string GetNSecureBytes(int bytes)
