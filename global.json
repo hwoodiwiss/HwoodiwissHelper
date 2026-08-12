@@ -1,7 +1,7 @@
 {
   "sdk": {
     "version": "11.0.100-preview.7.26381.103",
-    "allowPrerelease": true,
+    "allowPrerelease": false,
     "paths": ["./build/.dotnetcli", "$host$"],
     "errorMessage": "The required .NET SDK version is not installed, run ./build/build.ps1 to install it locally to the project."
   }
