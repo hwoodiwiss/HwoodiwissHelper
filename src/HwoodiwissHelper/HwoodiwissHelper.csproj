@@ -28,6 +28,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <Features>$(Features);runtime-async=on</Features>
   </PropertyGroup>
 
