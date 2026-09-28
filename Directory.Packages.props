@@ -7,7 +7,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="bunit" Version="2.11.3" />
-    <PackageVersion Include="coverlet.msbuild" Version="10.0.1" />
+    <PackageVersion Include="coverlet.msbuild" Version="10.1.0" />
     <PackageVersion Include="Dunet" Version="1.16.2" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.5" />
     <PackageVersion Include="HwoodiwissApplication" Version="1.0.5" />
